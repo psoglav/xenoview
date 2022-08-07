@@ -1,0 +1,5 @@
+**/.*
+test/
+sandbox/
+typings/
+examples/

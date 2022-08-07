@@ -1,0 +1,17 @@
+{
+  "name": "cryptoview",
+  "author": "psoglav",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.js",
+  "scripts": {
+    "watch": "tsc --watch",
+    "build": "tsc",
+    "prepublishOnly": "tsc",
+    "dev": ""
+  },
+  "license": "ISC",
+  "dependencies": {
+    "moment": "^2.29.4"
+  }
+}
