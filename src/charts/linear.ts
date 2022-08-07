@@ -1,12 +1,12 @@
 import {
-  TLinearGraphOptions,
+  TLinearChartOptions,
   TLinearHistory,
-  TLinearGraphData,
+  TLinearChartData,
 } from '../types'
 
-import Graph from './base'
+import Chart from './base'
 
-export class LinearGraph extends Graph {
+export class LinearChart extends Chart {
   private CHART_HOVER_STROKE_WIDTH = 1.5
   private CHART_CURRENT_STROKE_WIDTH = this.CHART_HOVER_STROKE_WIDTH
   private CHART_STROKE_WIDTH = 1
@@ -26,12 +26,12 @@ export class LinearGraph extends Graph {
   private mousePosition = { x: 0, y: 0 }
 
   private history: TLinearHistory | undefined
-  private graphData: TLinearGraphData | undefined
+  private chartData: TLinearChartData | undefined
 
   constructor(
     container: HTMLElement | string,
     data?: TLinearHistory,
-    opts?: TLinearGraphOptions
+    opts?: TLinearChartOptions
   ) {
     super(container)
 
@@ -41,9 +41,9 @@ export class LinearGraph extends Graph {
     this.draw()
   }
 
-  applyOptions(opts: TLinearGraphOptions) {
-    if (opts.graphStroke) {
-      let { color, width, hoverWidth } = opts.graphStroke
+  applyOptions(opts: TLinearChartOptions) {
+    if (opts.chartStroke) {
+      let { color, width, hoverWidth } = opts.chartStroke
 
       if (color) this.CHART_STROKE_COLOR = color
       if (hoverWidth) this.CHART_HOVER_STROKE_WIDTH = hoverWidth
@@ -53,11 +53,11 @@ export class LinearGraph extends Graph {
       }
     }
 
-    if (opts.graphFill) {
-      let { gradientStart, gradientEnd } = opts.graphFill
+    if (opts.chartFill) {
+      let { gradientStart, gradientEnd } = opts.chartFill
 
       if (gradientStart && gradientEnd) {
-        this.CHART_GRADIENT = this.graphContext.createLinearGradient(
+        this.CHART_GRADIENT = this.chartContext.createLinearGradient(
           0,
           0,
           0,
@@ -69,18 +69,18 @@ export class LinearGraph extends Graph {
     }
   }
 
-  get visibleGraphData() {
-    return this.graphData?.filter((y, i) => {
+  get visibleChartData() {
+    return this.chartData?.filter((y, i) => {
       let x =
-        this.GRAPH_LEFT + i * (this.floatingWidth! / this.graphData!.length)
+        this.GRAPH_LEFT + i * (this.floatingWidth! / this.chartData!.length)
 
       return x > this.GRAPH_LEFT && x < this.GRAPH_RIGHT
     })
   }
 
-  get graphDataWithPadding() {
+  get chartDataWithPadding() {
     let hh = this.height / 2
-    return this.visibleGraphData?.map((y) => (y - hh) / 1.5 + hh)
+    return this.visibleChartData?.map((y) => (y - hh) / 1.5 + hh)
   }
 
   get topHistoryPrice() {
@@ -117,7 +117,7 @@ export class LinearGraph extends Graph {
     return this.GRAPH_RIGHT - this.GRAPH_LEFT
   }
 
-  normalizeToGraphY(value: number) {
+  normalizeToChartY(value: number) {
     let max = this.topHistoryPrice[1]
     let min = this.bottomHistoryPrice[1]
 
@@ -143,7 +143,7 @@ export class LinearGraph extends Graph {
     this.mousePosition.y = e.clientY
 
     if (this.panningIsActive) {
-      this.moveGraph(e.movementX)
+      this.moveChart(e.movementX)
     }
 
     this.movePointer()
@@ -176,46 +176,46 @@ export class LinearGraph extends Graph {
   }
 
   wheelHandler(e: any) {
-    this.zoomGraph(e.wheelDeltaY > 1 ? 1 : -1)
+    this.zoomChart(e.wheelDeltaY > 1 ? 1 : -1)
     this.movePointer()
     this.draw()
   }
 
-  draw(updateGraphData?: boolean) {
-    this.graphContext.clearRect(0, 0, this.width, this.height)
+  draw(updateChartData?: boolean) {
+    this.chartContext.clearRect(0, 0, this.width, this.height)
 
     this.drawGrid(this.CHART_PRICE_SEGMENTS)
-    this.drawGraph(updateGraphData)
+    this.drawChart(updateChartData)
     this.drawPointer()
   }
 
-  zoomGraph(side: number) {
+  zoomChart(side: number) {
     let mx = this.mousePosition.x
     let d = 20 / this.zoomSpeed
 
     this.GRAPH_RIGHT += ((this.GRAPH_RIGHT - mx) / d) * side
     this.GRAPH_LEFT += ((this.GRAPH_LEFT - mx) / d) * side
 
-    this.clampGraph()
+    this.clampChart()
   }
 
-  moveGraph(movement: number) {
+  moveChart(movement: number) {
     if (this.GRAPH_RIGHT == this.width - 200 && movement < 0) return
     if (this.GRAPH_LEFT == 0 && movement > 0) return
 
     this.GRAPH_LEFT += movement
     this.GRAPH_RIGHT += movement
 
-    this.clampGraph()
+    this.clampChart()
   }
 
-  clampGraph() {
+  clampChart() {
     if (this.GRAPH_LEFT > 0) this.GRAPH_LEFT = 0
     if (this.GRAPH_RIGHT < this.width - 200) this.GRAPH_RIGHT = this.width - 200
   }
 
   movePointer() {
-    let data = this.visibleGraphData
+    let data = this.visibleChartData
 
     if (!data?.length) return
 
@@ -229,10 +229,10 @@ export class LinearGraph extends Graph {
   }
 
   drawPointer() {
-    if (!this.graphData?.length || !this.pointerIsVisible) return
+    if (!this.chartData?.length || !this.pointerIsVisible) return
 
-    let ctx = this.graphContext
-    let history = this.graphDataWithPadding!
+    let ctx = this.chartContext
+    let history = this.chartDataWithPadding!
     let x =
       this.GRAPH_LEFT +
       (this.floatingWidth / history.length) * this.pointerYPosIndex
@@ -272,19 +272,19 @@ export class LinearGraph extends Graph {
     )
   }
 
-  drawGraph(updateGraphData?: boolean) {
-    if (updateGraphData) {
-      this.graphData = this.normalizeData()
+  drawChart(updateChartData?: boolean) {
+    if (updateChartData) {
+      this.chartData = this.normalizeData()
     }
 
-    let data = this.graphDataWithPadding || []
+    let data = this.chartDataWithPadding || []
 
     if (!data.length) {
       this.log('no history')
       return
     }
 
-    let ctx = this.graphContext
+    let ctx = this.chartContext
 
     ctx.beginPath()
 
@@ -313,7 +313,7 @@ export class LinearGraph extends Graph {
   }
 
   drawGrid(segments: number) {
-    let ctx = this.graphContext
+    let ctx = this.chartContext
 
     let top, bottom
 
@@ -334,9 +334,9 @@ export class LinearGraph extends Graph {
       let y = i * interval + top
 
       ctx.fillStyle = '#ffffff44'
-      ctx.fillText(y.toString(), this.width - 35, this.normalizeToGraphY(y) - 5)
+      ctx.fillText(y.toString(), this.width - 35, this.normalizeToChartY(y) - 5)
 
-      y = this.normalizeToGraphY(y)
+      y = this.normalizeToChartY(y)
 
       ctx.moveTo(0, y)
       ctx.lineTo(this.width, y)

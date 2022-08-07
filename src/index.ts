@@ -1,2 +1,2 @@
-export * from './graphs/candles'
-export * from './graphs/linear'
+export * from './charts/candles'
+export * from './charts/linear'

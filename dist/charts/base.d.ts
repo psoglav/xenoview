@@ -1,11 +1,11 @@
-export default abstract class Graph {
+export default abstract class Chart {
     container: HTMLElement | undefined;
-    graphContext: CanvasRenderingContext2D;
+    chartContext: CanvasRenderingContext2D;
     yAxisContext: CanvasRenderingContext2D;
     xAxisContext: CanvasRenderingContext2D;
     zoomSpeed: number;
     constructor(container: HTMLElement | string);
-    createGraph(): HTMLCanvasElement;
+    createChart(): HTMLCanvasElement;
     createXAxis(): HTMLCanvasElement;
     createYAxis(): HTMLCanvasElement;
     createChartMarkup(): void;

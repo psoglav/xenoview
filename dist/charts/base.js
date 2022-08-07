@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class Graph {
+class Chart {
     constructor(container) {
         this.zoomSpeed = 4;
-        this.graphContext = document.createElement('canvas').getContext('2d');
+        this.chartContext = document.createElement('canvas').getContext('2d');
         this.yAxisContext = document.createElement('canvas').getContext('2d');
         this.xAxisContext = document.createElement('canvas').getContext('2d');
-        this.graphContext.lineWidth = 1 * this.getPixelRatio(this.graphContext);
+        this.chartContext.lineWidth = 1 * this.getPixelRatio(this.chartContext);
         if (typeof container === 'string') {
             this.container = document.querySelector(container);
         }
@@ -21,8 +21,8 @@ class Graph {
         }
         this.createChartMarkup();
     }
-    createGraph() {
-        let canvas = this.graphContext.canvas;
+    createChart() {
+        let canvas = this.chartContext.canvas;
         const preventDefault = function (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -33,7 +33,7 @@ class Graph {
         canvas.style.width = '100%';
         canvas.style.height = '100%';
         canvas.style.cursor = 'crosshair';
-        this.rescale(this.graphContext);
+        this.rescale(this.chartContext);
         this.bindMouseListeners();
         return canvas;
     }
@@ -60,7 +60,7 @@ class Graph {
         return canvas;
     }
     createChartMarkup() {
-        let graphCanvas = this.createGraph();
+        let chartCanvas = this.createChart();
         let yAxisCanvas = this.createYAxis();
         let xAxisCanvas = this.createXAxis();
         let rect = this.container.getBoundingClientRect();
@@ -70,16 +70,16 @@ class Graph {
         });
         window.addEventListener('mousemove', (e) => this.windowMouseMoveHandler(e));
         window.addEventListener('mouseup', (e) => this.windowMouseUpHandler(e));
-        this.container.appendChild(graphCanvas);
+        this.container.appendChild(chartCanvas);
         this.container.appendChild(xAxisCanvas);
         this.container.appendChild(yAxisCanvas);
-        this.rescale(this.graphContext);
+        this.rescale(this.chartContext);
         this.rescale(this.yAxisContext);
         this.rescale(this.xAxisContext);
     }
     // abstract xAxisMouseLeaveHandler(e?: MouseEvent): void
     bindMouseListeners() {
-        let canvas = this.graphContext.canvas;
+        let canvas = this.chartContext.canvas;
         canvas.addEventListener('mousemove', (e) => this.mouseMoveHandler(e));
         canvas.addEventListener('mouseleave', (e) => this.mouseLeaveHandler(e));
         canvas.addEventListener('mouseenter', (e) => this.mouseEnterHandler(e));
@@ -108,18 +108,18 @@ class Graph {
         return ctx.canvas.height * this.getPixelRatio(ctx);
     }
     get width() {
-        return (this.graphContext.canvas.clientWidth *
-            this.getPixelRatio(this.graphContext));
+        return (this.chartContext.canvas.clientWidth *
+            this.getPixelRatio(this.chartContext));
     }
     get height() {
-        return (this.graphContext.canvas.clientHeight *
-            this.getPixelRatio(this.graphContext));
+        return (this.chartContext.canvas.clientHeight *
+            this.getPixelRatio(this.chartContext));
     }
     get canvasRect() {
-        return this.graphContext.canvas.getBoundingClientRect();
+        return this.chartContext.canvas.getBoundingClientRect();
     }
     setSize(w, h) {
-        let canvas = this.graphContext.canvas;
+        let canvas = this.chartContext.canvas;
         canvas.width = w;
         canvas.height = h;
     }
@@ -168,10 +168,10 @@ class Graph {
         console.log('CryptoView Log: ', ...msg);
     }
     debug(text, x, y) {
-        this.graphContext.fillStyle = 'white';
-        this.graphContext.font = '20px Arial';
-        this.graphContext.fillText(text, x, y);
+        this.chartContext.fillStyle = 'white';
+        this.chartContext.font = '20px Arial';
+        this.chartContext.fillText(text, x, y);
     }
 }
-exports.default = Graph;
+exports.default = Chart;
 //# sourceMappingURL=base.js.map

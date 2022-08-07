@@ -12,17 +12,17 @@ export type TCandlesPoint = {
 
 export type TCandlesHistory = TCandlesPoint[]
 
-export type TLinearGraphData = number[]
+export type TLinearChartData = number[]
 
 export type TContainer = Element | string
 
-export interface TLinearGraphOptions {
-  graphStroke?: {
+export interface TLinearChartOptions {
+  chartStroke?: {
     width?: number
     hoverWidth?: number
     color?: string
   }
-  graphFill?: {
+  chartFill?: {
     gradientStart?: string
     gradientEnd?: string
   }

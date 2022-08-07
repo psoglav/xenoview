@@ -1,6 +1,6 @@
-import { TLinearGraphOptions, TLinearHistory } from '../types';
-import Graph from './base';
-export declare class LinearGraph extends Graph {
+import { TLinearChartOptions, TLinearHistory } from '../types';
+import Chart from './base';
+export declare class LinearChart extends Chart {
     private CHART_HOVER_STROKE_WIDTH;
     private CHART_CURRENT_STROKE_WIDTH;
     private CHART_STROKE_WIDTH;
@@ -15,15 +15,15 @@ export declare class LinearGraph extends Graph {
     private panningIsActive;
     private mousePosition;
     private history;
-    private graphData;
-    constructor(container: HTMLElement | string, data?: TLinearHistory, opts?: TLinearGraphOptions);
-    applyOptions(opts: TLinearGraphOptions): void;
-    get visibleGraphData(): number[];
-    get graphDataWithPadding(): number[];
+    private chartData;
+    constructor(container: HTMLElement | string, data?: TLinearHistory, opts?: TLinearChartOptions);
+    applyOptions(opts: TLinearChartOptions): void;
+    get visibleChartData(): number[];
+    get chartDataWithPadding(): number[];
     get topHistoryPrice(): number[];
     get bottomHistoryPrice(): number[];
     get floatingWidth(): number;
-    normalizeToGraphY(value: number): number;
+    normalizeToChartY(value: number): number;
     windowMouseMoveHandler(e?: MouseEvent | undefined): void;
     windowMouseUpHandler(e?: MouseEvent | undefined): void;
     xAxisMouseDownHandler(e?: MouseEvent | undefined): void;
@@ -37,13 +37,13 @@ export declare class LinearGraph extends Graph {
     mouseDownHandler(e: MouseEvent): void;
     mouseUpHandler(e: MouseEvent): void;
     wheelHandler(e: any): void;
-    draw(updateGraphData?: boolean): void;
-    zoomGraph(side: number): void;
-    moveGraph(movement: number): void;
-    clampGraph(): void;
+    draw(updateChartData?: boolean): void;
+    zoomChart(side: number): void;
+    moveChart(movement: number): void;
+    clampChart(): void;
     movePointer(): void;
     drawPointer(): void;
-    drawGraph(updateGraphData?: boolean): void;
+    drawChart(updateChartData?: boolean): void;
     drawGrid(segments: number): void;
     loadHistory(data: TLinearHistory): void;
     normalizeData(): any[];

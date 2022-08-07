@@ -1,18 +1,18 @@
-export default abstract class Graph {
+export default abstract class Chart {
   container: HTMLElement | undefined
 
-  graphContext: CanvasRenderingContext2D
+  chartContext: CanvasRenderingContext2D
   yAxisContext: CanvasRenderingContext2D
   xAxisContext: CanvasRenderingContext2D
 
   zoomSpeed: number = 4
 
   constructor(container: HTMLElement | string) {
-    this.graphContext = document.createElement('canvas').getContext('2d')!
+    this.chartContext = document.createElement('canvas').getContext('2d')!
     this.yAxisContext = document.createElement('canvas').getContext('2d')!
     this.xAxisContext = document.createElement('canvas').getContext('2d')!
 
-    this.graphContext.lineWidth = 1 * this.getPixelRatio(this.graphContext)
+    this.chartContext.lineWidth = 1 * this.getPixelRatio(this.chartContext)
 
     if (typeof container === 'string') {
       this.container = document.querySelector<HTMLElement>(container)!
@@ -30,8 +30,8 @@ export default abstract class Graph {
     this.createChartMarkup()
   }
 
-  createGraph(): HTMLCanvasElement {
-    let canvas = this.graphContext.canvas
+  createChart(): HTMLCanvasElement {
+    let canvas = this.chartContext.canvas
 
     const preventDefault = function (e: Event) {
       e.preventDefault()
@@ -46,7 +46,7 @@ export default abstract class Graph {
     canvas.style.height = '100%'
     canvas.style.cursor = 'crosshair'
 
-    this.rescale(this.graphContext)
+    this.rescale(this.chartContext)
     this.bindMouseListeners()
 
     return canvas
@@ -85,7 +85,7 @@ export default abstract class Graph {
   }
 
   createChartMarkup() {
-    let graphCanvas = this.createGraph()
+    let chartCanvas = this.createChart()
     let yAxisCanvas = this.createYAxis()
     let xAxisCanvas = this.createXAxis()
 
@@ -105,11 +105,11 @@ export default abstract class Graph {
       this.windowMouseUpHandler(e)
     )
 
-    this.container!.appendChild(graphCanvas)
+    this.container!.appendChild(chartCanvas)
     this.container!.appendChild(xAxisCanvas)
     this.container!.appendChild(yAxisCanvas)
 
-    this.rescale(this.graphContext)
+    this.rescale(this.chartContext)
     this.rescale(this.yAxisContext)
     this.rescale(this.xAxisContext)
   }
@@ -135,7 +135,7 @@ export default abstract class Graph {
   // abstract xAxisMouseLeaveHandler(e?: MouseEvent): void
 
   bindMouseListeners() {
-    let canvas = this.graphContext.canvas
+    let canvas = this.chartContext.canvas
     canvas.addEventListener('mousemove', (e) => this.mouseMoveHandler(e))
     canvas.addEventListener('mouseleave', (e) => this.mouseLeaveHandler(e))
     canvas.addEventListener('mouseenter', (e) => this.mouseEnterHandler(e))
@@ -170,24 +170,24 @@ export default abstract class Graph {
 
   get width() {
     return (
-      this.graphContext.canvas.clientWidth *
-      this.getPixelRatio(this.graphContext)
+      this.chartContext.canvas.clientWidth *
+      this.getPixelRatio(this.chartContext)
     )
   }
 
   get height() {
     return (
-      this.graphContext.canvas.clientHeight *
-      this.getPixelRatio(this.graphContext)
+      this.chartContext.canvas.clientHeight *
+      this.getPixelRatio(this.chartContext)
     )
   }
 
   get canvasRect() {
-    return this.graphContext.canvas.getBoundingClientRect()
+    return this.chartContext.canvas.getBoundingClientRect()
   }
 
   setSize(w: number, h: number) {
-    let canvas = this.graphContext.canvas
+    let canvas = this.chartContext.canvas
     canvas.width = w
     canvas.height = h
   }
@@ -262,8 +262,8 @@ export default abstract class Graph {
   }
 
   debug(text: any, x: number, y: number) {
-    this.graphContext.fillStyle = 'white'
-    this.graphContext.font = '20px Arial'
-    this.graphContext.fillText(text, x, y)
+    this.chartContext.fillStyle = 'white'
+    this.chartContext.font = '20px Arial'
+    this.chartContext.fillText(text, x, y)
   }
 }

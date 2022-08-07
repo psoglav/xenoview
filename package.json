@@ -8,10 +8,13 @@
     "watch": "tsc --watch",
     "build": "tsc",
     "prepublishOnly": "tsc",
-    "dev": ""
+    "test": "jest"
   },
   "license": "ISC",
   "dependencies": {
     "moment": "^2.29.4"
+  },
+  "devDependencies": {
+    "jest": "^28.1.3"
   }
 }

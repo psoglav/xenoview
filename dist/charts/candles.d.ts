@@ -1,6 +1,6 @@
-import { TLinearGraphOptions, TCandlesHistory } from '../types';
-import Graph from './base';
-export declare class CandlesGraph extends Graph {
+import { TLinearChartOptions, TCandlesHistory } from '../types';
+import Chart from './base';
+export declare class CandlesChart extends Chart {
     private CHART_GREEN_CANDLE_COLOR;
     private CHART_RED_CANDLE_COLOR;
     private GRAPH_LEFT;
@@ -16,12 +16,12 @@ export declare class CandlesGraph extends Graph {
     private isZoomingXAxis;
     private mousePosition;
     private history;
-    private graphData;
+    private chartData;
     private visibleData;
     private topHistoryPrice;
     private bottomHistoryPrice;
-    constructor(container: HTMLElement | string, data?: TCandlesHistory, opts?: TLinearGraphOptions);
-    applyOptions(opts: TLinearGraphOptions): void;
+    constructor(container: HTMLElement | string, data?: TCandlesHistory, opts?: TLinearChartOptions);
+    applyOptions(opts: TLinearChartOptions): void;
     getTopHistoryPrice(): [number, number];
     getBottomHistoryPrice(): [number, number];
     getStartDataPoint(): any;
@@ -41,8 +41,8 @@ export declare class CandlesGraph extends Graph {
     xAxisMouseDownHandler(e?: MouseEvent): void;
     xAxisMouseUpHandler(e?: MouseEvent): void;
     zoomYAxis(side: number): void;
-    zoomGraph(side: number): void;
-    moveGraph(movement: number): void;
+    zoomChart(side: number): void;
+    moveChart(movement: number): void;
     clampXPanning(): void;
     filterVisiblePointsAndCache(): any;
     filterVisiblePoints(data: any[]): any[];
@@ -53,7 +53,7 @@ export declare class CandlesGraph extends Graph {
     mainDebug(): void;
     drawXAxis(): void;
     drawYAxis(): void;
-    drawGraph(): void;
+    drawChart(): void;
     loadHistory(data: TCandlesHistory): void;
     normalizePoint(point: any): any;
     normalizeData(): {

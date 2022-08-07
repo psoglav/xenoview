@@ -1,9 +1,9 @@
-import { TLinearGraphOptions, TCandlesHistory } from '../types'
-import Graph from './base'
+import { TLinearChartOptions, TCandlesHistory } from '../types'
+import Chart from './base'
 
 import moment from 'moment'
 
-export class CandlesGraph extends Graph {
+export class CandlesChart extends Chart {
   private CHART_GREEN_CANDLE_COLOR = '#24a599'
   private CHART_RED_CANDLE_COLOR = '#ec544f'
 
@@ -23,7 +23,7 @@ export class CandlesGraph extends Graph {
   private mousePosition = { x: 0, y: 0 }
 
   private history: TCandlesHistory | undefined
-  private graphData: TCandlesHistory | undefined
+  private chartData: TCandlesHistory | undefined
   private visibleData: any
   private topHistoryPrice: [number, number] = [0, 0]
   private bottomHistoryPrice: [number, number] = [0, 0]
@@ -31,7 +31,7 @@ export class CandlesGraph extends Graph {
   constructor(
     container: HTMLElement | string,
     data?: TCandlesHistory,
-    opts?: TLinearGraphOptions
+    opts?: TLinearChartOptions
   ) {
     super(container)
 
@@ -41,7 +41,7 @@ export class CandlesGraph extends Graph {
     this.draw()
   }
 
-  applyOptions(opts: TLinearGraphOptions) {}
+  applyOptions(opts: TLinearChartOptions) {}
 
   getTopHistoryPrice(): [number, number] {
     let history = this.filterVisiblePoints(
@@ -109,7 +109,7 @@ export class CandlesGraph extends Graph {
 
       this.clampXPanning()
 
-      // this.graphData = this.normalizeData()
+      // this.chartData = this.normalizeData()
       // this.filterVisiblePointsAndCache()
 
       // let pos = this.mousePosition.x / this.width
@@ -128,7 +128,7 @@ export class CandlesGraph extends Graph {
     this.mousePosition.y = e.clientY
 
     if (this.panningIsActive) {
-      this.moveGraph(e.movementX)
+      this.moveChart(e.movementX)
     }
 
     this.movePointer()
@@ -166,7 +166,7 @@ export class CandlesGraph extends Graph {
     if (wd < 0 && cs < 1.7) return
     if (wd > 0 && cs > 350) return
 
-    this.zoomGraph(wd > 1 ? 1 : -1)
+    this.zoomChart(wd > 1 ? 1 : -1)
     this.movePointer()
     this.draw()
     this.drawPricePointer()
@@ -203,7 +203,7 @@ export class CandlesGraph extends Graph {
     this.GRAPH_TOP -= (this.GRAPH_TOP / 20) * side
   }
 
-  zoomGraph(side: number) {
+  zoomChart(side: number) {
     let zoomPoint = this.width
     let d = 20 / this.zoomSpeed
 
@@ -214,7 +214,7 @@ export class CandlesGraph extends Graph {
     this.filterVisiblePointsAndCache()
   }
 
-  moveGraph(movement: number) {
+  moveChart(movement: number) {
     if (this.GRAPH_RIGHT == this.width - 200 && movement < 0) return
     if (this.GRAPH_LEFT == 0 && movement > 0) return
 
@@ -244,7 +244,7 @@ export class CandlesGraph extends Graph {
   }
 
   movePointer() {
-    let data = this.graphData
+    let data = this.chartData
 
     if (!data?.length) return
 
@@ -258,23 +258,23 @@ export class CandlesGraph extends Graph {
   }
 
   draw() {
-    this.graphContext.clearRect(0, 0, this.width, this.height)
+    this.chartContext.clearRect(0, 0, this.width, this.height)
 
-    if (this.graphData) {
+    if (this.chartData) {
       this.drawXAxis()
       this.drawYAxis()
     }
 
-    this.drawGraph()
+    this.drawChart()
     this.drawPointer()
 
     this.mainDebug()
   }
 
   drawPointer() {
-    if (!this.graphData?.length || !this.pointerIsVisible) return
+    if (!this.chartData?.length || !this.pointerIsVisible) return
 
-    let ctx = this.graphContext
+    let ctx = this.chartContext
     let x = this.GRAPH_LEFT + this.candlesSpace * this.pointerYPosIndex
     let y = this.mousePosition.y
 
@@ -322,7 +322,7 @@ export class CandlesGraph extends Graph {
   }
 
   drawXAxis() {
-    let ctx = this.graphContext
+    let ctx = this.chartContext
     let xAxisCtx = this.xAxisContext
 
     let segments = this.history!.length / 50,
@@ -370,7 +370,7 @@ export class CandlesGraph extends Graph {
   }
 
   drawYAxis() {
-    let ctx = this.graphContext
+    let ctx = this.chartContext
     let yAxisCtx = this.yAxisContext
 
     let segments = 20,
@@ -446,7 +446,7 @@ export class CandlesGraph extends Graph {
     ctx.closePath()
   }
 
-  drawGraph() {
+  drawChart() {
     this.getTopHistoryPrice()
     this.getBottomHistoryPrice()
 
@@ -457,7 +457,7 @@ export class CandlesGraph extends Graph {
       return
     }
 
-    let ctx = this.graphContext
+    let ctx = this.chartContext
 
     this.moveTo(this.GRAPH_LEFT - 10, this.height, ctx)
 
@@ -503,7 +503,7 @@ export class CandlesGraph extends Graph {
 
   loadHistory(data: TCandlesHistory) {
     this.history = data
-    this.graphData = this.normalizeData()
+    this.chartData = this.normalizeData()
     this.draw()
   }
 

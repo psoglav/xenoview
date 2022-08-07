@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CandlesGraph = void 0;
+exports.CandlesChart = void 0;
 const base_1 = require("./base");
 const moment_1 = require("moment");
-class CandlesGraph extends base_1.default {
+class CandlesChart extends base_1.default {
     constructor(container, data, opts) {
         super(container);
         this.CHART_GREEN_CANDLE_COLOR = '#24a599';
@@ -79,7 +79,7 @@ class CandlesGraph extends base_1.default {
             this.GRAPH_LEFT +=
                 (((this.GRAPH_LEFT - zoomPoint) / d) * (e === null || e === void 0 ? void 0 : e.movementX)) / 100;
             this.clampXPanning();
-            // this.graphData = this.normalizeData()
+            // this.chartData = this.normalizeData()
             // this.filterVisiblePointsAndCache()
             // let pos = this.mousePosition.x / this.width
             // this.GRAPH_LEFT -= e.movementX * 10 * this.yZoomFactor * pos
@@ -94,7 +94,7 @@ class CandlesGraph extends base_1.default {
         this.mousePosition.x = e.clientX;
         this.mousePosition.y = e.clientY;
         if (this.panningIsActive) {
-            this.moveGraph(e.movementX);
+            this.moveChart(e.movementX);
         }
         this.movePointer();
         this.draw();
@@ -126,7 +126,7 @@ class CandlesGraph extends base_1.default {
             return;
         if (wd > 0 && cs > 350)
             return;
-        this.zoomGraph(wd > 1 ? 1 : -1);
+        this.zoomChart(wd > 1 ? 1 : -1);
         this.movePointer();
         this.draw();
         this.drawPricePointer();
@@ -156,7 +156,7 @@ class CandlesGraph extends base_1.default {
         this.GRAPH_BOTTOM += (this.GRAPH_BOTTOM / 20) * side;
         this.GRAPH_TOP -= (this.GRAPH_TOP / 20) * side;
     }
-    zoomGraph(side) {
+    zoomChart(side) {
         let zoomPoint = this.width;
         let d = 20 / this.zoomSpeed;
         this.GRAPH_RIGHT += ((this.GRAPH_RIGHT - zoomPoint) / d) * side;
@@ -164,7 +164,7 @@ class CandlesGraph extends base_1.default {
         this.clampXPanning();
         this.filterVisiblePointsAndCache();
     }
-    moveGraph(movement) {
+    moveChart(movement) {
         if (this.GRAPH_RIGHT == this.width - 200 && movement < 0)
             return;
         if (this.GRAPH_LEFT == 0 && movement > 0)
@@ -193,7 +193,7 @@ class CandlesGraph extends base_1.default {
         });
     }
     movePointer() {
-        let data = this.graphData;
+        let data = this.chartData;
         if (!(data === null || data === void 0 ? void 0 : data.length))
             return;
         let x = this.mousePosition.x - this.canvasRect.x;
@@ -203,20 +203,20 @@ class CandlesGraph extends base_1.default {
             i > data.length - 1 ? data.length - 1 : i < 0 ? 0 : i;
     }
     draw() {
-        this.graphContext.clearRect(0, 0, this.width, this.height);
-        if (this.graphData) {
+        this.chartContext.clearRect(0, 0, this.width, this.height);
+        if (this.chartData) {
             this.drawXAxis();
             this.drawYAxis();
         }
-        this.drawGraph();
+        this.drawChart();
         this.drawPointer();
         this.mainDebug();
     }
     drawPointer() {
         var _a;
-        if (!((_a = this.graphData) === null || _a === void 0 ? void 0 : _a.length) || !this.pointerIsVisible)
+        if (!((_a = this.chartData) === null || _a === void 0 ? void 0 : _a.length) || !this.pointerIsVisible)
             return;
-        let ctx = this.graphContext;
+        let ctx = this.chartContext;
         let x = this.GRAPH_LEFT + this.candlesSpace * this.pointerYPosIndex;
         let y = this.mousePosition.y;
         ctx.strokeStyle = '#666';
@@ -253,7 +253,7 @@ class CandlesGraph extends base_1.default {
         // this.debug(, 10, 300)
     }
     drawXAxis() {
-        let ctx = this.graphContext;
+        let ctx = this.chartContext;
         let xAxisCtx = this.xAxisContext;
         let segments = this.history.length / 50, h = this.height, w = this.width;
         let left = this.GRAPH_LEFT;
@@ -289,7 +289,7 @@ class CandlesGraph extends base_1.default {
         ctx.closePath();
     }
     drawYAxis() {
-        let ctx = this.graphContext;
+        let ctx = this.chartContext;
         let yAxisCtx = this.yAxisContext;
         let segments = 20, h = this.height, w = this.width;
         let t = this.topHistoryPrice[1];
@@ -340,7 +340,7 @@ class CandlesGraph extends base_1.default {
         ctx.stroke();
         ctx.closePath();
     }
-    drawGraph() {
+    drawChart() {
         this.getTopHistoryPrice();
         this.getBottomHistoryPrice();
         let data = this.history;
@@ -348,7 +348,7 @@ class CandlesGraph extends base_1.default {
             this.log('no history');
             return;
         }
-        let ctx = this.graphContext;
+        let ctx = this.chartContext;
         this.moveTo(this.GRAPH_LEFT - 10, this.height, ctx);
         for (let i = 0; i < data.length; i++) {
             this.candlesSpace = this.floatingWidth / data.length;
@@ -377,7 +377,7 @@ class CandlesGraph extends base_1.default {
     }
     loadHistory(data) {
         this.history = data;
-        this.graphData = this.normalizeData();
+        this.chartData = this.normalizeData();
         this.draw();
     }
     normalizePoint(point) {
@@ -434,5 +434,5 @@ class CandlesGraph extends base_1.default {
         return result;
     }
 }
-exports.CandlesGraph = CandlesGraph;
+exports.CandlesChart = CandlesChart;
 //# sourceMappingURL=candles.js.map

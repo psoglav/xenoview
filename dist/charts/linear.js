@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LinearGraph = void 0;
+exports.LinearChart = void 0;
 const base_1 = require("./base");
-class LinearGraph extends base_1.default {
+class LinearChart extends base_1.default {
     constructor(container, data, opts) {
         super(container);
         this.CHART_HOVER_STROKE_WIDTH = 1.5;
@@ -24,8 +24,8 @@ class LinearGraph extends base_1.default {
         this.draw();
     }
     applyOptions(opts) {
-        if (opts.graphStroke) {
-            let { color, width, hoverWidth } = opts.graphStroke;
+        if (opts.chartStroke) {
+            let { color, width, hoverWidth } = opts.chartStroke;
             if (color)
                 this.CHART_STROKE_COLOR = color;
             if (hoverWidth)
@@ -35,26 +35,26 @@ class LinearGraph extends base_1.default {
                 this.CHART_CURRENT_STROKE_WIDTH = width;
             }
         }
-        if (opts.graphFill) {
-            let { gradientStart, gradientEnd } = opts.graphFill;
+        if (opts.chartFill) {
+            let { gradientStart, gradientEnd } = opts.chartFill;
             if (gradientStart && gradientEnd) {
-                this.CHART_GRADIENT = this.graphContext.createLinearGradient(0, 0, 0, this.height);
+                this.CHART_GRADIENT = this.chartContext.createLinearGradient(0, 0, 0, this.height);
                 this.CHART_GRADIENT.addColorStop(0, gradientStart);
                 this.CHART_GRADIENT.addColorStop(1, gradientEnd);
             }
         }
     }
-    get visibleGraphData() {
+    get visibleChartData() {
         var _a;
-        return (_a = this.graphData) === null || _a === void 0 ? void 0 : _a.filter((y, i) => {
-            let x = this.GRAPH_LEFT + i * (this.floatingWidth / this.graphData.length);
+        return (_a = this.chartData) === null || _a === void 0 ? void 0 : _a.filter((y, i) => {
+            let x = this.GRAPH_LEFT + i * (this.floatingWidth / this.chartData.length);
             return x > this.GRAPH_LEFT && x < this.GRAPH_RIGHT;
         });
     }
-    get graphDataWithPadding() {
+    get chartDataWithPadding() {
         var _a;
         let hh = this.height / 2;
-        return (_a = this.visibleGraphData) === null || _a === void 0 ? void 0 : _a.map((y) => (y - hh) / 1.5 + hh);
+        return (_a = this.visibleChartData) === null || _a === void 0 ? void 0 : _a.map((y) => (y - hh) / 1.5 + hh);
     }
     get topHistoryPrice() {
         let history = this.history.map(([_, price]) => price);
@@ -83,7 +83,7 @@ class LinearGraph extends base_1.default {
     get floatingWidth() {
         return this.GRAPH_RIGHT - this.GRAPH_LEFT;
     }
-    normalizeToGraphY(value) {
+    normalizeToChartY(value) {
         let max = this.topHistoryPrice[1];
         let min = this.bottomHistoryPrice[1];
         let h = this.height;
@@ -102,7 +102,7 @@ class LinearGraph extends base_1.default {
         this.mousePosition.x = e.clientX;
         this.mousePosition.y = e.clientY;
         if (this.panningIsActive) {
-            this.moveGraph(e.movementX);
+            this.moveChart(e.movementX);
         }
         this.movePointer();
         this.draw();
@@ -128,40 +128,40 @@ class LinearGraph extends base_1.default {
         }
     }
     wheelHandler(e) {
-        this.zoomGraph(e.wheelDeltaY > 1 ? 1 : -1);
+        this.zoomChart(e.wheelDeltaY > 1 ? 1 : -1);
         this.movePointer();
         this.draw();
     }
-    draw(updateGraphData) {
-        this.graphContext.clearRect(0, 0, this.width, this.height);
+    draw(updateChartData) {
+        this.chartContext.clearRect(0, 0, this.width, this.height);
         this.drawGrid(this.CHART_PRICE_SEGMENTS);
-        this.drawGraph(updateGraphData);
+        this.drawChart(updateChartData);
         this.drawPointer();
     }
-    zoomGraph(side) {
+    zoomChart(side) {
         let mx = this.mousePosition.x;
         let d = 20 / this.zoomSpeed;
         this.GRAPH_RIGHT += ((this.GRAPH_RIGHT - mx) / d) * side;
         this.GRAPH_LEFT += ((this.GRAPH_LEFT - mx) / d) * side;
-        this.clampGraph();
+        this.clampChart();
     }
-    moveGraph(movement) {
+    moveChart(movement) {
         if (this.GRAPH_RIGHT == this.width - 200 && movement < 0)
             return;
         if (this.GRAPH_LEFT == 0 && movement > 0)
             return;
         this.GRAPH_LEFT += movement;
         this.GRAPH_RIGHT += movement;
-        this.clampGraph();
+        this.clampChart();
     }
-    clampGraph() {
+    clampChart() {
         if (this.GRAPH_LEFT > 0)
             this.GRAPH_LEFT = 0;
         if (this.GRAPH_RIGHT < this.width - 200)
             this.GRAPH_RIGHT = this.width - 200;
     }
     movePointer() {
-        let data = this.visibleGraphData;
+        let data = this.visibleChartData;
         if (!(data === null || data === void 0 ? void 0 : data.length))
             return;
         let x = this.mousePosition.x - this.canvasRect.x;
@@ -172,10 +172,10 @@ class LinearGraph extends base_1.default {
     }
     drawPointer() {
         var _a;
-        if (!((_a = this.graphData) === null || _a === void 0 ? void 0 : _a.length) || !this.pointerIsVisible)
+        if (!((_a = this.chartData) === null || _a === void 0 ? void 0 : _a.length) || !this.pointerIsVisible)
             return;
-        let ctx = this.graphContext;
-        let history = this.graphDataWithPadding;
+        let ctx = this.chartContext;
+        let history = this.chartDataWithPadding;
         let x = this.GRAPH_LEFT +
             (this.floatingWidth / history.length) * this.pointerYPosIndex;
         let y = history[this.pointerYPosIndex];
@@ -205,16 +205,16 @@ class LinearGraph extends base_1.default {
         ctx.fillText(this.history[this.pointerYPosIndex][1].toString(), 10, 50);
         ctx.fillText(new Date(this.history[this.pointerYPosIndex][0] * 1000).toString(), 10, 70);
     }
-    drawGraph(updateGraphData) {
-        if (updateGraphData) {
-            this.graphData = this.normalizeData();
+    drawChart(updateChartData) {
+        if (updateChartData) {
+            this.chartData = this.normalizeData();
         }
-        let data = this.graphDataWithPadding || [];
+        let data = this.chartDataWithPadding || [];
         if (!data.length) {
             this.log('no history');
             return;
         }
-        let ctx = this.graphContext;
+        let ctx = this.chartContext;
         ctx.beginPath();
         ctx.strokeStyle = this.CHART_STROKE_COLOR;
         ctx.lineWidth = this.CHART_CURRENT_STROKE_WIDTH || this.CHART_STROKE_WIDTH;
@@ -233,7 +233,7 @@ class LinearGraph extends base_1.default {
         ctx.closePath();
     }
     drawGrid(segments) {
-        let ctx = this.graphContext;
+        let ctx = this.chartContext;
         let top, bottom;
         top = this.topHistoryPrice[1];
         bottom = this.bottomHistoryPrice[1];
@@ -246,8 +246,8 @@ class LinearGraph extends base_1.default {
         for (let i = -1; i <= segments + 1; i++) {
             let y = i * interval + top;
             ctx.fillStyle = '#ffffff44';
-            ctx.fillText(y.toString(), this.width - 35, this.normalizeToGraphY(y) - 5);
-            y = this.normalizeToGraphY(y);
+            ctx.fillText(y.toString(), this.width - 35, this.normalizeToChartY(y) - 5);
+            y = this.normalizeToChartY(y);
             ctx.moveTo(0, y);
             ctx.lineTo(this.width, y);
         }
@@ -275,5 +275,5 @@ class LinearGraph extends base_1.default {
         return result;
     }
 }
-exports.LinearGraph = LinearGraph;
+exports.LinearChart = LinearChart;
 //# sourceMappingURL=linear.js.map

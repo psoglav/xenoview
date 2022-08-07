@@ -9,15 +9,15 @@ export declare type TCandlesPoint = {
     volumeto: number;
 };
 export declare type TCandlesHistory = TCandlesPoint[];
-export declare type TLinearGraphData = number[];
+export declare type TLinearChartData = number[];
 export declare type TContainer = Element | string;
-export interface TLinearGraphOptions {
-    graphStroke?: {
+export interface TLinearChartOptions {
+    chartStroke?: {
         width?: number;
         hoverWidth?: number;
         color?: string;
     };
-    graphFill?: {
+    chartFill?: {
         gradientStart?: string;
         gradientEnd?: string;
     };
