@@ -3,6 +3,10 @@ export default abstract class Chart {
     container: HTMLElement | undefined;
     options: ChartOptions;
     position: ChartBoundingRect;
+    mousePosition: {
+        x: number;
+        y: number;
+    };
     chartContext: CanvasRenderingContext2D;
     yAxisContext: CanvasRenderingContext2D;
     xAxisContext: CanvasRenderingContext2D;

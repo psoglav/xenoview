@@ -8,7 +8,6 @@ export declare class CandlesChart extends Chart {
     private yZoomFactor;
     private isZoomingYAxis;
     private isZoomingXAxis;
-    private mousePosition;
     private history;
     private chartData;
     private visibleData;

@@ -11,8 +11,6 @@ export class CandlesChart extends Chart {
   private isZoomingYAxis = false
   private isZoomingXAxis = false
 
-  private mousePosition = { x: 0, y: 0 }
-
   private history: TCandlesHistory | undefined
   private chartData: TCandlesHistory | undefined
   private visibleData: any
@@ -112,9 +110,6 @@ export class CandlesChart extends Chart {
   }
 
   mouseMoveHandler(e: MouseEvent) {
-    this.mousePosition.x = e.clientX
-    this.mousePosition.y = e.clientY
-
     if (this.panningIsActive) {
       this.moveChart(e.movementX)
     }

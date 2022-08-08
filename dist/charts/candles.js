@@ -13,7 +13,6 @@ class CandlesChart extends base_1.default {
         this.yZoomFactor = 1.2;
         this.isZoomingYAxis = false;
         this.isZoomingXAxis = false;
-        this.mousePosition = { x: 0, y: 0 };
         this.topHistoryPrice = [0, 0];
         this.bottomHistoryPrice = [0, 0];
         if (data)
@@ -82,8 +81,6 @@ class CandlesChart extends base_1.default {
         this.isZoomingXAxis = false;
     }
     mouseMoveHandler(e) {
-        this.mousePosition.x = e.clientX;
-        this.mousePosition.y = e.clientY;
         if (this.panningIsActive) {
             this.moveChart(e.movementX);
         }

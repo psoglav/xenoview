@@ -5,6 +5,7 @@ export default abstract class Chart {
   container: HTMLElement | undefined
   options: ChartOptions = defaultChartOptions
   position: ChartBoundingRect
+  mousePosition = { x: 0, y: 0 }
 
   chartContext: CanvasRenderingContext2D
   yAxisContext: CanvasRenderingContext2D
@@ -150,7 +151,11 @@ export default abstract class Chart {
 
   bindMouseListeners() {
     let canvas = this.chartContext.canvas
-    canvas.addEventListener('mousemove', (e) => this.mouseMoveHandler(e))
+    canvas.addEventListener('mousemove', (e) => {
+      this.mousePosition.x = e.clientX
+      this.mousePosition.y = e.clientY
+      this.mouseMoveHandler(e)
+    })
     canvas.addEventListener('mouseleave', (e) => this.mouseLeaveHandler(e))
     canvas.addEventListener('mouseenter', (e) => this.mouseEnterHandler(e))
     canvas.addEventListener('mousedown', (e) => this.mouseDownHandler(e))

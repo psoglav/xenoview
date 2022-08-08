@@ -4,6 +4,7 @@ const config_1 = require("../config");
 class Chart {
     constructor(container, options) {
         this.options = config_1.defaultChartOptions;
+        this.mousePosition = { x: 0, y: 0 };
         this.zoomSpeed = 4;
         if (options)
             this.options = options;
@@ -90,7 +91,11 @@ class Chart {
     // abstract xAxisMouseLeaveHandler(e?: MouseEvent): void
     bindMouseListeners() {
         let canvas = this.chartContext.canvas;
-        canvas.addEventListener('mousemove', (e) => this.mouseMoveHandler(e));
+        canvas.addEventListener('mousemove', (e) => {
+            this.mousePosition.x = e.clientX;
+            this.mousePosition.y = e.clientY;
+            this.mouseMoveHandler(e);
+        });
         canvas.addEventListener('mouseleave', (e) => this.mouseLeaveHandler(e));
         canvas.addEventListener('mouseenter', (e) => this.mouseEnterHandler(e));
         canvas.addEventListener('mousedown', (e) => this.mouseDownHandler(e));
