@@ -4,10 +4,8 @@ exports.CandlesChart = void 0;
 const utils_1 = require("../utils");
 const base_1 = require("./base");
 class CandlesChart extends base_1.default {
-    constructor(container, data, opts) {
-        super(container);
-        this.CHART_GREEN_CANDLE_COLOR = '#24a599';
-        this.CHART_RED_CANDLE_COLOR = '#ec544f';
+    constructor(container, data, options) {
+        super(container, options);
         this.GRAPH_LEFT = 0;
         this.GRAPH_RIGHT = this.width;
         this.GRAPH_TOP = 0;
@@ -24,11 +22,8 @@ class CandlesChart extends base_1.default {
         this.bottomHistoryPrice = [0, 0];
         if (data)
             this.loadHistory(data);
-        if (opts)
-            this.applyOptions(opts);
         this.draw();
     }
-    applyOptions(opts) { }
     getTopHistoryPrice() {
         let history = this.filterVisiblePoints(this.history.map(({ high }) => high));
         let max = history[0];
@@ -219,7 +214,7 @@ class CandlesChart extends base_1.default {
         let ctx = this.chartContext;
         let x = this.GRAPH_LEFT + this.candlesSpace * this.pointerYPosIndex;
         let y = this.mousePosition.y;
-        ctx.strokeStyle = '#666';
+        ctx.strokeStyle = this.options.pointer.fgColor;
         ctx.setLineDash([5, 4]);
         ctx.beginPath();
         this.moveTo(x, 0, ctx);
@@ -241,7 +236,7 @@ class CandlesChart extends base_1.default {
         let convert = (y) => reverse(normalize(y));
         let price = (y / h) * (b - t) + t;
         ctx.beginPath();
-        ctx.fillStyle = '#707588';
+        ctx.fillStyle = this.options.pointer.bgColor;
         this.rect(0, y - 10, this.getWidth(ctx), 20, ctx);
         ctx.fill();
         ctx.closePath();
@@ -276,7 +271,7 @@ class CandlesChart extends base_1.default {
             this.moveTo(x, 0, ctx);
             this.lineTo(x, h, ctx);
             let fz = 11;
-            xAxisCtx.fillStyle = '#9999ccee';
+            xAxisCtx.fillStyle = this.options.textColor;
             xAxisCtx.font = fz + 'px Verdana';
             let k = Math.floor((x / xw) * this.history.length);
             let point = this.history[k];
@@ -332,7 +327,7 @@ class CandlesChart extends base_1.default {
             this.moveTo(0, y + br, ctx);
             this.lineTo(w, y + br, ctx);
             let fz = 11;
-            yAxisCtx.fillStyle = '#9999ccee';
+            yAxisCtx.fillStyle = this.options.textColor;
             yAxisCtx.font = fz + 'px Verdana';
             let price = i * ((t - b) / segments);
             yAxisCtx.fillText(round(price + b).toFixed(2), 10, y + br - 2 + fz / 2);
@@ -341,6 +336,7 @@ class CandlesChart extends base_1.default {
         ctx.closePath();
     }
     drawChart() {
+        var _a, _b, _c, _d;
         this.getTopHistoryPrice();
         this.getBottomHistoryPrice();
         let data = this.history;
@@ -360,8 +356,8 @@ class CandlesChart extends base_1.default {
                 continue;
             let { close, open, low, high } = this.normalizePoint(data[i]);
             let candleColor = close > open
-                ? this.CHART_RED_CANDLE_COLOR
-                : this.CHART_GREEN_CANDLE_COLOR;
+                ? (_b = (_a = this.options.candles) === null || _a === void 0 ? void 0 : _a.colors) === null || _b === void 0 ? void 0 : _b.lower
+                : (_d = (_c = this.options.candles) === null || _c === void 0 ? void 0 : _c.colors) === null || _d === void 0 ? void 0 : _d.higher;
             ctx.beginPath();
             this.lineTo(x, high, ctx);
             this.lineTo(x, low, ctx);

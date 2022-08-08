@@ -1,3 +1,27 @@
+export interface ChartOptions {
+    bgColor?: string;
+    textColor?: string;
+    pointer?: {
+        fgColor: string;
+        bgColor: string;
+    };
+    candles?: {
+        colors: {
+            higher: string;
+            lower: string;
+        };
+    };
+    xAxis?: {
+        labels: {
+            fontSize: number;
+        };
+    };
+    yAxis?: {
+        labels: {
+            fontSize: number;
+        };
+    };
+}
 export declare type TLinearHistory = number[][];
 export declare type TCandlesPoint = {
     close: number;

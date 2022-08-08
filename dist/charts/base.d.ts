@@ -1,10 +1,12 @@
+import { ChartOptions } from '../types';
 export default abstract class Chart {
     container: HTMLElement | undefined;
+    options: ChartOptions;
     chartContext: CanvasRenderingContext2D;
     yAxisContext: CanvasRenderingContext2D;
     xAxisContext: CanvasRenderingContext2D;
     zoomSpeed: number;
-    constructor(container: HTMLElement | string);
+    constructor(container: HTMLElement | string, options?: ChartOptions);
     createChart(): HTMLCanvasElement;
     createXAxis(): HTMLCanvasElement;
     createYAxis(): HTMLCanvasElement;

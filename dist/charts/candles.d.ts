@@ -1,8 +1,6 @@
-import { TLinearChartOptions, TCandlesHistory } from '../types';
+import { TCandlesHistory, ChartOptions } from '../types';
 import Chart from './base';
 export declare class CandlesChart extends Chart {
-    private CHART_GREEN_CANDLE_COLOR;
-    private CHART_RED_CANDLE_COLOR;
     private GRAPH_LEFT;
     private GRAPH_RIGHT;
     private GRAPH_TOP;
@@ -20,8 +18,7 @@ export declare class CandlesChart extends Chart {
     private visibleData;
     private topHistoryPrice;
     private bottomHistoryPrice;
-    constructor(container: HTMLElement | string, data?: TCandlesHistory, opts?: TLinearChartOptions);
-    applyOptions(opts: TLinearChartOptions): void;
+    constructor(container: HTMLElement | string, data?: TCandlesHistory, options?: ChartOptions);
     getTopHistoryPrice(): [number, number];
     getBottomHistoryPrice(): [number, number];
     getStartDataPoint(): any;

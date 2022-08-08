@@ -1,3 +1,28 @@
+export interface ChartOptions {
+  bgColor?: string
+  textColor?: string
+  pointer?: {
+    fgColor: string
+    bgColor: string
+  }
+  candles?: {
+    colors: {
+      higher: string
+      lower: string
+    }
+  }
+  xAxis?: {
+    labels: {
+      fontSize: number
+    }
+  }
+  yAxis?: {
+    labels: {
+      fontSize: number
+    }
+  }
+}
+
 export type TLinearHistory = number[][]
 
 export type TCandlesPoint = {

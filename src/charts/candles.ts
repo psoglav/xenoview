@@ -1,11 +1,8 @@
-import { TLinearChartOptions, TCandlesHistory } from '../types'
+import { TCandlesHistory, ChartOptions } from '../types'
 import { getTimeFromTimestamp } from '../utils'
 import Chart from './base'
 
 export class CandlesChart extends Chart {
-  private CHART_GREEN_CANDLE_COLOR = '#24a599'
-  private CHART_RED_CANDLE_COLOR = '#ec544f'
-
   private GRAPH_LEFT = 0
   private GRAPH_RIGHT = this.width
   private GRAPH_TOP = 0
@@ -30,17 +27,14 @@ export class CandlesChart extends Chart {
   constructor(
     container: HTMLElement | string,
     data?: TCandlesHistory,
-    opts?: TLinearChartOptions
+    options?: ChartOptions
   ) {
-    super(container)
+    super(container, options)
 
     if (data) this.loadHistory(data)
 
-    if (opts) this.applyOptions(opts)
     this.draw()
   }
-
-  applyOptions(opts: TLinearChartOptions) {}
 
   getTopHistoryPrice(): [number, number] {
     let history = this.filterVisiblePoints(
@@ -277,7 +271,7 @@ export class CandlesChart extends Chart {
     let x = this.GRAPH_LEFT + this.candlesSpace * this.pointerYPosIndex
     let y = this.mousePosition.y
 
-    ctx.strokeStyle = '#666'
+    ctx.strokeStyle = this.options.pointer.fgColor
     ctx.setLineDash([5, 4])
 
     ctx.beginPath()
@@ -307,7 +301,7 @@ export class CandlesChart extends Chart {
     let price = (y / h) * (b - t) + t
 
     ctx.beginPath()
-    ctx.fillStyle = '#707588'
+    ctx.fillStyle = this.options.pointer.bgColor
     this.rect(0, y - 10, this.getWidth(ctx), 20, ctx)
     ctx.fill()
     ctx.closePath()
@@ -355,7 +349,7 @@ export class CandlesChart extends Chart {
       this.lineTo(x, h, ctx)
 
       let fz = 11
-      xAxisCtx.fillStyle = '#9999ccee'
+      xAxisCtx.fillStyle = this.options.textColor
       xAxisCtx.font = fz + 'px Verdana'
       let k = Math.floor((x / xw) * this.history!.length)
       let point = this.history![k]
@@ -436,7 +430,7 @@ export class CandlesChart extends Chart {
       this.lineTo(w, y + br, ctx)
 
       let fz = 11
-      yAxisCtx.fillStyle = '#9999ccee'
+      yAxisCtx.fillStyle = this.options.textColor
       yAxisCtx.font = fz + 'px Verdana'
       let price = i * ((t - b) / segments)
       yAxisCtx.fillText(round(price + b).toFixed(2), 10, y + br - 2 + fz / 2)
@@ -473,8 +467,8 @@ export class CandlesChart extends Chart {
 
       let candleColor =
         close > open
-          ? this.CHART_RED_CANDLE_COLOR
-          : this.CHART_GREEN_CANDLE_COLOR
+          ? this.options.candles?.colors?.lower
+          : this.options.candles?.colors?.higher
 
       ctx.beginPath()
 

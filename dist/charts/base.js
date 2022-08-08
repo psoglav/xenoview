@@ -1,8 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const config_1 = require("../config");
 class Chart {
-    constructor(container) {
+    constructor(container, options) {
+        this.options = config_1.defaultChartOptions;
         this.zoomSpeed = 4;
+        if (options)
+            this.options = options;
         this.chartContext = document.createElement('canvas').getContext('2d');
         this.yAxisContext = document.createElement('canvas').getContext('2d');
         this.xAxisContext = document.createElement('canvas').getContext('2d');
