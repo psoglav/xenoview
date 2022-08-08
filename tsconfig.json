@@ -6,8 +6,11 @@
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "noImplicitThis": true,
-    "outDir": "./dist",
-    "paths": {}
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
