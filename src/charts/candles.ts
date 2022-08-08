@@ -1,7 +1,6 @@
 import { TLinearChartOptions, TCandlesHistory } from '../types'
+import { getTimeFromTimestamp } from '../utils'
 import Chart from './base'
-
-import moment from 'moment'
 
 export class CandlesChart extends Chart {
   private CHART_GREEN_CANDLE_COLOR = '#24a599'
@@ -361,7 +360,8 @@ export class CandlesChart extends Chart {
       let k = Math.floor((x / xw) * this.history!.length)
       let point = this.history![k]
       if (!point) continue
-      let time = moment(point.time * 1000).format('HH:mm')
+
+      let time = getTimeFromTimestamp(point.time * 1000)
       xAxisCtx.fillText(time, x - 16, 16)
     }
 

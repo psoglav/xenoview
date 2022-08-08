@@ -11,9 +11,6 @@
     "test": "jest"
   },
   "license": "ISC",
-  "dependencies": {
-    "moment": "^2.29.4"
-  },
   "devDependencies": {
     "@types/jest": "^28.1.6",
     "jest": "^28.1.3"

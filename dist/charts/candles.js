@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CandlesChart = void 0;
+const utils_1 = require("../utils");
 const base_1 = require("./base");
-const moment_1 = require("moment");
 class CandlesChart extends base_1.default {
     constructor(container, data, opts) {
         super(container);
@@ -282,7 +282,7 @@ class CandlesChart extends base_1.default {
             let point = this.history[k];
             if (!point)
                 continue;
-            let time = (0, moment_1.default)(point.time * 1000).format('HH:mm');
+            let time = (0, utils_1.getTimeFromTimestamp)(point.time * 1000);
             xAxisCtx.fillText(time, x - 16, 16);
         }
         ctx.stroke();
