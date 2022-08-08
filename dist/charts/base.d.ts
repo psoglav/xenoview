@@ -1,7 +1,8 @@
-import { ChartOptions } from '../types';
+import { ChartBoundingRect, ChartOptions } from '../types';
 export default abstract class Chart {
     container: HTMLElement | undefined;
     options: ChartOptions;
+    position: ChartBoundingRect;
     chartContext: CanvasRenderingContext2D;
     yAxisContext: CanvasRenderingContext2D;
     xAxisContext: CanvasRenderingContext2D;

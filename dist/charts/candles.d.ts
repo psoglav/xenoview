@@ -1,10 +1,6 @@
 import { TCandlesHistory, ChartOptions } from '../types';
 import Chart from './base';
 export declare class CandlesChart extends Chart {
-    private GRAPH_LEFT;
-    private GRAPH_RIGHT;
-    private GRAPH_TOP;
-    private GRAPH_BOTTOM;
     private pointerYPosIndex;
     private pointerIsVisible;
     private panningIsActive;

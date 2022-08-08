@@ -24,6 +24,12 @@ class Chart {
             this.container.style.grid = '1fr 28px / 1fr 70px';
         }
         this.createChartMarkup();
+        this.position = {
+            left: 0,
+            right: this.width,
+            top: 0,
+            bottom: this.height,
+        };
     }
     createChart() {
         let canvas = this.chartContext.canvas;

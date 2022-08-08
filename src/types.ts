@@ -23,6 +23,13 @@ export interface ChartOptions {
   }
 }
 
+export interface ChartBoundingRect {
+  left: number
+  right: number
+  top: number
+  bottom: number
+}
+
 export type TLinearHistory = number[][]
 
 export type TCandlesPoint = {

@@ -22,6 +22,12 @@ export interface ChartOptions {
         };
     };
 }
+export interface ChartBoundingRect {
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+}
 export declare type TLinearHistory = number[][];
 export declare type TCandlesPoint = {
     close: number;

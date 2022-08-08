@@ -1,9 +1,10 @@
 import { defaultChartOptions } from '../config'
-import { ChartOptions } from '../types'
+import { ChartBoundingRect, ChartOptions } from '../types'
 
 export default abstract class Chart {
   container: HTMLElement | undefined
   options: ChartOptions = defaultChartOptions
+  position: ChartBoundingRect
 
   chartContext: CanvasRenderingContext2D
   yAxisContext: CanvasRenderingContext2D
@@ -34,6 +35,13 @@ export default abstract class Chart {
     }
 
     this.createChartMarkup()
+
+    this.position = {
+      left: 0,
+      right: this.width,
+      top: 0,
+      bottom: this.height,
+    }
   }
 
   createChart(): HTMLCanvasElement {

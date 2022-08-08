@@ -6,10 +6,6 @@ const base_1 = require("./base");
 class CandlesChart extends base_1.default {
     constructor(container, data, options) {
         super(container, options);
-        this.GRAPH_LEFT = 0;
-        this.GRAPH_RIGHT = this.width;
-        this.GRAPH_TOP = 0;
-        this.GRAPH_BOTTOM = this.height;
         this.pointerYPosIndex = 4;
         this.pointerIsVisible = false;
         this.panningIsActive = false;
@@ -63,21 +59,21 @@ class CandlesChart extends base_1.default {
         return data[data.length - 1];
     }
     get floatingWidth() {
-        return this.GRAPH_RIGHT - this.GRAPH_LEFT;
+        return this.position.right - this.position.left;
     }
     windowMouseMoveHandler(e) {
         if (this.isZoomingXAxis && (e === null || e === void 0 ? void 0 : e.movementX)) {
             let zoomPoint = this.width;
             let d = 20 / this.zoomSpeed;
-            this.GRAPH_RIGHT +=
-                (((this.GRAPH_RIGHT - zoomPoint) / d) * (e === null || e === void 0 ? void 0 : e.movementX)) / 100;
-            this.GRAPH_LEFT +=
-                (((this.GRAPH_LEFT - zoomPoint) / d) * (e === null || e === void 0 ? void 0 : e.movementX)) / 100;
+            this.position.right +=
+                (((this.position.right - zoomPoint) / d) * (e === null || e === void 0 ? void 0 : e.movementX)) / 100;
+            this.position.left +=
+                (((this.position.left - zoomPoint) / d) * (e === null || e === void 0 ? void 0 : e.movementX)) / 100;
             this.clampXPanning();
             // this.chartData = this.normalizeData()
             // this.filterVisiblePointsAndCache()
             // let pos = this.mousePosition.x / this.width
-            // this.GRAPH_LEFT -= e.movementX * 10 * this.yZoomFactor * pos
+            // this.position.left -= e.movementX * 10 * this.yZoomFactor * pos
             // this.clampXPanning()
             this.draw();
         }
@@ -148,31 +144,31 @@ class CandlesChart extends base_1.default {
     }
     zoomYAxis(side) {
         // in dev
-        this.GRAPH_BOTTOM += (this.GRAPH_BOTTOM / 20) * side;
-        this.GRAPH_TOP -= (this.GRAPH_TOP / 20) * side;
+        this.position.bottom += (this.position.bottom / 20) * side;
+        this.position.top -= (this.position.top / 20) * side;
     }
     zoomChart(side) {
         let zoomPoint = this.width;
         let d = 20 / this.zoomSpeed;
-        this.GRAPH_RIGHT += ((this.GRAPH_RIGHT - zoomPoint) / d) * side;
-        this.GRAPH_LEFT += ((this.GRAPH_LEFT - zoomPoint) / d) * side;
+        this.position.right += ((this.position.right - zoomPoint) / d) * side;
+        this.position.left += ((this.position.left - zoomPoint) / d) * side;
         this.clampXPanning();
         this.filterVisiblePointsAndCache();
     }
     moveChart(movement) {
-        if (this.GRAPH_RIGHT == this.width - 200 && movement < 0)
+        if (this.position.right == this.width - 200 && movement < 0)
             return;
-        if (this.GRAPH_LEFT == 0 && movement > 0)
+        if (this.position.left == 0 && movement > 0)
             return;
-        this.GRAPH_LEFT += movement;
-        this.GRAPH_RIGHT += movement;
+        this.position.left += movement;
+        this.position.right += movement;
         this.clampXPanning();
     }
     clampXPanning() {
-        if (this.GRAPH_LEFT > 0)
-            this.GRAPH_LEFT = 0;
-        if (this.GRAPH_RIGHT < this.width - 200)
-            this.GRAPH_RIGHT = this.width - 200;
+        if (this.position.left > 0)
+            this.position.left = 0;
+        if (this.position.right < this.width - 200)
+            this.position.right = this.width - 200;
     }
     filterVisiblePointsAndCache() {
         let hist = this.history;
@@ -183,7 +179,7 @@ class CandlesChart extends base_1.default {
     }
     filterVisiblePoints(data) {
         return data.filter((_, i) => {
-            let x = this.GRAPH_LEFT + (this.floatingWidth / data.length) * i;
+            let x = this.position.left + (this.floatingWidth / data.length) * i;
             return x > 0 && x < this.width;
         });
     }
@@ -192,7 +188,7 @@ class CandlesChart extends base_1.default {
         if (!(data === null || data === void 0 ? void 0 : data.length))
             return;
         let x = this.mousePosition.x - this.canvasRect.x;
-        x = ((x - this.GRAPH_LEFT) / this.floatingWidth) * data.length;
+        x = ((x - this.position.left) / this.floatingWidth) * data.length;
         let i = Math.round(x);
         this.pointerYPosIndex =
             i > data.length - 1 ? data.length - 1 : i < 0 ? 0 : i;
@@ -212,7 +208,7 @@ class CandlesChart extends base_1.default {
         if (!((_a = this.chartData) === null || _a === void 0 ? void 0 : _a.length) || !this.pointerIsVisible)
             return;
         let ctx = this.chartContext;
-        let x = this.GRAPH_LEFT + this.candlesSpace * this.pointerYPosIndex;
+        let x = this.position.left + this.candlesSpace * this.pointerYPosIndex;
         let y = this.mousePosition.y;
         ctx.strokeStyle = this.options.pointer.fgColor;
         ctx.setLineDash([5, 4]);
@@ -251,8 +247,8 @@ class CandlesChart extends base_1.default {
         let ctx = this.chartContext;
         let xAxisCtx = this.xAxisContext;
         let segments = this.history.length / 50, h = this.height, w = this.width;
-        let left = this.GRAPH_LEFT;
-        let right = this.GRAPH_RIGHT;
+        let left = this.position.left;
+        let right = this.position.right;
         this.clear(xAxisCtx);
         ctx.beginPath();
         ctx.strokeStyle = '#7777aa33';
@@ -345,10 +341,10 @@ class CandlesChart extends base_1.default {
             return;
         }
         let ctx = this.chartContext;
-        this.moveTo(this.GRAPH_LEFT - 10, this.height, ctx);
+        this.moveTo(this.position.left - 10, this.height, ctx);
         for (let i = 0; i < data.length; i++) {
             this.candlesSpace = this.floatingWidth / data.length;
-            let x = this.GRAPH_LEFT + i * this.candlesSpace;
+            let x = this.position.left + i * this.candlesSpace;
             let halfCandle = this.candlesSpace / 4;
             if (x > this.width + halfCandle)
                 break;
