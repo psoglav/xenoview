@@ -1,2 +1,2 @@
 export * from './charts/candles'
-export * from './charts/linear'
+// export * from './charts/linear'
