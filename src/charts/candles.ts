@@ -1,5 +1,5 @@
 import { TCandlesHistory, ChartOptions } from '../types'
-import { getTimeFromTimestamp } from '../utils'
+import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../utils'
 import Chart from './base'
 
 export class CandlesChart extends Chart {
@@ -90,12 +90,6 @@ export class CandlesChart extends Chart {
 
       this.clampXPanning()
 
-      // this.chartData = this.normalizeData()
-      // this.filterVisiblePointsAndCache()
-
-      // let pos = this.mousePosition.x / this.mainCanvasWidth
-      // this.position.left -= e.movementX * 10 * this.yZoomFactor * pos
-      // this.clampXPanning()
       this.draw()
     }
   }
@@ -112,6 +106,7 @@ export class CandlesChart extends Chart {
     this.movePointer()
     this.draw()
     this.drawPricePointer()
+    this.drawTimePointer()
   }
 
   mouseEnterHandler() {
@@ -148,6 +143,7 @@ export class CandlesChart extends Chart {
     this.movePointer()
     this.draw()
     this.drawPricePointer()
+    this.drawTimePointer()
   }
 
   yAxisMouseMoveHandler(e?: MouseEvent): void {
@@ -274,11 +270,6 @@ export class CandlesChart extends Chart {
     let t = this.topHistoryPrice[1]
     let b = this.bottomHistoryPrice[1]
 
-    let normalize = (y: number) => ((y - b) / (t - b)) * h
-    let reverse = (y: number) => h - y
-
-    let convert = (y: number) => reverse(normalize(y))
-
     let price = (y / h) * (b - t) + t
 
     ctx.beginPath()
@@ -289,6 +280,26 @@ export class CandlesChart extends Chart {
     ctx.fillStyle = 'white'
     ctx.font = '11px Verdana'
     ctx.fillText(price.toFixed(2), 10, y + 5.5)
+  }
+
+  drawTimePointer() {
+    let ctx = this.xAxisContext
+    let data = this.history
+    let h = this.getHeight(ctx)
+    let x = this.mousePosition.x - this.canvasRect.x
+    let i = Math.round(((x - this.position.left) / this.chartFullWidth) * data.length)
+    let point = data[i]
+    let time = getFullTimeFromTimestamp(point.time * 1000)
+
+    x = this.getPointX(i)
+    ctx.beginPath()
+    ctx.fillStyle = this.options.pointer.bgColor
+    this.rect(x - 60, 0, 118, h, ctx)
+    ctx.fill()
+    ctx.closePath()
+    ctx.fillStyle = 'white'
+    ctx.font = '11px Verdana'
+    ctx.fillText(time, x - 50, 20)
   }
 
   mainDebug() {

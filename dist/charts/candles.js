@@ -64,11 +64,6 @@ class CandlesChart extends base_1.default {
             this.position.left +=
                 (((this.position.left - zoomPoint) / d) * (e === null || e === void 0 ? void 0 : e.movementX)) / 100;
             this.clampXPanning();
-            // this.chartData = this.normalizeData()
-            // this.filterVisiblePointsAndCache()
-            // let pos = this.mousePosition.x / this.mainCanvasWidth
-            // this.position.left -= e.movementX * 10 * this.yZoomFactor * pos
-            // this.clampXPanning()
             this.draw();
         }
     }
@@ -82,6 +77,7 @@ class CandlesChart extends base_1.default {
         this.movePointer();
         this.draw();
         this.drawPricePointer();
+        this.drawTimePointer();
     }
     mouseEnterHandler() {
         this.pointerIsVisible = true;
@@ -113,6 +109,7 @@ class CandlesChart extends base_1.default {
         this.movePointer();
         this.draw();
         this.drawPricePointer();
+        this.drawTimePointer();
     }
     yAxisMouseMoveHandler(e) {
         if (this.isZoomingYAxis && (e === null || e === void 0 ? void 0 : e.movementY)) {
@@ -215,9 +212,6 @@ class CandlesChart extends base_1.default {
         let h = this.mainCanvasHeight;
         let t = this.topHistoryPrice[1];
         let b = this.bottomHistoryPrice[1];
-        let normalize = (y) => ((y - b) / (t - b)) * h;
-        let reverse = (y) => h - y;
-        let convert = (y) => reverse(normalize(y));
         let price = (y / h) * (b - t) + t;
         ctx.beginPath();
         ctx.fillStyle = this.options.pointer.bgColor;
@@ -227,6 +221,24 @@ class CandlesChart extends base_1.default {
         ctx.fillStyle = 'white';
         ctx.font = '11px Verdana';
         ctx.fillText(price.toFixed(2), 10, y + 5.5);
+    }
+    drawTimePointer() {
+        let ctx = this.xAxisContext;
+        let data = this.history;
+        let h = this.getHeight(ctx);
+        let x = this.mousePosition.x - this.canvasRect.x;
+        let i = Math.round(((x - this.position.left) / this.chartFullWidth) * data.length);
+        let point = data[i];
+        let time = (0, utils_1.getFullTimeFromTimestamp)(point.time * 1000);
+        x = this.getPointX(i);
+        ctx.beginPath();
+        ctx.fillStyle = this.options.pointer.bgColor;
+        this.rect(x - 60, 0, 118, h, ctx);
+        ctx.fill();
+        ctx.closePath();
+        ctx.fillStyle = 'white';
+        ctx.font = '11px Verdana';
+        ctx.fillText(time, x - 50, 20);
     }
     mainDebug() {
         // this.debug(, 10, 300)
