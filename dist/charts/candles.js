@@ -76,8 +76,8 @@ class CandlesChart extends base_1.default {
         }
         this.movePointer();
         this.draw();
-        this.drawPricePointer();
-        this.drawTimePointer();
+        this.drawPriceMarker();
+        this.drawTimeMarker();
     }
     mouseEnterHandler() {
         this.pointerIsVisible = true;
@@ -108,8 +108,8 @@ class CandlesChart extends base_1.default {
         this.zoomChart(wd > 1 ? 1 : -1);
         this.movePointer();
         this.draw();
-        this.drawPricePointer();
-        this.drawTimePointer();
+        this.drawPriceMarker();
+        this.drawTimeMarker();
     }
     yAxisMouseMoveHandler(e) {
         if (this.isZoomingYAxis && (e === null || e === void 0 ? void 0 : e.movementY)) {
@@ -206,7 +206,7 @@ class CandlesChart extends base_1.default {
         ctx.closePath();
         ctx.setLineDash([]);
     }
-    drawPricePointer() {
+    drawPriceMarker() {
         let ctx = this.yAxisContext;
         let y = this.mousePosition.y - this.canvasRect.top;
         let h = this.mainCanvasHeight;
@@ -222,7 +222,7 @@ class CandlesChart extends base_1.default {
         ctx.font = '11px Verdana';
         ctx.fillText(price.toFixed(2), 10, y + 5.5);
     }
-    drawTimePointer() {
+    drawTimeMarker() {
         let ctx = this.xAxisContext;
         let data = this.history;
         let h = this.getHeight(ctx);

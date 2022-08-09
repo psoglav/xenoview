@@ -39,8 +39,8 @@ export declare class CandlesChart extends Chart {
     movePointer(): void;
     draw(): void;
     drawPointer(): void;
-    drawPricePointer(): void;
-    drawTimePointer(): void;
+    drawPriceMarker(): void;
+    drawTimeMarker(): void;
     mainDebug(): void;
     getGridRows(): void;
     getGridColumns(): number[];
