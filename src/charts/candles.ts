@@ -20,7 +20,7 @@ export class CandlesChart extends Chart {
   constructor(
     container: HTMLElement | string,
     data?: TCandlesHistory,
-    options?: ChartOptions
+    options?: ChartOptions,
   ) {
     super(container, options)
 
@@ -31,7 +31,7 @@ export class CandlesChart extends Chart {
 
   getTopHistoryPrice(): [number, number] {
     let history = this.filterVisiblePoints(
-      this.history!.map(({ high }) => high)
+      this.history!.map(({ high }) => high),
     )
 
     let max = history[0]
@@ -180,12 +180,6 @@ export class CandlesChart extends Chart {
     this.isZoomingXAxis = false
   }
 
-  zoomYAxis(side: number) {
-    // in dev
-    this.position.bottom += (this.position.bottom / 20) * side
-    this.position.top -= (this.position.top / 20) * side
-  }
-
   zoomChart(side: number) {
     let zoomPoint = this.width
     let d = 20 / this.zoomSpeed
@@ -209,7 +203,8 @@ export class CandlesChart extends Chart {
 
   clampXPanning() {
     if (this.position.left > 0) this.position.left = 0
-    if (this.position.right < this.width - 200) this.position.right = this.width - 200
+    if (this.position.right < this.width - 200)
+      this.position.right = this.width - 200
   }
 
   filterVisiblePointsAndCache() {
@@ -221,7 +216,8 @@ export class CandlesChart extends Chart {
 
   filterVisiblePoints(data: any[]) {
     return data.filter((_, i) => {
-      let x: number = this.position.left + (this.floatingWidth / data.length) * i
+      let x: number =
+        this.position.left + (this.floatingWidth / data.length) * i
       return x > 0 && x < this.width
     })
   }
@@ -474,7 +470,7 @@ export class CandlesChart extends Chart {
           open,
           this.candlesSpace / 2,
           close - open,
-          ctx
+          ctx,
         )
 
         ctx.fillStyle = candleColor

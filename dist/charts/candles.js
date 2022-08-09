@@ -139,11 +139,6 @@ class CandlesChart extends base_1.default {
     xAxisMouseUpHandler(e) {
         this.isZoomingXAxis = false;
     }
-    zoomYAxis(side) {
-        // in dev
-        this.position.bottom += (this.position.bottom / 20) * side;
-        this.position.top -= (this.position.top / 20) * side;
-    }
     zoomChart(side) {
         let zoomPoint = this.width;
         let d = 20 / this.zoomSpeed;
