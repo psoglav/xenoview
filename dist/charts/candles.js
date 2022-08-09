@@ -186,6 +186,7 @@ class CandlesChart extends base_1.default {
         }
         this.drawChart();
         this.drawPointer();
+        this.drawCurrentMarketPriceMarker();
         this.mainDebug();
     }
     drawPointer() {
@@ -198,13 +199,40 @@ class CandlesChart extends base_1.default {
         ctx.strokeStyle = this.options.pointer.fgColor;
         ctx.setLineDash([5, 4]);
         ctx.beginPath();
-        this.moveTo(x, 0, ctx);
-        this.lineTo(x, this.mainCanvasHeight, ctx);
-        this.moveTo(0, y - this.canvasRect.top, ctx);
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, this.mainCanvasHeight);
+        ctx.moveTo(0, y - this.canvasRect.top);
         ctx.lineTo(this.mainCanvasWidth, y - this.canvasRect.top);
-        ctx.stroke();
         ctx.closePath();
+        ctx.stroke();
         ctx.setLineDash([]);
+    }
+    drawCurrentMarketPriceMarker() {
+        let ctx = this.chartContext;
+        let data = this.history;
+        if (!data || !data.length)
+            return;
+        let point = data[data.length - 1];
+        let npoint = this.normalizePoint(point);
+        let y = npoint.close;
+        let type = npoint.close < npoint.open ? 'higher' : 'lower';
+        ctx.strokeStyle = this.options.candles.colors[type];
+        ctx.setLineDash([1, 2]);
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(this.mainCanvasWidth, y);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx = this.yAxisContext;
+        ctx.beginPath();
+        ctx.fillStyle = this.options.candles.colors[type];
+        this.rect(0, y - 10, this.getWidth(ctx), 20, ctx);
+        ctx.fill();
+        ctx.closePath();
+        ctx.fillStyle = 'white';
+        ctx.font = '11px Verdana';
+        ctx.fillText(point.close.toFixed(2), 10, y + 5.5);
     }
     drawPriceMarker() {
         let ctx = this.yAxisContext;
