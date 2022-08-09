@@ -74,18 +74,6 @@ export class CandlesChart extends Chart {
     return this.bottomHistoryPrice
   }
 
-  getStartDataPoint() {
-    if (this.history == null || !this.history.length) return [0, 0]
-    return this.filterVisiblePoints(this.history)[0]
-  }
-
-  getEndDataPoint() {
-    if (this.history == null || !this.history.length) return [0, 0]
-    let data = this.filterVisiblePoints(this.history)
-    console.log(data[data.length - 1])
-    return data[data.length - 1]
-  }
-
   get floatingWidth() {
     return this.position.right - this.position.left
   }

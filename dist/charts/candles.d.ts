@@ -17,8 +17,6 @@ export declare class CandlesChart extends Chart {
     getPointX(value: any): number;
     getTopHistoryPrice(): [number, number];
     getBottomHistoryPrice(): [number, number];
-    getStartDataPoint(): any;
-    getEndDataPoint(): any;
     get floatingWidth(): number;
     windowMouseMoveHandler(e: MouseEvent): void;
     windowMouseUpHandler(e: MouseEvent): void;
