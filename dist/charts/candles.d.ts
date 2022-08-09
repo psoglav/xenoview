@@ -14,6 +14,7 @@ export declare class CandlesChart extends Chart {
     private topHistoryPrice;
     private bottomHistoryPrice;
     constructor(container: HTMLElement | string, data?: TCandlesHistory, options?: ChartOptions);
+    getPointX(value: any): number;
     getTopHistoryPrice(): [number, number];
     getBottomHistoryPrice(): [number, number];
     getStartDataPoint(): any;
@@ -42,7 +43,10 @@ export declare class CandlesChart extends Chart {
     drawPointer(): void;
     drawPricePointer(): void;
     mainDebug(): void;
-    drawXAxis(): void;
+    getGridRows(): void;
+    getGridColumns(): number[];
+    drawGridColumns(): void;
+    drawXAxisLabels(): void;
     drawYAxis(): void;
     drawChart(): void;
     loadHistory(data: TCandlesHistory): void;

@@ -19,6 +19,13 @@ class CandlesChart extends base_1.default {
             this.loadHistory(data);
         this.draw();
     }
+    getPointX(value) {
+        let i = value;
+        let data = this.history;
+        if (typeof value == 'object')
+            i = data.indexOf(value);
+        return this.position.left + (this.floatingWidth / data.length) * i;
+    }
     getTopHistoryPrice() {
         let history = this.filterVisiblePoints(this.history.map(({ high }) => high));
         let max = history[0];
@@ -171,7 +178,7 @@ class CandlesChart extends base_1.default {
     }
     filterVisiblePoints(data) {
         return data.filter((_, i) => {
-            let x = this.position.left + (this.floatingWidth / data.length) * i;
+            let x = this.getPointX(i);
             return x > 0 && x < this.width;
         });
     }
@@ -188,7 +195,8 @@ class CandlesChart extends base_1.default {
     draw() {
         this.chartContext.clearRect(0, 0, this.width, this.height);
         if (this.chartData) {
-            this.drawXAxis();
+            this.drawGridColumns();
+            this.drawXAxisLabels();
             this.drawYAxis();
         }
         this.drawChart();
@@ -235,38 +243,50 @@ class CandlesChart extends base_1.default {
     mainDebug() {
         // this.debug(, 10, 300)
     }
-    drawXAxis() {
+    getGridRows() {
+        // TODO: refactor existing algorithm of drawing the rows as from below
+    }
+    getGridColumns() {
+        let prev = 0;
+        return this.history
+            .map((_, i) => i)
+            .filter((i) => {
+            let x = this.getPointX(i);
+            let px = this.getPointX(prev);
+            if (x - px < 100 && x != px) {
+                return 0;
+            }
+            prev = i;
+            return 1;
+        });
+    }
+    drawGridColumns() {
         let ctx = this.chartContext;
-        let xAxisCtx = this.xAxisContext;
-        let segments = this.history.length / 50, h = this.height, w = this.width;
-        let left = this.position.left;
-        let right = this.position.right;
-        this.clear(xAxisCtx);
+        let cols = this.getGridColumns();
         ctx.beginPath();
         ctx.strokeStyle = '#7777aa33';
-        let xw = this.floatingWidth < this.width ? this.width : this.floatingWidth;
-        let step = xw / segments;
-        while (step > 150) {
-            segments += 2;
-            step = xw / segments;
-        }
-        while (step < 50) {
-            segments -= 2;
-            step = xw / segments;
-        }
-        for (let i = 0; i <= segments; i++) {
-            let x = i * step + left;
+        for (let i of cols) {
+            let x = this.getPointX(i);
             this.moveTo(x, 0, ctx);
-            this.lineTo(x, h, ctx);
-            let fz = 11;
-            xAxisCtx.fillStyle = this.options.textColor;
-            xAxisCtx.font = fz + 'px Verdana';
-            let k = Math.floor((x / xw) * this.history.length);
-            let point = this.history[k];
-            if (!point)
-                continue;
+            this.lineTo(x, this.height, ctx);
+        }
+        ctx.stroke();
+        ctx.closePath();
+    }
+    drawXAxisLabels() {
+        var _a, _b;
+        let ctx = this.xAxisContext;
+        let cols = this.getGridColumns();
+        this.clear(ctx);
+        ctx.beginPath();
+        let size = ((_b = (_a = this.options.xAxis) === null || _a === void 0 ? void 0 : _a.labels) === null || _b === void 0 ? void 0 : _b.fontSize) || 11;
+        ctx.fillStyle = this.options.textColor;
+        ctx.font = size + 'px Verdana';
+        for (let i of cols) {
+            let point = this.history[i];
+            let x = this.getPointX(i);
             let time = (0, utils_1.getTimeFromTimestamp)(point.time * 1000);
-            xAxisCtx.fillText(time, x - 16, 16);
+            ctx.fillText(time, x - 16, 16);
         }
         ctx.stroke();
         ctx.closePath();
