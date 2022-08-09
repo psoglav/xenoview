@@ -39,9 +39,9 @@ export default abstract class Chart {
 
     this.position = {
       left: 0,
-      right: this.width,
+      right: this.mainCanvasWidth,
       top: 0,
-      bottom: this.height,
+      bottom: this.mainCanvasHeight,
     }
   }
 
@@ -187,14 +187,14 @@ export default abstract class Chart {
     return ctx.canvas.height * this.getPixelRatio(ctx)
   }
 
-  get width() {
+  get mainCanvasWidth() {
     return (
       this.chartContext.canvas.clientWidth *
       this.getPixelRatio(this.chartContext)
     )
   }
 
-  get height() {
+  get mainCanvasHeight() {
     return (
       this.chartContext.canvas.clientHeight *
       this.getPixelRatio(this.chartContext)

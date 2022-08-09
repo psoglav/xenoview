@@ -34,8 +34,8 @@ export default abstract class Chart {
     bindXAxisListeners(): void;
     getWidth(ctx: CanvasRenderingContext2D): number;
     getHeight(ctx: CanvasRenderingContext2D): number;
-    get width(): number;
-    get height(): number;
+    get mainCanvasWidth(): number;
+    get mainCanvasHeight(): number;
     get canvasRect(): DOMRect;
     setSize(w: number, h: number): void;
     rescale(ctx: CanvasRenderingContext2D): void;

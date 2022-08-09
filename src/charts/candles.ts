@@ -33,7 +33,7 @@ export class CandlesChart extends Chart {
     let i = value
     let data = this.history
     if (typeof value == 'object') i = data.indexOf(value)
-    return this.position.left + (this.floatingWidth / data.length) * i
+    return this.position.left + (this.chartFullWidth / data.length) * i
   }
 
   getTopHistoryPrice(): [number, number] {
@@ -74,13 +74,13 @@ export class CandlesChart extends Chart {
     return this.bottomHistoryPrice
   }
 
-  get floatingWidth() {
+  get chartFullWidth() {
     return this.position.right - this.position.left
   }
 
   windowMouseMoveHandler(e: MouseEvent) {
     if (this.isZoomingXAxis && e?.movementX) {
-      let zoomPoint = this.width
+      let zoomPoint = this.mainCanvasWidth
       let d = 20 / this.zoomSpeed
 
       this.position.right +=
@@ -93,7 +93,7 @@ export class CandlesChart extends Chart {
       // this.chartData = this.normalizeData()
       // this.filterVisiblePointsAndCache()
 
-      // let pos = this.mousePosition.x / this.width
+      // let pos = this.mousePosition.x / this.mainCanvasWidth
       // this.position.left -= e.movementX * 10 * this.yZoomFactor * pos
       // this.clampXPanning()
       this.draw()
@@ -176,7 +176,7 @@ export class CandlesChart extends Chart {
   }
 
   zoomChart(side: number) {
-    let zoomPoint = this.width
+    let zoomPoint = this.mainCanvasWidth
     let d = 20 / this.zoomSpeed
 
     this.position.right += ((this.position.right - zoomPoint) / d) * side
@@ -187,7 +187,7 @@ export class CandlesChart extends Chart {
   }
 
   moveChart(movement: number) {
-    if (this.position.right == this.width - 200 && movement < 0) return
+    if (this.position.right == this.mainCanvasWidth - 200 && movement < 0) return
     if (this.position.left == 0 && movement > 0) return
 
     this.position.left += movement
@@ -198,8 +198,8 @@ export class CandlesChart extends Chart {
 
   clampXPanning() {
     if (this.position.left > 0) this.position.left = 0
-    if (this.position.right < this.width - 200)
-      this.position.right = this.width - 200
+    if (this.position.right < this.mainCanvasWidth - 200)
+      this.position.right = this.mainCanvasWidth - 200
   }
 
   filterVisiblePointsAndCache() {
@@ -212,7 +212,7 @@ export class CandlesChart extends Chart {
   filterVisiblePoints(data: any[]) {
     return data.filter((_, i) => {
       let x: number = this.getPointX(i)
-      return x > 0 && x < this.width
+      return x > 0 && x < this.mainCanvasWidth
     })
   }
 
@@ -222,7 +222,7 @@ export class CandlesChart extends Chart {
     if (!data?.length) return
 
     let x = this.mousePosition.x - this.canvasRect.x
-    x = ((x - this.position.left) / this.floatingWidth) * data.length
+    x = ((x - this.position.left) / this.chartFullWidth) * data.length
 
     let i = Math.round(x)
 
@@ -231,7 +231,7 @@ export class CandlesChart extends Chart {
   }
 
   draw() {
-    this.chartContext.clearRect(0, 0, this.width, this.height)
+    this.chartContext.clearRect(0, 0, this.mainCanvasWidth, this.mainCanvasHeight)
 
     if (this.chartData) {
       this.drawGridColumns()
@@ -257,9 +257,9 @@ export class CandlesChart extends Chart {
 
     ctx.beginPath()
     this.moveTo(x, 0, ctx)
-    this.lineTo(x, this.height, ctx)
+    this.lineTo(x, this.mainCanvasHeight, ctx)
     this.moveTo(0, y - this.canvasRect.top, ctx)
-    ctx.lineTo(this.width, y - this.canvasRect.top)
+    ctx.lineTo(this.mainCanvasWidth, y - this.canvasRect.top)
     ctx.stroke()
     ctx.closePath()
 
@@ -270,7 +270,7 @@ export class CandlesChart extends Chart {
     let ctx = this.yAxisContext
     let y = this.mousePosition.y - this.canvasRect.top
 
-    let h = this.height
+    let h = this.mainCanvasHeight
     let t = this.topHistoryPrice[1]
     let b = this.bottomHistoryPrice[1]
 
@@ -326,7 +326,7 @@ export class CandlesChart extends Chart {
     for (let i of cols) {
       let x = this.getPointX(i)
       this.moveTo(x, 0, ctx)
-      this.lineTo(x, this.height, ctx)
+      this.lineTo(x, this.mainCanvasHeight, ctx)
     }
 
     ctx.stroke()
@@ -360,8 +360,8 @@ export class CandlesChart extends Chart {
     let yAxisCtx = this.yAxisContext
 
     let segments = 20,
-      h = this.height,
-      w = this.width
+      h = this.mainCanvasHeight,
+      w = this.mainCanvasWidth
 
     let t = this.topHistoryPrice[1]
     let b = this.bottomHistoryPrice[1]
@@ -445,14 +445,14 @@ export class CandlesChart extends Chart {
 
     let ctx = this.chartContext
 
-    this.moveTo(this.position.left - 10, this.height, ctx)
+    this.moveTo(this.position.left - 10, this.mainCanvasHeight, ctx)
 
     for (let i = 0; i < data.length; i++) {
-      this.candlesSpace = this.floatingWidth! / data.length
+      this.candlesSpace = this.chartFullWidth! / data.length
       let x = this.position.left + i * this.candlesSpace
       let halfCandle = this.candlesSpace / 4
 
-      if (x > this.width + halfCandle) break
+      if (x > this.mainCanvasWidth + halfCandle) break
       else if (x < -halfCandle) continue
 
       let { close, open, low, high } = this.normalizePoint(data[i])
@@ -494,7 +494,7 @@ export class CandlesChart extends Chart {
   }
 
   normalizePoint(point: any) {
-    let h = this.height
+    let h = this.mainCanvasHeight
 
     let min = this.bottomHistoryPrice[1]
     let max = this.topHistoryPrice[1]
@@ -531,7 +531,7 @@ export class CandlesChart extends Chart {
     if (!hist?.length) return []
 
     let result = hist?.map((n) => ({ ...n }))
-    let h = this.height
+    let h = this.mainCanvasHeight
 
     let min = this.getBottomHistoryPrice()[1]
     let max = this.getTopHistoryPrice()[1]
