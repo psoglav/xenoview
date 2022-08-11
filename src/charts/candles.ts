@@ -1,4 +1,4 @@
-import { TCandlesHistory, ChartOptions } from '../types'
+import { HistoryData, ChartOptions } from '../types'
 import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../utils'
 import Chart from './base'
 
@@ -11,15 +11,15 @@ export class CandlesChart extends Chart {
   private isZoomingYAxis = false
   private isZoomingXAxis = false
 
-  private history: TCandlesHistory | undefined
-  private chartData: TCandlesHistory | undefined
+  private history: HistoryData | undefined
+  private chartData: HistoryData | undefined
   private visibleData: any
   private topHistoryPrice: [number, number] = [0, 0]
   private bottomHistoryPrice: [number, number] = [0, 0]
 
   constructor(
     container: HTMLElement | string,
-    data?: TCandlesHistory,
+    data?: HistoryData,
     options?: ChartOptions,
   ) {
     super(container, options)
@@ -531,7 +531,7 @@ export class CandlesChart extends Chart {
     }
   }
 
-  loadHistory(data: TCandlesHistory) {
+  loadHistory(data: HistoryData) {
     this.history = data
     this.chartData = this.normalizeData()
     this.draw()

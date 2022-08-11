@@ -1,7 +1,7 @@
 import {
   TLinearChartOptions,
-  TLinearHistory,
-  TLinearChartData,
+  LinearHistory,
+  ChartData,
 } from '../types'
 
 import Chart from './base'
@@ -25,12 +25,12 @@ export class LinearChart extends Chart {
 
   private mousePosition = { x: 0, y: 0 }
 
-  private history: TLinearHistory | undefined
-  private chartData: TLinearChartData | undefined
+  private history: LinearHistory | undefined
+  private chartData: ChartData | undefined
 
   constructor(
     container: HTMLElement | string,
-    data?: TLinearHistory,
+    data?: LinearHistory,
     opts?: TLinearChartOptions
   ) {
     super(container)
@@ -350,7 +350,7 @@ export class LinearChart extends Chart {
     ctx.closePath()
   }
 
-  loadHistory(data: TLinearHistory) {
+  loadHistory(data: LinearHistory) {
     this.history = data
     this.draw(true)
   }

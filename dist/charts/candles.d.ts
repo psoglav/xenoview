@@ -1,4 +1,4 @@
-import { TCandlesHistory, ChartOptions } from '../types';
+import { HistoryData, ChartOptions } from '../types';
 import Chart from './base';
 export declare class CandlesChart extends Chart {
     private pointerYPosIndex;
@@ -13,7 +13,7 @@ export declare class CandlesChart extends Chart {
     private visibleData;
     private topHistoryPrice;
     private bottomHistoryPrice;
-    constructor(container: HTMLElement | string, data?: TCandlesHistory, options?: ChartOptions);
+    constructor(container: HTMLElement | string, data?: HistoryData, options?: ChartOptions);
     getPointX(value: any): number;
     getTopHistoryPrice(): [number, number];
     getBottomHistoryPrice(): [number, number];
@@ -49,7 +49,7 @@ export declare class CandlesChart extends Chart {
     drawXAxisLabels(): void;
     drawYAxis(): void;
     drawChart(): void;
-    loadHistory(data: TCandlesHistory): void;
+    loadHistory(data: HistoryData): void;
     normalizePoint(point: any): any;
     normalizeData(): {
         close: number;

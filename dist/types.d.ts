@@ -28,8 +28,8 @@ export interface ChartBoundingRect {
     top: number;
     bottom: number;
 }
-export declare type TLinearHistory = number[][];
-export declare type TCandlesPoint = {
+export declare type LinearHistory = number[][];
+export declare type HistoryPoint = {
     close: number;
     high: number;
     low: number;
@@ -38,17 +38,6 @@ export declare type TCandlesPoint = {
     volumefrom: number;
     volumeto: number;
 };
-export declare type TCandlesHistory = TCandlesPoint[];
-export declare type TLinearChartData = number[];
-export declare type TContainer = Element | string;
-export interface TLinearChartOptions {
-    chartStroke?: {
-        width?: number;
-        hoverWidth?: number;
-        color?: string;
-    };
-    chartFill?: {
-        gradientStart?: string;
-        gradientEnd?: string;
-    };
-}
+export declare type HistoryData = HistoryPoint[];
+export declare type ChartData = number[];
+export declare type ChartContainer = Element | string;
