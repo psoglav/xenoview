@@ -14,6 +14,11 @@ export declare class CandlesChart extends Chart {
     private topHistoryPrice;
     private bottomHistoryPrice;
     constructor(container: HTMLElement | string, data?: HistoryData, options?: ChartOptions);
+    /**
+     * Get point X position.
+     * @param {number | HistoryPoint} value a point or an index of it
+     * @returns {number} X position
+     */
     getPointX(value: any): number;
     getTopHistoryPrice(): [number, number];
     getBottomHistoryPrice(): [number, number];

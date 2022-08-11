@@ -19,6 +19,11 @@ class CandlesChart extends base_1.default {
             this.loadHistory(data);
         this.draw();
     }
+    /**
+     * Get point X position.
+     * @param {number | HistoryPoint} value a point or an index of it
+     * @returns {number} X position
+     */
     getPointX(value) {
         let i = value;
         let data = this.history;
@@ -27,7 +32,7 @@ class CandlesChart extends base_1.default {
         return this.position.left + (this.chartFullWidth / data.length) * i;
     }
     getTopHistoryPrice() {
-        let history = this.filterVisiblePoints(this.history.map(({ high }) => high));
+        let history = this.visibleData ? this.visibleData.map(({ high }) => high) : this.filterVisiblePoints(this.history.map(({ high }) => high));
         let max = history[0];
         let i = 0;
         history.forEach((p, ii) => {
@@ -40,7 +45,7 @@ class CandlesChart extends base_1.default {
         return this.topHistoryPrice;
     }
     getBottomHistoryPrice() {
-        let history = this.filterVisiblePoints(this.history.map(({ low }) => low));
+        let history = this.visibleData ? this.visibleData.map(({ low }) => low) : this.filterVisiblePoints(this.history.map(({ low }) => low));
         let min = history[0];
         let i = 0;
         history.forEach((p, ii) => {

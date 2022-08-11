@@ -37,7 +37,7 @@ export class CandlesChart extends Chart {
   }
 
   getTopHistoryPrice(): [number, number] {
-    let history = this.filterVisiblePoints(
+    let history = this.visibleData ? this.visibleData.map(({ high }) => high) : this.filterVisiblePoints(
       this.history!.map(({ high }) => high),
     )
 
@@ -57,7 +57,9 @@ export class CandlesChart extends Chart {
   }
 
   getBottomHistoryPrice(): [number, number] {
-    let history = this.filterVisiblePoints(this.history!.map(({ low }) => low))
+    let history = this.visibleData ? this.visibleData.map(({ low }) => low) : this.filterVisiblePoints(
+      this.history!.map(({ low }) => low),
+    )
 
     let min = history[0]
     let i = 0
