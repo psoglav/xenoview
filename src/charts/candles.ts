@@ -1,4 +1,4 @@
-import { HistoryData, ChartOptions } from '../types'
+import { HistoryData, ChartOptions, HistoryPoint } from '../types'
 import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../utils'
 import Chart from './base'
 
@@ -29,6 +29,11 @@ export class CandlesChart extends Chart {
     this.draw()
   }
 
+  /**
+   * Get point X position.
+   * @param {number | HistoryPoint} value a point or an index of it
+   * @returns {number} X position
+   */
   getPointX(value): number {
     let i = value
     let data = this.history
