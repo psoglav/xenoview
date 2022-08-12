@@ -167,6 +167,7 @@ export class CandlesChart extends Chart {
       ((x - this.position.left) / this.chartFullWidth) * data.length,
     )
     let point = data[i]
+    if(!point) return
     let time = getFullTimeFromTimestamp(point.time * 1000)
 
     x = this.getPointX(i)

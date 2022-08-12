@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const moment_1 = require("moment");
 const config_1 = require("../config");
 class ChartDataBase {
     constructor() {
@@ -7,14 +8,54 @@ class ChartDataBase {
         this.bottomHistoryPrice = [0, 0];
     }
     get chartFullWidth() {
-        return this.chart.position.right - this.chart.position.left;
-    }
-    init(chart) {
-        this.chart = chart;
+        return this.position.right - this.position.left;
     }
     loadHistory(value) {
         this.history = value;
         this.chartData = this.normalizeData();
+    }
+    updatePoint(point, value) {
+        point.close = value.PRICE;
+        point.time = value.LASTUPDATE;
+        if (point.close < point.low)
+            point.low = point.close;
+        if (point.close > point.high)
+            point.high = point.close;
+    }
+    updateCurrentPoint(value) {
+        if (!value.PRICE || !value.LASTUPDATE)
+            return;
+        let hist = this.history;
+        if (!hist)
+            return;
+        let currentPoint = hist[hist.length - 1];
+        let pointMinutesTs = +(0, moment_1.default)(value.LASTUPDATE * 1000)
+            .milliseconds(0)
+            .seconds(0);
+        let currentPointMinutesTs = +(0, moment_1.default)(currentPoint.time * 1000)
+            .milliseconds(0)
+            .seconds(0);
+        if (currentPointMinutesTs == pointMinutesTs) {
+            this.updatePoint(hist[hist.length - 1], value);
+            this.draw();
+        }
+        else if (pointMinutesTs > currentPointMinutesTs) {
+            let pp = hist[hist.length - 1];
+            if (value.PRICE < pp.low)
+                pp.low = value.PRICE;
+            if (value.PRICE > pp.high)
+                pp.high = value.PRICE;
+            pp.close = value.PRICE;
+            hist.shift();
+            hist.push({
+                time: value.LASTUPDATE,
+                high: value.PRICE,
+                open: value.PRICE,
+                close: value.PRICE,
+                low: value.PRICE,
+            });
+            this.draw();
+        }
     }
     /**
      * Get point X position.
@@ -26,12 +67,12 @@ class ChartDataBase {
         let data = this.history;
         if (typeof value == 'object')
             i = data.indexOf(value);
-        return this.chart.position.left + (this.chartFullWidth / data.length) * i;
+        return this.position.left + (this.chartFullWidth / data.length) * i;
     }
     filterVisiblePoints(data) {
         return data.filter((_, i) => {
             let x = this.getPointX(i);
-            return x > 0 && x < this.chart.mainCanvasWidth;
+            return x > 0 && x < this.mainCanvasWidth;
         });
     }
     filterVisiblePointsAndCache() {
@@ -41,7 +82,7 @@ class ChartDataBase {
         return this.visiblePoints;
     }
     normalizePoint(point) {
-        let h = this.chart.mainCanvasHeight;
+        let h = this.mainCanvasHeight;
         let min = this.bottomHistoryPrice[1];
         let max = this.topHistoryPrice[1];
         let normalize = (y) => ((y - min) / (max - min)) * h;
@@ -55,7 +96,7 @@ class ChartDataBase {
         min = convert(min);
         max = convert(max);
         let hh = Math.abs((max - min) / 2);
-        let k = Math.abs(this.chart.yZoomFactor);
+        let k = Math.abs(this.yZoomFactor);
         p.close = (p.close - hh) / k + hh;
         p.open = (p.open - hh) / k + hh;
         p.high = (p.high - hh) / k + hh;
@@ -67,7 +108,7 @@ class ChartDataBase {
         if (!(hist === null || hist === void 0 ? void 0 : hist.length))
             return [];
         let result = hist === null || hist === void 0 ? void 0 : hist.map((n) => (Object.assign({}, n)));
-        let h = this.chart.mainCanvasHeight;
+        let h = this.mainCanvasHeight;
         let min = this.getBottomHistoryPrice()[1];
         let max = this.getTopHistoryPrice()[1];
         let normalize = (y) => ((y - min) / (max - min)) * h;
@@ -84,7 +125,7 @@ class ChartDataBase {
         let hh = Math.abs((max - min) / 2);
         result = result.map((point) => {
             let p = Object.create(point);
-            let k = Math.abs(this.chart.yZoomFactor);
+            let k = Math.abs(this.yZoomFactor);
             p.close = (p.close - hh) / k + hh;
             p.open = (p.open - hh) / k + hh;
             p.high = (p.high - hh) / k + hh;
@@ -94,7 +135,9 @@ class ChartDataBase {
         return result;
     }
     getTopHistoryPrice() {
-        let history = this.visiblePoints ? this.visiblePoints.map(({ high }) => high) : this.filterVisiblePoints(this.history.map(({ high }) => high));
+        let history = this.visiblePoints
+            ? this.visiblePoints.map(({ high }) => high)
+            : this.filterVisiblePoints(this.history.map(({ high }) => high));
         let max = history[0];
         let i = 0;
         history.forEach((p, ii) => {
@@ -107,7 +150,9 @@ class ChartDataBase {
         return this.topHistoryPrice;
     }
     getBottomHistoryPrice() {
-        let history = this.visiblePoints ? this.visiblePoints.map(({ low }) => low) : this.filterVisiblePoints(this.history.map(({ low }) => low));
+        let history = this.visiblePoints
+            ? this.visiblePoints.map(({ low }) => low)
+            : this.filterVisiblePoints(this.history.map(({ low }) => low));
         let min = history[0];
         let i = 0;
         history.forEach((p, ii) => {
@@ -127,7 +172,6 @@ class Chart extends ChartDataBase {
         this.mousePosition = { x: 0, y: 0 };
         this.zoomSpeed = 4;
         this.yZoomFactor = 1.2;
-        this.init(this);
         if (options)
             this.options = options;
         this.chartContext = document.createElement('canvas').getContext('2d');

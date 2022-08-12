@@ -1,15 +1,25 @@
-import { ChartBoundingRect, ChartOptions, HistoryData } from '../types';
-declare class ChartDataBase {
+import { ChartBoundingRect, ChartOptions, HistoryData, HistoryPoint } from '../types';
+declare abstract class ChartDataBase {
     history: HistoryData;
     chartData: HistoryData;
     visiblePoints: HistoryData;
     topHistoryPrice: [number, number];
     bottomHistoryPrice: [number, number];
-    private chart;
+    abstract yZoomFactor: number;
+    abstract position: ChartBoundingRect;
+    abstract get mainCanvasWidth(): number;
+    abstract get mainCanvasHeight(): number;
     get chartFullWidth(): number;
     constructor();
-    init(chart: Chart): void;
     loadHistory(value: HistoryData): void;
+    updatePoint(point: HistoryPoint, value: {
+        PRICE: any;
+        LASTUPDATE: any;
+    }): void;
+    updateCurrentPoint(value: {
+        PRICE: any;
+        LASTUPDATE: any;
+    }): void;
     /**
      * Get point X position.
      * @param {number | HistoryPoint} value a point or an index of it
@@ -22,6 +32,7 @@ declare class ChartDataBase {
     normalizeData(): HistoryData;
     getTopHistoryPrice(): [number, number];
     getBottomHistoryPrice(): [number, number];
+    abstract draw(): void;
 }
 export default abstract class Chart extends ChartDataBase {
     container: HTMLElement | undefined;

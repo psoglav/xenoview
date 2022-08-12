@@ -129,6 +129,8 @@ class CandlesChart extends base_1.default {
         let x = this.mousePosition.x - this.canvasRect.x;
         let i = Math.round(((x - this.position.left) / this.chartFullWidth) * data.length);
         let point = data[i];
+        if (!point)
+            return;
         let time = (0, utils_1.getFullTimeFromTimestamp)(point.time * 1000);
         x = this.getPointX(i);
         ctx.beginPath();

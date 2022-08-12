@@ -38,8 +38,8 @@ export type HistoryPoint = {
   low: number
   open: number
   time: number
-  volumefrom: number
-  volumeto: number
+  // volumefrom: number
+  // volumeto: number
 }
 
 export type HistoryData = HistoryPoint[]

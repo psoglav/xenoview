@@ -1,7 +1,13 @@
+import moment from 'moment'
 import { defaultChartOptions } from '../config'
-import { ChartBoundingRect, ChartData, ChartOptions, HistoryData, HistoryPoint } from '../types'
+import {
+  ChartBoundingRect,
+  ChartOptions,
+  HistoryData,
+  HistoryPoint,
+} from '../types'
 
-class ChartDataBase {
+abstract class ChartDataBase {
   history: HistoryData
   chartData: HistoryData
   visiblePoints: HistoryData
@@ -9,21 +15,66 @@ class ChartDataBase {
   topHistoryPrice: [number, number] = [0, 0]
   bottomHistoryPrice: [number, number] = [0, 0]
 
-  private chart: Chart
+  abstract yZoomFactor: number
+  abstract position: ChartBoundingRect
+
+  abstract get mainCanvasWidth(): number
+  abstract get mainCanvasHeight(): number
 
   get chartFullWidth() {
-    return this.chart.position.right - this.chart.position.left
+    return this.position.right - this.position.left
   }
 
   constructor() {}
 
-  init(chart: Chart) {
-    this.chart = chart
-  }
-
   loadHistory(value: HistoryData) {
     this.history = value
     this.chartData = this.normalizeData()
+  }
+
+  updatePoint(point: HistoryPoint, value: { PRICE; LASTUPDATE }) {
+    point.close = value.PRICE
+    point.time = value.LASTUPDATE
+
+    if (point.close < point.low) point.low = point.close
+    if (point.close > point.high) point.high = point.close
+  }
+
+  updateCurrentPoint(value: { PRICE; LASTUPDATE }) {
+    if (!value.PRICE || !value.LASTUPDATE) return
+
+    let hist = this.history
+    if (!hist) return
+
+    let currentPoint = hist[hist.length - 1]
+    let pointMinutesTs = +moment(value.LASTUPDATE * 1000)
+      .milliseconds(0)
+      .seconds(0)
+    let currentPointMinutesTs = +moment(currentPoint.time * 1000)
+      .milliseconds(0)
+      .seconds(0)
+
+    if (currentPointMinutesTs == pointMinutesTs) {
+      this.updatePoint(hist[hist.length - 1], value)
+      this.draw()
+    } else if (pointMinutesTs > currentPointMinutesTs) {
+      let pp = hist[hist.length - 1]
+
+      if (value.PRICE < pp.low) pp.low = value.PRICE
+      if (value.PRICE > pp.high) pp.high = value.PRICE
+
+      pp.close = value.PRICE
+
+      hist.shift()
+      hist.push({
+        time: value.LASTUPDATE,
+        high: value.PRICE,
+        open: value.PRICE,
+        close: value.PRICE,
+        low: value.PRICE,
+      })
+      this.draw()
+    }
   }
 
   /**
@@ -31,17 +82,17 @@ class ChartDataBase {
    * @param {number | HistoryPoint} value a point or an index of it
    * @returns {number} X position
    */
-   getPointX(value): number {
+  getPointX(value): number {
     let i = value
     let data = this.history
     if (typeof value == 'object') i = data.indexOf(value)
-    return this.chart.position.left + (this.chartFullWidth / data.length) * i
-   }
-  
+    return this.position.left + (this.chartFullWidth / data.length) * i
+  }
+
   filterVisiblePoints(data: any[]) {
     return data.filter((_, i) => {
       let x: number = this.getPointX(i)
-      return x > 0 && x < this.chart.mainCanvasWidth
+      return x > 0 && x < this.mainCanvasWidth
     })
   }
 
@@ -50,9 +101,9 @@ class ChartDataBase {
     this.visiblePoints = this.filterVisiblePoints(this.history)
     return this.visiblePoints
   }
-  
+
   normalizePoint(point: any) {
-    let h = this.chart.mainCanvasHeight
+    let h = this.mainCanvasHeight
 
     let min = this.bottomHistoryPrice[1]
     let max = this.topHistoryPrice[1]
@@ -74,7 +125,7 @@ class ChartDataBase {
 
     let hh = Math.abs((max - min) / 2)
 
-    let k = Math.abs(this.chart.yZoomFactor)
+    let k = Math.abs(this.yZoomFactor)
     p.close = (p.close - hh) / k + hh
     p.open = (p.open - hh) / k + hh
     p.high = (p.high - hh) / k + hh
@@ -89,7 +140,7 @@ class ChartDataBase {
     if (!hist?.length) return []
 
     let result = hist?.map((n) => ({ ...n }))
-    let h = this.chart.mainCanvasHeight
+    let h = this.mainCanvasHeight
 
     let min = this.getBottomHistoryPrice()[1]
     let max = this.getTopHistoryPrice()[1]
@@ -113,7 +164,7 @@ class ChartDataBase {
 
     result = result.map((point) => {
       let p = Object.create(point)
-      let k = Math.abs(this.chart.yZoomFactor)
+      let k = Math.abs(this.yZoomFactor)
       p.close = (p.close - hh) / k + hh
       p.open = (p.open - hh) / k + hh
       p.high = (p.high - hh) / k + hh
@@ -125,9 +176,9 @@ class ChartDataBase {
   }
 
   getTopHistoryPrice(): [number, number] {
-    let history = this.visiblePoints ? this.visiblePoints.map(({ high }) => high) : this.filterVisiblePoints(
-      this.history!.map(({ high }) => high),
-    )
+    let history = this.visiblePoints
+      ? this.visiblePoints.map(({ high }) => high)
+      : this.filterVisiblePoints(this.history!.map(({ high }) => high))
 
     let max = history[0]
     let i = 0
@@ -145,9 +196,9 @@ class ChartDataBase {
   }
 
   getBottomHistoryPrice(): [number, number] {
-    let history = this.visiblePoints ? this.visiblePoints.map(({ low }) => low) : this.filterVisiblePoints(
-      this.history!.map(({ low }) => low),
-    )
+    let history = this.visiblePoints
+      ? this.visiblePoints.map(({ low }) => low)
+      : this.filterVisiblePoints(this.history!.map(({ low }) => low))
 
     let min = history[0]
     let i = 0
@@ -163,6 +214,8 @@ class ChartDataBase {
 
     return this.bottomHistoryPrice
   }
+
+  abstract draw(): void
 }
 
 export default abstract class Chart extends ChartDataBase {
@@ -180,9 +233,8 @@ export default abstract class Chart extends ChartDataBase {
 
   constructor(container: HTMLElement | string, options?: ChartOptions) {
     super()
-    this.init(this)
 
-    if(options) this.options = options
+    if (options) this.options = options
 
     this.chartContext = document.createElement('canvas').getContext('2d')!
     this.yAxisContext = document.createElement('canvas').getContext('2d')!
@@ -280,13 +332,9 @@ export default abstract class Chart extends ChartDataBase {
       this.setSize(rect.width, rect.height)
     })
 
-    window.addEventListener('mousemove', (e) =>
-      this.windowMouseMoveHandler(e)
-    )
+    window.addEventListener('mousemove', (e) => this.windowMouseMoveHandler(e))
 
-    window.addEventListener('mouseup', (e) =>
-      this.windowMouseUpHandler(e)
-    )
+    window.addEventListener('mouseup', (e) => this.windowMouseUpHandler(e))
 
     this.container!.appendChild(chartCanvas)
     this.container!.appendChild(xAxisCanvas)
@@ -392,7 +440,7 @@ export default abstract class Chart extends ChartDataBase {
   getSharpPixel(
     pos: number,
     ctx: CanvasRenderingContext2D,
-    thickness: number = 1
+    thickness: number = 1,
   ): number {
     if (thickness % 2 == 0) {
       return pos
@@ -426,13 +474,13 @@ export default abstract class Chart extends ChartDataBase {
     y: number,
     w: number,
     h: number,
-    ctx: CanvasRenderingContext2D
+    ctx: CanvasRenderingContext2D,
   ) {
     ctx.rect(
       this.getSharpPixel(x, ctx),
       this.getSharpPixel(y, ctx),
       this.getSharpPixel(w, ctx),
-      this.getSharpPixel(h, ctx)
+      this.getSharpPixel(h, ctx),
     )
   }
 

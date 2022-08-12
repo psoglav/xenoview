@@ -35,8 +35,6 @@ export declare type HistoryPoint = {
     low: number;
     open: number;
     time: number;
-    volumefrom: number;
-    volumeto: number;
 };
 export declare type HistoryData = HistoryPoint[];
 export declare type ChartData = number[];

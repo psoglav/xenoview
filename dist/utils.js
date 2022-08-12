@@ -12,6 +12,7 @@ const getTimeFromTimestamp = (ts) => {
     return h + ":" + m;
 };
 exports.getTimeFromTimestamp = getTimeFromTimestamp;
+// TODO: multiply ts by 1000 if needed
 const getFullTimeFromTimestamp = (ts) => {
     let date = new Date(ts);
     let y = date.getFullYear().toString().slice(2).padStart(3, `'`);
