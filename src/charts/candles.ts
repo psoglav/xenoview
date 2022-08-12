@@ -1,4 +1,4 @@
-import { HistoryData, ChartOptions, HistoryPoint } from '../types'
+import { HistoryData, ChartOptions } from '../types'
 import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../utils'
 import Chart from './base'
 
@@ -7,15 +7,8 @@ export class CandlesChart extends Chart {
   private pointerIsVisible = false
   private panningIsActive = false
   private candlesSpace = 0
-  private yZoomFactor = 1.2
   private isZoomingYAxis = false
   private isZoomingXAxis = false
-
-  private history: HistoryData | undefined
-  private chartData: HistoryData | undefined
-  private visibleData: any
-  private topHistoryPrice: [number, number] = [0, 0]
-  private bottomHistoryPrice: [number, number] = [0, 0]
 
   constructor(
     container: HTMLElement | string,
@@ -29,153 +22,25 @@ export class CandlesChart extends Chart {
     this.draw()
   }
 
-  /**
-   * Get point X position.
-   * @param {number | HistoryPoint} value a point or an index of it
-   * @returns {number} X position
-   */
-  getPointX(value): number {
-    let i = value
-    let data = this.history
-    if (typeof value == 'object') i = data.indexOf(value)
-    return this.position.left + (this.chartFullWidth / data.length) * i
-  }
-
-  getTopHistoryPrice(): [number, number] {
-    let history = this.visibleData ? this.visibleData.map(({ high }) => high) : this.filterVisiblePoints(
-      this.history!.map(({ high }) => high),
+  draw() {
+    this.chartContext.clearRect(
+      0,
+      0,
+      this.mainCanvasWidth,
+      this.mainCanvasHeight,
     )
 
-    let max = history[0]
-    let i = 0
-
-    history.forEach((p, ii) => {
-      if (p > max) {
-        max = p
-        i = ii
-      }
-    })
-
-    this.topHistoryPrice = [i, max]
-
-    return this.topHistoryPrice
-  }
-
-  getBottomHistoryPrice(): [number, number] {
-    let history = this.visibleData ? this.visibleData.map(({ low }) => low) : this.filterVisiblePoints(
-      this.history!.map(({ low }) => low),
-    )
-
-    let min = history[0]
-    let i = 0
-
-    history.forEach((p, ii) => {
-      if (p < min) {
-        min = p
-        i = ii
-      }
-    })
-
-    this.bottomHistoryPrice = [i, min]
-
-    return this.bottomHistoryPrice
-  }
-
-  get chartFullWidth() {
-    return this.position.right - this.position.left
-  }
-
-  windowMouseMoveHandler(e: MouseEvent) {
-    if (this.isZoomingXAxis && e?.movementX) {
-      let zoomPoint = this.mainCanvasWidth
-      let d = 20 / this.zoomSpeed
-
-      this.position.right +=
-        (((this.position.right - zoomPoint) / d) * e?.movementX) / 100
-      this.position.left +=
-        (((this.position.left - zoomPoint) / d) * e?.movementX) / 100
-
-      this.clampXPanning()
-
-      this.draw()
-    }
-  }
-
-  windowMouseUpHandler(e: MouseEvent) {
-    this.isZoomingXAxis = false
-  }
-
-  mouseMoveHandler(e: MouseEvent) {
-    if (this.panningIsActive) {
-      this.moveChart(e.movementX)
+    if (this.chartData) {
+      this.drawGridColumns()
+      this.drawXAxisLabels()
+      this.drawYAxis()
     }
 
-    this.movePointer()
-    this.draw()
-    this.drawPriceMarker()
-    this.drawTimeMarker()
-  }
+    this.drawChart()
+    this.drawPointer()
+    this.drawCurrentMarketPriceMarker()
 
-  mouseEnterHandler() {
-    this.pointerIsVisible = true
-  }
-
-  mouseLeaveHandler() {
-    this.pointerIsVisible = false
-    this.panningIsActive = false
-
-    this.draw()
-  }
-
-  mouseDownHandler(e: MouseEvent) {
-    if (e.button == 0) {
-      e.preventDefault()
-      this.panningIsActive = true
-    }
-  }
-
-  mouseUpHandler(e: MouseEvent) {
-    if (e.button == 0) {
-      this.panningIsActive = false
-    }
-  }
-
-  wheelHandler(e: any) {
-    let cs = this.candlesSpace
-    let wd = e.wheelDeltaY
-    if (wd < 0 && cs < 1.7) return
-    if (wd > 0 && cs > 350) return
-
-    this.zoomChart(wd > 1 ? 1 : -1)
-    this.movePointer()
-    this.draw()
-    this.drawPriceMarker()
-    this.drawTimeMarker()
-  }
-
-  yAxisMouseMoveHandler(e?: MouseEvent): void {
-    if (this.isZoomingYAxis && e?.movementY) {
-      let f = this.yZoomFactor
-      f += (e?.movementY / 300) * f
-      this.yZoomFactor = f
-      this.draw()
-    }
-  }
-
-  yAxisMouseDownHandler(e?: MouseEvent): void {
-    this.isZoomingYAxis = true
-  }
-
-  yAxisMouseUpHandler(e?: MouseEvent): void {
-    this.isZoomingYAxis = false
-  }
-
-  xAxisMouseDownHandler(e?: MouseEvent): void {
-    this.isZoomingXAxis = true
-  }
-
-  xAxisMouseUpHandler(e?: MouseEvent): void {
-    this.isZoomingXAxis = false
+    this.mainDebug()
   }
 
   zoomChart(side: number) {
@@ -190,7 +55,8 @@ export class CandlesChart extends Chart {
   }
 
   moveChart(movement: number) {
-    if (this.position.right == this.mainCanvasWidth - 200 && movement < 0) return
+    if (this.position.right == this.mainCanvasWidth - 200 && movement < 0)
+      return
     if (this.position.left == 0 && movement > 0) return
 
     this.position.left += movement
@@ -205,20 +71,6 @@ export class CandlesChart extends Chart {
       this.position.right = this.mainCanvasWidth - 200
   }
 
-  filterVisiblePointsAndCache() {
-    let hist = this.history
-    if (!hist) return []
-    this.visibleData = this.filterVisiblePoints(hist)
-    return this.visibleData
-  }
-
-  filterVisiblePoints(data: any[]) {
-    return data.filter((_, i) => {
-      let x: number = this.getPointX(i)
-      return x > 0 && x < this.mainCanvasWidth
-    })
-  }
-
   movePointer() {
     let data = this.chartData
 
@@ -231,22 +83,6 @@ export class CandlesChart extends Chart {
 
     this.pointerYPosIndex =
       i > data.length - 1 ? data.length - 1 : i < 0 ? 0 : i
-  }
-
-  draw() {
-    this.chartContext.clearRect(0, 0, this.mainCanvasWidth, this.mainCanvasHeight)
-
-    if (this.chartData) {
-      this.drawGridColumns()
-      this.drawXAxisLabels()
-      this.drawYAxis()
-    }
-
-    this.drawChart()
-    this.drawPointer()
-    this.drawCurrentMarketPriceMarker()
-
-    this.mainDebug()
   }
 
   drawPointer() {
@@ -275,7 +111,7 @@ export class CandlesChart extends Chart {
     let data = this.history
     if (!data || !data.length) return
     let point = data[data.length - 1]
-    let npoint = this.normalizePoint(point) 
+    let npoint = this.normalizePoint(point)
     let y = npoint.close
 
     let type = npoint.close < npoint.open ? 'higher' : 'lower'
@@ -327,7 +163,9 @@ export class CandlesChart extends Chart {
     let data = this.history
     let h = this.getHeight(ctx)
     let x = this.mousePosition.x - this.canvasRect.x
-    let i = Math.round(((x - this.position.left) / this.chartFullWidth) * data.length)
+    let i = Math.round(
+      ((x - this.position.left) / this.chartFullWidth) * data.length,
+    )
     let point = data[i]
     let time = getFullTimeFromTimestamp(point.time * 1000)
 
@@ -538,82 +376,96 @@ export class CandlesChart extends Chart {
     }
   }
 
-  loadHistory(data: HistoryData) {
-    this.history = data
-    this.chartData = this.normalizeData()
+  windowMouseMoveHandler(e: MouseEvent) {
+    if (this.isZoomingXAxis && e?.movementX) {
+      let zoomPoint = this.mainCanvasWidth
+      let d = 20 / this.zoomSpeed
+
+      this.position.right +=
+        (((this.position.right - zoomPoint) / d) * e?.movementX) / 100
+      this.position.left +=
+        (((this.position.left - zoomPoint) / d) * e?.movementX) / 100
+
+      this.clampXPanning()
+
+      this.draw()
+    }
+  }
+
+  windowMouseUpHandler(e: MouseEvent) {
+    this.isZoomingXAxis = false
+  }
+
+  mouseMoveHandler(e: MouseEvent) {
+    if (this.panningIsActive) {
+      this.moveChart(e.movementX)
+    }
+
+    this.movePointer()
+    this.draw()
+    this.drawPriceMarker()
+    this.drawTimeMarker()
+  }
+
+  mouseEnterHandler() {
+    this.pointerIsVisible = true
+  }
+
+  mouseLeaveHandler() {
+    this.pointerIsVisible = false
+    this.panningIsActive = false
+
     this.draw()
   }
 
-  normalizePoint(point: any) {
-    let h = this.mainCanvasHeight
-
-    let min = this.bottomHistoryPrice[1]
-    let max = this.topHistoryPrice[1]
-
-    let normalize = (y: number) => ((y - min) / (max - min)) * h
-    let reverse = (y: number) => h - y
-
-    let convert = (y: number) => reverse(normalize(y))
-
-    let p = Object.create(point) as typeof point
-
-    p.close = convert(p.close)
-    p.open = convert(p.open)
-    p.high = convert(p.high)
-    p.low = convert(p.low)
-
-    min = convert(min)
-    max = convert(max)
-
-    let hh = Math.abs((max - min) / 2)
-
-    let k = Math.abs(this.yZoomFactor)
-    p.close = (p.close - hh) / k + hh
-    p.open = (p.open - hh) / k + hh
-    p.high = (p.high - hh) / k + hh
-    p.low = (p.low - hh) / k + hh
-
-    return p
+  mouseDownHandler(e: MouseEvent) {
+    if (e.button == 0) {
+      e.preventDefault()
+      this.panningIsActive = true
+    }
   }
 
-  normalizeData() {
-    let hist = this.history
-
-    if (!hist?.length) return []
-
-    let result = hist?.map((n) => ({ ...n }))
-    let h = this.mainCanvasHeight
-
-    let min = this.getBottomHistoryPrice()[1]
-    let max = this.getTopHistoryPrice()[1]
-
-    let normalize = (y: number) => ((y - min) / (max - min)) * h
-    let reverse = (y: number) => h - y
-
-    let convert = (y: number) => reverse(normalize(y))
-
-    for (let i = 0; i < hist.length; i++) {
-      result[i].close = convert(result[i].close)
-      result[i].open = convert(result[i].open)
-      result[i].high = convert(result[i].high)
-      result[i].low = convert(result[i].low)
+  mouseUpHandler(e: MouseEvent) {
+    if (e.button == 0) {
+      this.panningIsActive = false
     }
+  }
 
-    min = convert(min)
-    max = convert(max)
+  wheelHandler(e: any) {
+    let cs = this.candlesSpace
+    let wd = e.wheelDeltaY
+    if (wd < 0 && cs < 1.7) return
+    if (wd > 0 && cs > 350) return
 
-    let hh = Math.abs((max - min) / 2)
+    this.zoomChart(wd > 1 ? 1 : -1)
+    this.movePointer()
+    this.draw()
+    this.drawPriceMarker()
+    this.drawTimeMarker()
+  }
 
-    result = result.map((point) => {
-      let p = Object.create(point)
-      let k = Math.abs(this.yZoomFactor)
-      p.close = (p.close - hh) / k + hh
-      p.open = (p.open - hh) / k + hh
-      p.high = (p.high - hh) / k + hh
-      p.low = (p.low - hh) / k + hh
-      return p
-    })
+  yAxisMouseMoveHandler(e?: MouseEvent): void {
+    if (this.isZoomingYAxis && e?.movementY) {
+      let f = this.yZoomFactor
+      f += (e?.movementY / 300) * f
+      this.yZoomFactor = f
+      this.draw()
+    }
+  }
 
-    return result
+  yAxisMouseDownHandler(e?: MouseEvent): void {
+    this.isZoomingYAxis = true
+  }
+
+  yAxisMouseUpHandler(e?: MouseEvent): void {
+    this.isZoomingYAxis = false
+  }
+
+  xAxisMouseDownHandler(e?: MouseEvent): void {
+    this.isZoomingXAxis = true
+  }
+
+  xAxisMouseUpHandler(e?: MouseEvent): void {
+    this.isZoomingXAxis = false
   }
 }

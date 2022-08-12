@@ -10,131 +10,23 @@ class CandlesChart extends base_1.default {
         this.pointerIsVisible = false;
         this.panningIsActive = false;
         this.candlesSpace = 0;
-        this.yZoomFactor = 1.2;
         this.isZoomingYAxis = false;
         this.isZoomingXAxis = false;
-        this.topHistoryPrice = [0, 0];
-        this.bottomHistoryPrice = [0, 0];
         if (data)
             this.loadHistory(data);
         this.draw();
     }
-    /**
-     * Get point X position.
-     * @param {number | HistoryPoint} value a point or an index of it
-     * @returns {number} X position
-     */
-    getPointX(value) {
-        let i = value;
-        let data = this.history;
-        if (typeof value == 'object')
-            i = data.indexOf(value);
-        return this.position.left + (this.chartFullWidth / data.length) * i;
-    }
-    getTopHistoryPrice() {
-        let history = this.visibleData ? this.visibleData.map(({ high }) => high) : this.filterVisiblePoints(this.history.map(({ high }) => high));
-        let max = history[0];
-        let i = 0;
-        history.forEach((p, ii) => {
-            if (p > max) {
-                max = p;
-                i = ii;
-            }
-        });
-        this.topHistoryPrice = [i, max];
-        return this.topHistoryPrice;
-    }
-    getBottomHistoryPrice() {
-        let history = this.visibleData ? this.visibleData.map(({ low }) => low) : this.filterVisiblePoints(this.history.map(({ low }) => low));
-        let min = history[0];
-        let i = 0;
-        history.forEach((p, ii) => {
-            if (p < min) {
-                min = p;
-                i = ii;
-            }
-        });
-        this.bottomHistoryPrice = [i, min];
-        return this.bottomHistoryPrice;
-    }
-    get chartFullWidth() {
-        return this.position.right - this.position.left;
-    }
-    windowMouseMoveHandler(e) {
-        if (this.isZoomingXAxis && (e === null || e === void 0 ? void 0 : e.movementX)) {
-            let zoomPoint = this.mainCanvasWidth;
-            let d = 20 / this.zoomSpeed;
-            this.position.right +=
-                (((this.position.right - zoomPoint) / d) * (e === null || e === void 0 ? void 0 : e.movementX)) / 100;
-            this.position.left +=
-                (((this.position.left - zoomPoint) / d) * (e === null || e === void 0 ? void 0 : e.movementX)) / 100;
-            this.clampXPanning();
-            this.draw();
+    draw() {
+        this.chartContext.clearRect(0, 0, this.mainCanvasWidth, this.mainCanvasHeight);
+        if (this.chartData) {
+            this.drawGridColumns();
+            this.drawXAxisLabels();
+            this.drawYAxis();
         }
-    }
-    windowMouseUpHandler(e) {
-        this.isZoomingXAxis = false;
-    }
-    mouseMoveHandler(e) {
-        if (this.panningIsActive) {
-            this.moveChart(e.movementX);
-        }
-        this.movePointer();
-        this.draw();
-        this.drawPriceMarker();
-        this.drawTimeMarker();
-    }
-    mouseEnterHandler() {
-        this.pointerIsVisible = true;
-    }
-    mouseLeaveHandler() {
-        this.pointerIsVisible = false;
-        this.panningIsActive = false;
-        this.draw();
-    }
-    mouseDownHandler(e) {
-        if (e.button == 0) {
-            e.preventDefault();
-            this.panningIsActive = true;
-        }
-    }
-    mouseUpHandler(e) {
-        if (e.button == 0) {
-            this.panningIsActive = false;
-        }
-    }
-    wheelHandler(e) {
-        let cs = this.candlesSpace;
-        let wd = e.wheelDeltaY;
-        if (wd < 0 && cs < 1.7)
-            return;
-        if (wd > 0 && cs > 350)
-            return;
-        this.zoomChart(wd > 1 ? 1 : -1);
-        this.movePointer();
-        this.draw();
-        this.drawPriceMarker();
-        this.drawTimeMarker();
-    }
-    yAxisMouseMoveHandler(e) {
-        if (this.isZoomingYAxis && (e === null || e === void 0 ? void 0 : e.movementY)) {
-            let f = this.yZoomFactor;
-            f += ((e === null || e === void 0 ? void 0 : e.movementY) / 300) * f;
-            this.yZoomFactor = f;
-            this.draw();
-        }
-    }
-    yAxisMouseDownHandler(e) {
-        this.isZoomingYAxis = true;
-    }
-    yAxisMouseUpHandler(e) {
-        this.isZoomingYAxis = false;
-    }
-    xAxisMouseDownHandler(e) {
-        this.isZoomingXAxis = true;
-    }
-    xAxisMouseUpHandler(e) {
-        this.isZoomingXAxis = false;
+        this.drawChart();
+        this.drawPointer();
+        this.drawCurrentMarketPriceMarker();
+        this.mainDebug();
     }
     zoomChart(side) {
         let zoomPoint = this.mainCanvasWidth;
@@ -159,19 +51,6 @@ class CandlesChart extends base_1.default {
         if (this.position.right < this.mainCanvasWidth - 200)
             this.position.right = this.mainCanvasWidth - 200;
     }
-    filterVisiblePointsAndCache() {
-        let hist = this.history;
-        if (!hist)
-            return [];
-        this.visibleData = this.filterVisiblePoints(hist);
-        return this.visibleData;
-    }
-    filterVisiblePoints(data) {
-        return data.filter((_, i) => {
-            let x = this.getPointX(i);
-            return x > 0 && x < this.mainCanvasWidth;
-        });
-    }
     movePointer() {
         let data = this.chartData;
         if (!(data === null || data === void 0 ? void 0 : data.length))
@@ -181,18 +60,6 @@ class CandlesChart extends base_1.default {
         let i = Math.round(x);
         this.pointerYPosIndex =
             i > data.length - 1 ? data.length - 1 : i < 0 ? 0 : i;
-    }
-    draw() {
-        this.chartContext.clearRect(0, 0, this.mainCanvasWidth, this.mainCanvasHeight);
-        if (this.chartData) {
-            this.drawGridColumns();
-            this.drawXAxisLabels();
-            this.drawYAxis();
-        }
-        this.drawChart();
-        this.drawPointer();
-        this.drawCurrentMarketPriceMarker();
-        this.mainDebug();
     }
     drawPointer() {
         var _a;
@@ -412,63 +279,81 @@ class CandlesChart extends base_1.default {
             ctx.closePath();
         }
     }
-    loadHistory(data) {
-        this.history = data;
-        this.chartData = this.normalizeData();
+    windowMouseMoveHandler(e) {
+        if (this.isZoomingXAxis && (e === null || e === void 0 ? void 0 : e.movementX)) {
+            let zoomPoint = this.mainCanvasWidth;
+            let d = 20 / this.zoomSpeed;
+            this.position.right +=
+                (((this.position.right - zoomPoint) / d) * (e === null || e === void 0 ? void 0 : e.movementX)) / 100;
+            this.position.left +=
+                (((this.position.left - zoomPoint) / d) * (e === null || e === void 0 ? void 0 : e.movementX)) / 100;
+            this.clampXPanning();
+            this.draw();
+        }
+    }
+    windowMouseUpHandler(e) {
+        this.isZoomingXAxis = false;
+    }
+    mouseMoveHandler(e) {
+        if (this.panningIsActive) {
+            this.moveChart(e.movementX);
+        }
+        this.movePointer();
+        this.draw();
+        this.drawPriceMarker();
+        this.drawTimeMarker();
+    }
+    mouseEnterHandler() {
+        this.pointerIsVisible = true;
+    }
+    mouseLeaveHandler() {
+        this.pointerIsVisible = false;
+        this.panningIsActive = false;
         this.draw();
     }
-    normalizePoint(point) {
-        let h = this.mainCanvasHeight;
-        let min = this.bottomHistoryPrice[1];
-        let max = this.topHistoryPrice[1];
-        let normalize = (y) => ((y - min) / (max - min)) * h;
-        let reverse = (y) => h - y;
-        let convert = (y) => reverse(normalize(y));
-        let p = Object.create(point);
-        p.close = convert(p.close);
-        p.open = convert(p.open);
-        p.high = convert(p.high);
-        p.low = convert(p.low);
-        min = convert(min);
-        max = convert(max);
-        let hh = Math.abs((max - min) / 2);
-        let k = Math.abs(this.yZoomFactor);
-        p.close = (p.close - hh) / k + hh;
-        p.open = (p.open - hh) / k + hh;
-        p.high = (p.high - hh) / k + hh;
-        p.low = (p.low - hh) / k + hh;
-        return p;
-    }
-    normalizeData() {
-        let hist = this.history;
-        if (!(hist === null || hist === void 0 ? void 0 : hist.length))
-            return [];
-        let result = hist === null || hist === void 0 ? void 0 : hist.map((n) => (Object.assign({}, n)));
-        let h = this.mainCanvasHeight;
-        let min = this.getBottomHistoryPrice()[1];
-        let max = this.getTopHistoryPrice()[1];
-        let normalize = (y) => ((y - min) / (max - min)) * h;
-        let reverse = (y) => h - y;
-        let convert = (y) => reverse(normalize(y));
-        for (let i = 0; i < hist.length; i++) {
-            result[i].close = convert(result[i].close);
-            result[i].open = convert(result[i].open);
-            result[i].high = convert(result[i].high);
-            result[i].low = convert(result[i].low);
+    mouseDownHandler(e) {
+        if (e.button == 0) {
+            e.preventDefault();
+            this.panningIsActive = true;
         }
-        min = convert(min);
-        max = convert(max);
-        let hh = Math.abs((max - min) / 2);
-        result = result.map((point) => {
-            let p = Object.create(point);
-            let k = Math.abs(this.yZoomFactor);
-            p.close = (p.close - hh) / k + hh;
-            p.open = (p.open - hh) / k + hh;
-            p.high = (p.high - hh) / k + hh;
-            p.low = (p.low - hh) / k + hh;
-            return p;
-        });
-        return result;
+    }
+    mouseUpHandler(e) {
+        if (e.button == 0) {
+            this.panningIsActive = false;
+        }
+    }
+    wheelHandler(e) {
+        let cs = this.candlesSpace;
+        let wd = e.wheelDeltaY;
+        if (wd < 0 && cs < 1.7)
+            return;
+        if (wd > 0 && cs > 350)
+            return;
+        this.zoomChart(wd > 1 ? 1 : -1);
+        this.movePointer();
+        this.draw();
+        this.drawPriceMarker();
+        this.drawTimeMarker();
+    }
+    yAxisMouseMoveHandler(e) {
+        if (this.isZoomingYAxis && (e === null || e === void 0 ? void 0 : e.movementY)) {
+            let f = this.yZoomFactor;
+            f += ((e === null || e === void 0 ? void 0 : e.movementY) / 300) * f;
+            this.yZoomFactor = f;
+            this.draw();
+        }
+    }
+    yAxisMouseDownHandler(e) {
+        this.isZoomingYAxis = true;
+    }
+    yAxisMouseUpHandler(e) {
+        this.isZoomingYAxis = false;
+    }
+    xAxisMouseDownHandler(e) {
+        this.isZoomingXAxis = true;
+    }
+    xAxisMouseUpHandler(e) {
+        this.isZoomingXAxis = false;
     }
 }
 exports.CandlesChart = CandlesChart;

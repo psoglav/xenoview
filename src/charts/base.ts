@@ -1,7 +1,171 @@
 import { defaultChartOptions } from '../config'
-import { ChartBoundingRect, ChartOptions } from '../types'
+import { ChartBoundingRect, ChartData, ChartOptions, HistoryData, HistoryPoint } from '../types'
 
-export default abstract class Chart {
+class ChartDataBase {
+  history: HistoryData
+  chartData: HistoryData
+  visiblePoints: HistoryData
+
+  topHistoryPrice: [number, number] = [0, 0]
+  bottomHistoryPrice: [number, number] = [0, 0]
+
+  private chart: Chart
+
+  get chartFullWidth() {
+    return this.chart.position.right - this.chart.position.left
+  }
+
+  constructor() {}
+
+  init(chart: Chart) {
+    this.chart = chart
+  }
+
+  loadHistory(value: HistoryData) {
+    this.history = value
+    this.chartData = this.normalizeData()
+  }
+
+  /**
+   * Get point X position.
+   * @param {number | HistoryPoint} value a point or an index of it
+   * @returns {number} X position
+   */
+   getPointX(value): number {
+    let i = value
+    let data = this.history
+    if (typeof value == 'object') i = data.indexOf(value)
+    return this.chart.position.left + (this.chartFullWidth / data.length) * i
+   }
+  
+  filterVisiblePoints(data: any[]) {
+    return data.filter((_, i) => {
+      let x: number = this.getPointX(i)
+      return x > 0 && x < this.chart.mainCanvasWidth
+    })
+  }
+
+  filterVisiblePointsAndCache() {
+    if (!this.history) return []
+    this.visiblePoints = this.filterVisiblePoints(this.history)
+    return this.visiblePoints
+  }
+  
+  normalizePoint(point: any) {
+    let h = this.chart.mainCanvasHeight
+
+    let min = this.bottomHistoryPrice[1]
+    let max = this.topHistoryPrice[1]
+
+    let normalize = (y: number) => ((y - min) / (max - min)) * h
+    let reverse = (y: number) => h - y
+
+    let convert = (y: number) => reverse(normalize(y))
+
+    let p = Object.create(point) as typeof point
+
+    p.close = convert(p.close)
+    p.open = convert(p.open)
+    p.high = convert(p.high)
+    p.low = convert(p.low)
+
+    min = convert(min)
+    max = convert(max)
+
+    let hh = Math.abs((max - min) / 2)
+
+    let k = Math.abs(this.chart.yZoomFactor)
+    p.close = (p.close - hh) / k + hh
+    p.open = (p.open - hh) / k + hh
+    p.high = (p.high - hh) / k + hh
+    p.low = (p.low - hh) / k + hh
+
+    return p
+  }
+
+  normalizeData(): HistoryData {
+    let hist = this.history
+
+    if (!hist?.length) return []
+
+    let result = hist?.map((n) => ({ ...n }))
+    let h = this.chart.mainCanvasHeight
+
+    let min = this.getBottomHistoryPrice()[1]
+    let max = this.getTopHistoryPrice()[1]
+
+    let normalize = (y: number) => ((y - min) / (max - min)) * h
+    let reverse = (y: number) => h - y
+
+    let convert = (y: number) => reverse(normalize(y))
+
+    for (let i = 0; i < hist.length; i++) {
+      result[i].close = convert(result[i].close)
+      result[i].open = convert(result[i].open)
+      result[i].high = convert(result[i].high)
+      result[i].low = convert(result[i].low)
+    }
+
+    min = convert(min)
+    max = convert(max)
+
+    let hh = Math.abs((max - min) / 2)
+
+    result = result.map((point) => {
+      let p = Object.create(point)
+      let k = Math.abs(this.chart.yZoomFactor)
+      p.close = (p.close - hh) / k + hh
+      p.open = (p.open - hh) / k + hh
+      p.high = (p.high - hh) / k + hh
+      p.low = (p.low - hh) / k + hh
+      return p
+    })
+
+    return result
+  }
+
+  getTopHistoryPrice(): [number, number] {
+    let history = this.visiblePoints ? this.visiblePoints.map(({ high }) => high) : this.filterVisiblePoints(
+      this.history!.map(({ high }) => high),
+    )
+
+    let max = history[0]
+    let i = 0
+
+    history.forEach((p, ii) => {
+      if (p > max) {
+        max = p
+        i = ii
+      }
+    })
+
+    this.topHistoryPrice = [i, max]
+
+    return this.topHistoryPrice
+  }
+
+  getBottomHistoryPrice(): [number, number] {
+    let history = this.visiblePoints ? this.visiblePoints.map(({ low }) => low) : this.filterVisiblePoints(
+      this.history!.map(({ low }) => low),
+    )
+
+    let min = history[0]
+    let i = 0
+
+    history.forEach((p, ii) => {
+      if (p < min) {
+        min = p
+        i = ii
+      }
+    })
+
+    this.bottomHistoryPrice = [i, min]
+
+    return this.bottomHistoryPrice
+  }
+}
+
+export default abstract class Chart extends ChartDataBase {
   container: HTMLElement | undefined
   options: ChartOptions = defaultChartOptions
   position: ChartBoundingRect
@@ -12,8 +176,12 @@ export default abstract class Chart {
   xAxisContext: CanvasRenderingContext2D
 
   zoomSpeed: number = 4
+  yZoomFactor = 1.2
 
   constructor(container: HTMLElement | string, options?: ChartOptions) {
+    super()
+    this.init(this)
+
     if(options) this.options = options
 
     this.chartContext = document.createElement('canvas').getContext('2d')!

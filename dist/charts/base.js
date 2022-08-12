@@ -1,11 +1,133 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = require("../config");
-class Chart {
+class ChartDataBase {
+    constructor() {
+        this.topHistoryPrice = [0, 0];
+        this.bottomHistoryPrice = [0, 0];
+    }
+    get chartFullWidth() {
+        return this.chart.position.right - this.chart.position.left;
+    }
+    init(chart) {
+        this.chart = chart;
+    }
+    loadHistory(value) {
+        this.history = value;
+        this.chartData = this.normalizeData();
+    }
+    /**
+     * Get point X position.
+     * @param {number | HistoryPoint} value a point or an index of it
+     * @returns {number} X position
+     */
+    getPointX(value) {
+        let i = value;
+        let data = this.history;
+        if (typeof value == 'object')
+            i = data.indexOf(value);
+        return this.chart.position.left + (this.chartFullWidth / data.length) * i;
+    }
+    filterVisiblePoints(data) {
+        return data.filter((_, i) => {
+            let x = this.getPointX(i);
+            return x > 0 && x < this.chart.mainCanvasWidth;
+        });
+    }
+    filterVisiblePointsAndCache() {
+        if (!this.history)
+            return [];
+        this.visiblePoints = this.filterVisiblePoints(this.history);
+        return this.visiblePoints;
+    }
+    normalizePoint(point) {
+        let h = this.chart.mainCanvasHeight;
+        let min = this.bottomHistoryPrice[1];
+        let max = this.topHistoryPrice[1];
+        let normalize = (y) => ((y - min) / (max - min)) * h;
+        let reverse = (y) => h - y;
+        let convert = (y) => reverse(normalize(y));
+        let p = Object.create(point);
+        p.close = convert(p.close);
+        p.open = convert(p.open);
+        p.high = convert(p.high);
+        p.low = convert(p.low);
+        min = convert(min);
+        max = convert(max);
+        let hh = Math.abs((max - min) / 2);
+        let k = Math.abs(this.chart.yZoomFactor);
+        p.close = (p.close - hh) / k + hh;
+        p.open = (p.open - hh) / k + hh;
+        p.high = (p.high - hh) / k + hh;
+        p.low = (p.low - hh) / k + hh;
+        return p;
+    }
+    normalizeData() {
+        let hist = this.history;
+        if (!(hist === null || hist === void 0 ? void 0 : hist.length))
+            return [];
+        let result = hist === null || hist === void 0 ? void 0 : hist.map((n) => (Object.assign({}, n)));
+        let h = this.chart.mainCanvasHeight;
+        let min = this.getBottomHistoryPrice()[1];
+        let max = this.getTopHistoryPrice()[1];
+        let normalize = (y) => ((y - min) / (max - min)) * h;
+        let reverse = (y) => h - y;
+        let convert = (y) => reverse(normalize(y));
+        for (let i = 0; i < hist.length; i++) {
+            result[i].close = convert(result[i].close);
+            result[i].open = convert(result[i].open);
+            result[i].high = convert(result[i].high);
+            result[i].low = convert(result[i].low);
+        }
+        min = convert(min);
+        max = convert(max);
+        let hh = Math.abs((max - min) / 2);
+        result = result.map((point) => {
+            let p = Object.create(point);
+            let k = Math.abs(this.chart.yZoomFactor);
+            p.close = (p.close - hh) / k + hh;
+            p.open = (p.open - hh) / k + hh;
+            p.high = (p.high - hh) / k + hh;
+            p.low = (p.low - hh) / k + hh;
+            return p;
+        });
+        return result;
+    }
+    getTopHistoryPrice() {
+        let history = this.visiblePoints ? this.visiblePoints.map(({ high }) => high) : this.filterVisiblePoints(this.history.map(({ high }) => high));
+        let max = history[0];
+        let i = 0;
+        history.forEach((p, ii) => {
+            if (p > max) {
+                max = p;
+                i = ii;
+            }
+        });
+        this.topHistoryPrice = [i, max];
+        return this.topHistoryPrice;
+    }
+    getBottomHistoryPrice() {
+        let history = this.visiblePoints ? this.visiblePoints.map(({ low }) => low) : this.filterVisiblePoints(this.history.map(({ low }) => low));
+        let min = history[0];
+        let i = 0;
+        history.forEach((p, ii) => {
+            if (p < min) {
+                min = p;
+                i = ii;
+            }
+        });
+        this.bottomHistoryPrice = [i, min];
+        return this.bottomHistoryPrice;
+    }
+}
+class Chart extends ChartDataBase {
     constructor(container, options) {
+        super();
         this.options = config_1.defaultChartOptions;
         this.mousePosition = { x: 0, y: 0 };
         this.zoomSpeed = 4;
+        this.yZoomFactor = 1.2;
+        this.init(this);
         if (options)
             this.options = options;
         this.chartContext = document.createElement('canvas').getContext('2d');

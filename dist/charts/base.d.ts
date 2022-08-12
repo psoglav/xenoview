@@ -1,5 +1,29 @@
-import { ChartBoundingRect, ChartOptions } from '../types';
-export default abstract class Chart {
+import { ChartBoundingRect, ChartOptions, HistoryData } from '../types';
+declare class ChartDataBase {
+    history: HistoryData;
+    chartData: HistoryData;
+    visiblePoints: HistoryData;
+    topHistoryPrice: [number, number];
+    bottomHistoryPrice: [number, number];
+    private chart;
+    get chartFullWidth(): number;
+    constructor();
+    init(chart: Chart): void;
+    loadHistory(value: HistoryData): void;
+    /**
+     * Get point X position.
+     * @param {number | HistoryPoint} value a point or an index of it
+     * @returns {number} X position
+     */
+    getPointX(value: any): number;
+    filterVisiblePoints(data: any[]): any[];
+    filterVisiblePointsAndCache(): HistoryData;
+    normalizePoint(point: any): any;
+    normalizeData(): HistoryData;
+    getTopHistoryPrice(): [number, number];
+    getBottomHistoryPrice(): [number, number];
+}
+export default abstract class Chart extends ChartDataBase {
     container: HTMLElement | undefined;
     options: ChartOptions;
     position: ChartBoundingRect;
@@ -11,6 +35,7 @@ export default abstract class Chart {
     yAxisContext: CanvasRenderingContext2D;
     xAxisContext: CanvasRenderingContext2D;
     zoomSpeed: number;
+    yZoomFactor: number;
     constructor(container: HTMLElement | string, options?: ChartOptions);
     createChart(): HTMLCanvasElement;
     createXAxis(): HTMLCanvasElement;
@@ -49,3 +74,4 @@ export default abstract class Chart {
     log(...msg: any): void;
     debug(text: any, x: number, y: number): void;
 }
+export {};
