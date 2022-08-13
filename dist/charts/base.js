@@ -8,11 +8,15 @@ class ChartDataBase {
         this.bottomHistoryPrice = [0, 0];
     }
     get chartFullWidth() {
-        return this.position.right - this.position.left;
+        return this.chart.position.right - this.chart.position.left;
+    }
+    init(chart) {
+        this.chart = chart;
     }
     loadHistory(value) {
         this.history = value;
         this.chartData = this.normalizeData();
+        console.log('loadHistory');
     }
     updatePoint(point, value) {
         point.close = value.PRICE;
@@ -23,6 +27,7 @@ class ChartDataBase {
             point.high = point.close;
     }
     updateCurrentPoint(value) {
+        console.log('updateCurrentPoint');
         if (!value.PRICE || !value.LASTUPDATE)
             return;
         let hist = this.history;
@@ -37,7 +42,6 @@ class ChartDataBase {
             .seconds(0);
         if (currentPointMinutesTs == pointMinutesTs) {
             this.updatePoint(hist[hist.length - 1], value);
-            this.draw();
         }
         else if (pointMinutesTs > currentPointMinutesTs) {
             let pp = hist[hist.length - 1];
@@ -54,8 +58,8 @@ class ChartDataBase {
                 close: value.PRICE,
                 low: value.PRICE,
             });
-            this.draw();
         }
+        this.draw();
     }
     /**
      * Get point X position.
@@ -67,12 +71,12 @@ class ChartDataBase {
         let data = this.history;
         if (typeof value == 'object')
             i = data.indexOf(value);
-        return this.position.left + (this.chartFullWidth / data.length) * i;
+        return this.chart.position.left + (this.chartFullWidth / data.length) * i;
     }
     filterVisiblePoints(data) {
         return data.filter((_, i) => {
             let x = this.getPointX(i);
-            return x > 0 && x < this.mainCanvasWidth;
+            return x > 0 && x < this.chart.mainCanvasWidth;
         });
     }
     filterVisiblePointsAndCache() {
@@ -81,8 +85,23 @@ class ChartDataBase {
         this.visiblePoints = this.filterVisiblePoints(this.history);
         return this.visiblePoints;
     }
+    normalizeY(value) {
+        let h = this.chart.mainCanvasHeight;
+        let min = this.bottomHistoryPrice[1];
+        let max = this.topHistoryPrice[1];
+        let normalize = (y) => ((y - min) / (max - min)) * h;
+        let reverse = (y) => h - y;
+        let convert = (y) => reverse(normalize(y));
+        value = convert(value);
+        min = convert(min);
+        max = convert(max);
+        let hh = Math.abs((max - min) / 2);
+        let k = Math.abs(this.chart.yZoomFactor);
+        value = (value - hh) / k + hh;
+        return value;
+    }
     normalizePoint(point) {
-        let h = this.mainCanvasHeight;
+        let h = this.chart.mainCanvasHeight;
         let min = this.bottomHistoryPrice[1];
         let max = this.topHistoryPrice[1];
         let normalize = (y) => ((y - min) / (max - min)) * h;
@@ -96,7 +115,7 @@ class ChartDataBase {
         min = convert(min);
         max = convert(max);
         let hh = Math.abs((max - min) / 2);
-        let k = Math.abs(this.yZoomFactor);
+        let k = Math.abs(this.chart.yZoomFactor);
         p.close = (p.close - hh) / k + hh;
         p.open = (p.open - hh) / k + hh;
         p.high = (p.high - hh) / k + hh;
@@ -108,7 +127,7 @@ class ChartDataBase {
         if (!(hist === null || hist === void 0 ? void 0 : hist.length))
             return [];
         let result = hist === null || hist === void 0 ? void 0 : hist.map((n) => (Object.assign({}, n)));
-        let h = this.mainCanvasHeight;
+        let h = this.chart.mainCanvasHeight;
         let min = this.getBottomHistoryPrice()[1];
         let max = this.getTopHistoryPrice()[1];
         let normalize = (y) => ((y - min) / (max - min)) * h;
@@ -125,7 +144,7 @@ class ChartDataBase {
         let hh = Math.abs((max - min) / 2);
         result = result.map((point) => {
             let p = Object.create(point);
-            let k = Math.abs(this.yZoomFactor);
+            let k = Math.abs(this.chart.yZoomFactor);
             p.close = (p.close - hh) / k + hh;
             p.open = (p.open - hh) / k + hh;
             p.high = (p.high - hh) / k + hh;
@@ -172,6 +191,7 @@ class Chart extends ChartDataBase {
         this.mousePosition = { x: 0, y: 0 };
         this.zoomSpeed = 4;
         this.yZoomFactor = 1.2;
+        this.init(this);
         if (options)
             this.options = options;
         this.chartContext = document.createElement('canvas').getContext('2d');

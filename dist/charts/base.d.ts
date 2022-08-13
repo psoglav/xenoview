@@ -5,12 +5,10 @@ declare abstract class ChartDataBase {
     visiblePoints: HistoryData;
     topHistoryPrice: [number, number];
     bottomHistoryPrice: [number, number];
-    abstract yZoomFactor: number;
-    abstract position: ChartBoundingRect;
-    abstract get mainCanvasWidth(): number;
-    abstract get mainCanvasHeight(): number;
+    private chart;
     get chartFullWidth(): number;
     constructor();
+    init(chart: Chart): void;
     loadHistory(value: HistoryData): void;
     updatePoint(point: HistoryPoint, value: {
         PRICE: any;
@@ -28,6 +26,7 @@ declare abstract class ChartDataBase {
     getPointX(value: any): number;
     filterVisiblePoints(data: any[]): any[];
     filterVisiblePointsAndCache(): HistoryData;
+    normalizeY(value: number): number;
     normalizePoint(point: any): any;
     normalizeData(): HistoryData;
     getTopHistoryPrice(): [number, number];

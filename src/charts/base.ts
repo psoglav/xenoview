@@ -15,21 +15,23 @@ abstract class ChartDataBase {
   topHistoryPrice: [number, number] = [0, 0]
   bottomHistoryPrice: [number, number] = [0, 0]
 
-  abstract yZoomFactor: number
-  abstract position: ChartBoundingRect
-
-  abstract get mainCanvasWidth(): number
-  abstract get mainCanvasHeight(): number
+  private chart: Chart
 
   get chartFullWidth() {
-    return this.position.right - this.position.left
+    return this.chart.position.right - this.chart.position.left
   }
 
+
   constructor() {}
+
+  init(chart: Chart) {
+    this.chart = chart
+  }
 
   loadHistory(value: HistoryData) {
     this.history = value
     this.chartData = this.normalizeData()
+    console.log('loadHistory')
   }
 
   updatePoint(point: HistoryPoint, value: { PRICE; LASTUPDATE }) {
@@ -41,6 +43,7 @@ abstract class ChartDataBase {
   }
 
   updateCurrentPoint(value: { PRICE; LASTUPDATE }) {
+    console.log('updateCurrentPoint')
     if (!value.PRICE || !value.LASTUPDATE) return
 
     let hist = this.history
@@ -56,7 +59,6 @@ abstract class ChartDataBase {
 
     if (currentPointMinutesTs == pointMinutesTs) {
       this.updatePoint(hist[hist.length - 1], value)
-      this.draw()
     } else if (pointMinutesTs > currentPointMinutesTs) {
       let pp = hist[hist.length - 1]
 
@@ -73,8 +75,9 @@ abstract class ChartDataBase {
         close: value.PRICE,
         low: value.PRICE,
       })
-      this.draw()
     }
+
+    this.draw()
   }
 
   /**
@@ -86,13 +89,13 @@ abstract class ChartDataBase {
     let i = value
     let data = this.history
     if (typeof value == 'object') i = data.indexOf(value)
-    return this.position.left + (this.chartFullWidth / data.length) * i
+    return this.chart.position.left + (this.chartFullWidth / data.length) * i
   }
 
   filterVisiblePoints(data: any[]) {
     return data.filter((_, i) => {
       let x: number = this.getPointX(i)
-      return x > 0 && x < this.mainCanvasWidth
+      return x > 0 && x < this.chart.mainCanvasWidth
     })
   }
 
@@ -102,8 +105,32 @@ abstract class ChartDataBase {
     return this.visiblePoints
   }
 
+  normalizeY(value: number) {
+    let h = this.chart.mainCanvasHeight
+
+    let min = this.bottomHistoryPrice[1]
+    let max = this.topHistoryPrice[1]
+
+    let normalize = (y: number) => ((y - min) / (max - min)) * h
+    let reverse = (y: number) => h - y
+
+    let convert = (y: number) => reverse(normalize(y))
+
+    value = convert(value)
+
+    min = convert(min)
+    max = convert(max)
+
+    let hh = Math.abs((max - min) / 2)
+
+    let k = Math.abs(this.chart.yZoomFactor)
+    value = (value - hh) / k + hh
+
+    return value
+  }
+
   normalizePoint(point: any) {
-    let h = this.mainCanvasHeight
+    let h = this.chart.mainCanvasHeight
 
     let min = this.bottomHistoryPrice[1]
     let max = this.topHistoryPrice[1]
@@ -125,7 +152,7 @@ abstract class ChartDataBase {
 
     let hh = Math.abs((max - min) / 2)
 
-    let k = Math.abs(this.yZoomFactor)
+    let k = Math.abs(this.chart.yZoomFactor)
     p.close = (p.close - hh) / k + hh
     p.open = (p.open - hh) / k + hh
     p.high = (p.high - hh) / k + hh
@@ -140,7 +167,7 @@ abstract class ChartDataBase {
     if (!hist?.length) return []
 
     let result = hist?.map((n) => ({ ...n }))
-    let h = this.mainCanvasHeight
+    let h = this.chart.mainCanvasHeight
 
     let min = this.getBottomHistoryPrice()[1]
     let max = this.getTopHistoryPrice()[1]
@@ -164,7 +191,7 @@ abstract class ChartDataBase {
 
     result = result.map((point) => {
       let p = Object.create(point)
-      let k = Math.abs(this.yZoomFactor)
+      let k = Math.abs(this.chart.yZoomFactor)
       p.close = (p.close - hh) / k + hh
       p.open = (p.open - hh) / k + hh
       p.high = (p.high - hh) / k + hh
@@ -233,6 +260,7 @@ export default abstract class Chart extends ChartDataBase {
 
   constructor(container: HTMLElement | string, options?: ChartOptions) {
     super()
+    this.init(this)
 
     if (options) this.options = options
 

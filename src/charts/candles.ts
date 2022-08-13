@@ -23,17 +23,16 @@ export class CandlesChart extends Chart {
   }
 
   draw() {
-    this.chartContext.clearRect(
-      0,
-      0,
-      this.mainCanvasWidth,
-      this.mainCanvasHeight,
-    )
+    this.clear(this.chartContext)
+    this.clear(this.xAxisContext)
+    this.clear(this.yAxisContext)
 
     if (this.chartData) {
       this.drawGridColumns()
+      this.drawGridRows()
       this.drawXAxisLabels()
-      this.drawYAxis()
+      this.drawYAxisLabels()
+      // this.drawYAxis()
     }
 
     this.drawChart()
@@ -167,7 +166,7 @@ export class CandlesChart extends Chart {
       ((x - this.position.left) / this.chartFullWidth) * data.length,
     )
     let point = data[i]
-    if(!point) return
+    if (!point) return
     let time = getFullTimeFromTimestamp(point.time * 1000)
 
     x = this.getPointX(i)
@@ -186,7 +185,53 @@ export class CandlesChart extends Chart {
   }
 
   getGridRows() {
-    // TODO: refactor existing algorithm of drawing the rows as from below
+    let t = this.topHistoryPrice[1]
+    let b = this.bottomHistoryPrice[1]
+
+    if (t == 0 && b == 0) return []
+
+    t = Math.floor(t / 10) * 10
+    b = Math.floor(b / 10) * 10
+    let delta = (t - b)
+
+    let result = []
+    let length = delta / 10
+    let start = 0
+    let end = length
+
+    let step = 1
+
+    while (this.normalizeY((start / length) * delta + b) < this.getWidth(this.chartContext)) {
+      start -= step
+      step += 5
+      if(start < -5000) break
+    }
+    
+    step = 0
+    
+    while (this.normalizeY((end / length) * delta + b) > 0) {
+      end += step
+      step += 5
+      if(end > 5000) break
+    }
+
+    for (let i = start; i <= end; i++) {
+      result.push((i / length) * delta + b)
+    }
+
+    let prev = 0
+
+    return result.filter((i) => {
+      let y = this.normalizeY(i)
+      let py = this.normalizeY(prev)
+
+      if (py - y < 30 && y != py) {
+        return 0
+      }
+
+      prev = i
+      return 1
+    })
   }
 
   getGridColumns() {
@@ -206,6 +251,23 @@ export class CandlesChart extends Chart {
       })
   }
 
+  drawGridRows() {
+    let ctx = this.chartContext
+    let rows = this.getGridRows()
+
+    ctx.beginPath()
+    ctx.strokeStyle = '#7777aa33'
+
+    for (let i of rows) {
+      let y = this.normalizeY(i)
+      this.moveTo(0, y, ctx)
+      this.lineTo(this.getWidth(ctx), y, ctx)
+    }
+
+    ctx.stroke()
+    ctx.closePath()
+  }
+  
   drawGridColumns() {
     let ctx = this.chartContext
     let cols = this.getGridColumns()
@@ -221,6 +283,22 @@ export class CandlesChart extends Chart {
 
     ctx.stroke()
     ctx.closePath()
+  }
+
+  drawYAxisLabels() {
+    let ctx = this.yAxisContext
+    let rows = this.getGridRows()
+
+    for (let i of rows) {
+      let y = this.normalizeY(i)
+      this.moveTo(0, y, ctx)
+      this.lineTo(this.getWidth(ctx), y, ctx)
+
+      let fz = 11
+      ctx.fillStyle = this.options.textColor
+      ctx.font = fz + 'px Verdana'
+      ctx.fillText(i.toFixed(2), 10, y - 2 + fz / 2)
+    }
   }
 
   drawXAxisLabels() {
