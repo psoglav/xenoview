@@ -51,6 +51,7 @@ export default abstract class Chart extends ChartDataBase {
     createXAxis(): HTMLCanvasElement;
     createYAxis(): HTMLCanvasElement;
     createChartMarkup(): void;
+    abstract clampXPanning(): void;
     abstract windowMouseMoveHandler(e?: MouseEvent): void;
     abstract windowMouseUpHandler(e?: MouseEvent): void;
     abstract mouseMoveHandler(e?: MouseEvent): void;
@@ -72,7 +73,7 @@ export default abstract class Chart extends ChartDataBase {
     get mainCanvasWidth(): number;
     get mainCanvasHeight(): number;
     get canvasRect(): DOMRect;
-    setSize(w: number, h: number): void;
+    setSize(w: number, h: number, canvas: HTMLCanvasElement): void;
     rescale(ctx: CanvasRenderingContext2D): void;
     getSharpPixel(pos: number, ctx: CanvasRenderingContext2D, thickness?: number): number;
     getPixelRatio(context: any): number;

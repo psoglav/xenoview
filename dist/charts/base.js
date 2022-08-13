@@ -16,7 +16,6 @@ class ChartDataBase {
     loadHistory(value) {
         this.history = value;
         this.chartData = this.normalizeData();
-        console.log('loadHistory');
     }
     updatePoint(point, value) {
         point.close = value.PRICE;
@@ -27,7 +26,6 @@ class ChartDataBase {
             point.high = point.close;
     }
     updateCurrentPoint(value) {
-        console.log('updateCurrentPoint');
         if (!value.PRICE || !value.LASTUPDATE)
             return;
         let hist = this.history;
@@ -261,9 +259,13 @@ class Chart extends ChartDataBase {
         let yAxisCanvas = this.createYAxis();
         let xAxisCanvas = this.createXAxis();
         let rect = this.container.getBoundingClientRect();
-        this.setSize(rect.width - 70, rect.height - 28);
+        this.setSize(rect.width - 70, rect.height - 28, chartCanvas);
         window.addEventListener('resize', () => {
-            this.setSize(rect.width, rect.height);
+            rect = this.container.getBoundingClientRect();
+            this.setSize(rect.width - 70, rect.height - 28, chartCanvas);
+            this.setSize(rect.width - 70, 28, xAxisCanvas);
+            this.setSize(70, rect.height - 28, yAxisCanvas);
+            this.clampXPanning();
         });
         window.addEventListener('mousemove', (e) => this.windowMouseMoveHandler(e));
         window.addEventListener('mouseup', (e) => this.windowMouseUpHandler(e));
@@ -319,8 +321,7 @@ class Chart extends ChartDataBase {
     get canvasRect() {
         return this.chartContext.canvas.getBoundingClientRect();
     }
-    setSize(w, h) {
-        let canvas = this.chartContext.canvas;
+    setSize(w, h, canvas) {
         canvas.width = w;
         canvas.height = h;
     }

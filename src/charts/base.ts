@@ -21,7 +21,6 @@ abstract class ChartDataBase {
     return this.chart.position.right - this.chart.position.left
   }
 
-
   constructor() {}
 
   init(chart: Chart) {
@@ -31,7 +30,6 @@ abstract class ChartDataBase {
   loadHistory(value: HistoryData) {
     this.history = value
     this.chartData = this.normalizeData()
-    console.log('loadHistory')
   }
 
   updatePoint(point: HistoryPoint, value: { PRICE; LASTUPDATE }) {
@@ -43,7 +41,6 @@ abstract class ChartDataBase {
   }
 
   updateCurrentPoint(value: { PRICE; LASTUPDATE }) {
-    console.log('updateCurrentPoint')
     if (!value.PRICE || !value.LASTUPDATE) return
 
     let hist = this.history
@@ -354,10 +351,14 @@ export default abstract class Chart extends ChartDataBase {
 
     let rect = this.container!.getBoundingClientRect()
 
-    this.setSize(rect.width - 70, rect.height - 28)
+    this.setSize(rect.width - 70, rect.height - 28, chartCanvas)
 
     window.addEventListener('resize', () => {
-      this.setSize(rect.width, rect.height)
+      rect = this.container!.getBoundingClientRect()
+      this.setSize(rect.width - 70, rect.height - 28, chartCanvas)
+      this.setSize(rect.width - 70, 28, xAxisCanvas)
+      this.setSize(70, rect.height - 28, yAxisCanvas)
+      this.clampXPanning()
     })
 
     window.addEventListener('mousemove', (e) => this.windowMouseMoveHandler(e))
@@ -372,6 +373,8 @@ export default abstract class Chart extends ChartDataBase {
     this.rescale(this.yAxisContext)
     this.rescale(this.xAxisContext)
   }
+
+  abstract clampXPanning(): void
 
   abstract windowMouseMoveHandler(e?: MouseEvent): void
   abstract windowMouseUpHandler(e?: MouseEvent): void
@@ -449,8 +452,7 @@ export default abstract class Chart extends ChartDataBase {
     return this.chartContext.canvas.getBoundingClientRect()
   }
 
-  setSize(w: number, h: number) {
-    let canvas = this.chartContext.canvas
+  setSize(w: number, h: number, canvas: HTMLCanvasElement) {
     canvas.width = w
     canvas.height = h
   }
