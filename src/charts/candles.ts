@@ -35,6 +35,11 @@ export class CandlesChart extends Chart {
       // this.drawYAxis()
     }
 
+    if (this.pointerIsVisible) {
+      this.drawTimeMarker()
+      this.drawPriceMarker()
+    }
+
     this.drawChart()
     this.drawPointer()
     this.drawCurrentMarketPriceMarker()
@@ -167,6 +172,7 @@ export class CandlesChart extends Chart {
     )
     let point = data[i]
     if (!point) return
+    
     let time = getFullTimeFromTimestamp(point.time * 1000)
 
     x = this.getPointX(i)
@@ -192,7 +198,7 @@ export class CandlesChart extends Chart {
 
     t = Math.floor(t / 10) * 10
     b = Math.floor(b / 10) * 10
-    let delta = (t - b)
+    let delta = t - b
 
     let result = []
     let length = delta / 10
@@ -201,18 +207,21 @@ export class CandlesChart extends Chart {
 
     let step = 1
 
-    while (this.normalizeY((start / length) * delta + b) < this.getWidth(this.chartContext)) {
+    while (
+      this.normalizeY((start / length) * delta + b) <
+      this.getWidth(this.chartContext)
+    ) {
       start -= step
       step += 5
-      if(start < -5000) break
+      if (start < -5000) break
     }
-    
+
     step = 0
-    
+
     while (this.normalizeY((end / length) * delta + b) > 0) {
       end += step
       step += 5
-      if(end > 5000) break
+      if (end > 5000) break
     }
 
     for (let i = start; i <= end; i++) {
@@ -267,7 +276,7 @@ export class CandlesChart extends Chart {
     ctx.stroke()
     ctx.closePath()
   }
-  
+
   drawGridColumns() {
     let ctx = this.chartContext
     let cols = this.getGridColumns()

@@ -27,6 +27,10 @@ class CandlesChart extends base_1.default {
             this.drawYAxisLabels();
             // this.drawYAxis()
         }
+        if (this.pointerIsVisible) {
+            this.drawTimeMarker();
+            this.drawPriceMarker();
+        }
         this.drawChart();
         this.drawPointer();
         this.drawCurrentMarketPriceMarker();
@@ -156,13 +160,14 @@ class CandlesChart extends base_1.default {
             return [];
         t = Math.floor(t / 10) * 10;
         b = Math.floor(b / 10) * 10;
-        let delta = (t - b);
+        let delta = t - b;
         let result = [];
         let length = delta / 10;
         let start = 0;
         let end = length;
         let step = 1;
-        while (this.normalizeY((start / length) * delta + b) < this.getWidth(this.chartContext)) {
+        while (this.normalizeY((start / length) * delta + b) <
+            this.getWidth(this.chartContext)) {
             start -= step;
             step += 5;
             if (start < -5000)
