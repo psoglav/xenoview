@@ -21,3 +21,14 @@ export const getFullTimeFromTimestamp = (ts: number): string => {
 
   return `${d} ${M} ${y}  ${h}:${m}`
 };
+
+export const toMinutes = (ts: number): number => {
+  let date = new Date(ts)
+  return +new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+  )
+}

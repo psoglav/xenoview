@@ -1,4 +1,4 @@
-import moment from 'moment/moment'
+import { toMinutes } from '../utils'
 import { defaultChartOptions } from '../config'
 import {
   ChartBoundingRect,
@@ -47,13 +47,9 @@ abstract class ChartDataBase {
     if (!hist) return
 
     let currentPoint = hist[hist.length - 1]
-    let pointMinutesTs = +moment(value.LASTUPDATE * 1000)
-      .milliseconds(0)
-      .seconds(0)
-    let currentPointMinutesTs = +moment(currentPoint.time * 1000)
-      .milliseconds(0)
-      .seconds(0)
-
+    let pointMinutesTs = toMinutes(value.LASTUPDATE * 1000)
+    let currentPointMinutesTs = toMinutes(currentPoint.time * 1000)
+    
     if (currentPointMinutesTs == pointMinutesTs) {
       this.updatePoint(hist[hist.length - 1], value)
     } else if (pointMinutesTs > currentPointMinutesTs) {

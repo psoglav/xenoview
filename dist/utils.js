@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFullTimeFromTimestamp = exports.getTimeFromTimestamp = exports.lerp = void 0;
+exports.toMinutes = exports.getFullTimeFromTimestamp = exports.getTimeFromTimestamp = exports.lerp = void 0;
 const lerp = (start, end, t) => {
     return start + (end - start) * t;
 };
@@ -23,4 +23,9 @@ const getFullTimeFromTimestamp = (ts) => {
     return `${d} ${M} ${y}  ${h}:${m}`;
 };
 exports.getFullTimeFromTimestamp = getFullTimeFromTimestamp;
+const toMinutes = (ts) => {
+    let date = new Date(ts);
+    return +new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes());
+};
+exports.toMinutes = toMinutes;
 //# sourceMappingURL=utils.js.map

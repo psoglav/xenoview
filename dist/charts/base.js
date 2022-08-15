@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const moment_1 = require("moment/moment");
+const utils_1 = require("../utils");
 const config_1 = require("../config");
 class ChartDataBase {
     constructor() {
@@ -32,12 +32,8 @@ class ChartDataBase {
         if (!hist)
             return;
         let currentPoint = hist[hist.length - 1];
-        let pointMinutesTs = +(0, moment_1.default)(value.LASTUPDATE * 1000)
-            .milliseconds(0)
-            .seconds(0);
-        let currentPointMinutesTs = +(0, moment_1.default)(currentPoint.time * 1000)
-            .milliseconds(0)
-            .seconds(0);
+        let pointMinutesTs = (0, utils_1.toMinutes)(value.LASTUPDATE * 1000);
+        let currentPointMinutesTs = (0, utils_1.toMinutes)(currentPoint.time * 1000);
         if (currentPointMinutesTs == pointMinutesTs) {
             this.updatePoint(hist[hist.length - 1], value);
         }

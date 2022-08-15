@@ -22,8 +22,5 @@
     "tabWidth": 2,
     "semi": false,
     "singleQuote": true
-  },
-  "dependencies": {
-    "moment": "^2.29.4"
   }
 }
