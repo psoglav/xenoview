@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const moment_1 = require("moment");
+const moment_1 = require("moment/moment");
 const config_1 = require("../config");
 class ChartDataBase {
     constructor() {
