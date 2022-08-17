@@ -16,6 +16,7 @@ class ChartDataBase {
     loadHistory(value) {
         this.history = value;
         this.chartData = this.normalizeData();
+        this.draw();
     }
     updatePoint(point, value) {
         point.close = value.PRICE;

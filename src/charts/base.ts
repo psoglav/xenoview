@@ -30,6 +30,7 @@ abstract class ChartDataBase {
   loadHistory(value: HistoryData) {
     this.history = value
     this.chartData = this.normalizeData()
+    this.draw()
   }
 
   updatePoint(point: HistoryPoint, value: { PRICE; LASTUPDATE }) {
