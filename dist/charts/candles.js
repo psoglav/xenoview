@@ -139,7 +139,9 @@ class CandlesChart extends base_1.default {
         let point = data[i];
         if (!point)
             return;
-        let time = (0, utils_1.getFullTimeFromTimestamp)(point.time * 1000);
+        if (point.time.toString().length != 13)
+            point.time *= 1000;
+        let time = (0, utils_1.getFullTimeFromTimestamp)(point.time);
         x = this.getPointX(i);
         ctx.beginPath();
         ctx.fillStyle = this.options.pointer.bgColor;

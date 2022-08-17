@@ -173,7 +173,8 @@ export class CandlesChart extends Chart {
     let point = data[i]
     if (!point) return
     
-    let time = getFullTimeFromTimestamp(point.time * 1000)
+    if(point.time.toString().length != 13) point.time *= 1000
+    let time = getFullTimeFromTimestamp(point.time)
 
     x = this.getPointX(i)
     ctx.beginPath()
