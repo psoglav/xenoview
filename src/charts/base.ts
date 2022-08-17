@@ -355,6 +355,7 @@ export default abstract class Chart extends ChartDataBase {
       this.setSize(rect.width - 70, 28, xAxisCanvas)
       this.setSize(70, rect.height - 28, yAxisCanvas)
       this.clampXPanning()
+      this.draw()
     })
 
     window.addEventListener('mousemove', (e) => this.windowMouseMoveHandler(e))
