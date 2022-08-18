@@ -4,6 +4,8 @@
     "module": "CommonJS",
     "declaration": true,
     "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "noImplicitThis": true,
     "outDir": "dist",
