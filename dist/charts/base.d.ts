@@ -1,4 +1,5 @@
 import { ChartBoundingRect, ChartOptions, HistoryData, HistoryPoint } from '../types';
+import { Ticker } from '..';
 declare abstract class ChartDataBase {
     history: HistoryData;
     chartData: HistoryData;
@@ -36,6 +37,7 @@ declare abstract class ChartDataBase {
 export default abstract class Chart extends ChartDataBase {
     container: HTMLElement | undefined;
     options: ChartOptions;
+    ticker: Ticker;
     position: ChartBoundingRect;
     mousePosition: {
         x: number;
@@ -47,6 +49,7 @@ export default abstract class Chart extends ChartDataBase {
     zoomSpeed: number;
     yZoomFactor: number;
     constructor(container: HTMLElement | string, options?: ChartOptions);
+    setTicker(ticker: Ticker): void;
     createChart(): HTMLCanvasElement;
     createXAxis(): HTMLCanvasElement;
     createYAxis(): HTMLCanvasElement;

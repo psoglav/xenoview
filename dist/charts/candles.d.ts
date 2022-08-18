@@ -1,4 +1,4 @@
-import { HistoryData, ChartOptions } from '../types';
+import { ChartOptions } from '../types';
 import Chart from './base';
 export declare class CandlesChart extends Chart {
     private pointerYPosIndex;
@@ -7,7 +7,7 @@ export declare class CandlesChart extends Chart {
     private candlesSpace;
     private isZoomingYAxis;
     private isZoomingXAxis;
-    constructor(container: HTMLElement | string, data?: HistoryData, options?: ChartOptions);
+    constructor(container: HTMLElement | string, options?: ChartOptions);
     draw(): void;
     zoomChart(side: number): void;
     moveChart(movement: number): void;

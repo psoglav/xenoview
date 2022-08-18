@@ -15,5 +15,6 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./charts/candles"), exports);
+__exportStar(require("./ticker"), exports);
 // export * from './charts/linear'
 //# sourceMappingURL=index.js.map

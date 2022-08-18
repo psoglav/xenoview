@@ -4,7 +4,7 @@ exports.CandlesChart = void 0;
 const utils_1 = require("../utils");
 const base_1 = require("./base");
 class CandlesChart extends base_1.default {
-    constructor(container, data, options) {
+    constructor(container, options) {
         super(container, options);
         this.pointerYPosIndex = 4;
         this.pointerIsVisible = false;
@@ -12,9 +12,6 @@ class CandlesChart extends base_1.default {
         this.candlesSpace = 0;
         this.isZoomingYAxis = false;
         this.isZoomingXAxis = false;
-        if (data)
-            this.loadHistory(data);
-        this.draw();
     }
     draw() {
         this.clear(this.chartContext);

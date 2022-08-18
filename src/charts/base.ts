@@ -6,6 +6,7 @@ import {
   HistoryData,
   HistoryPoint,
 } from '../types'
+import { Ticker } from '..'
 
 abstract class ChartDataBase {
   history: HistoryData
@@ -42,15 +43,15 @@ abstract class ChartDataBase {
   }
 
   updateCurrentPoint(value: { PRICE; LASTUPDATE }) {
-    if (!value.PRICE || !value.LASTUPDATE) return
+    if (!value?.PRICE || !value?.LASTUPDATE) return
 
     let hist = this.history
-    if (!hist) return
+    if (!hist?.length) return
 
     let currentPoint = hist[hist.length - 1]
     let pointMinutesTs = toMinutes(value.LASTUPDATE * 1000)
     let currentPointMinutesTs = toMinutes(currentPoint.time * 1000)
-    
+
     if (currentPointMinutesTs == pointMinutesTs) {
       this.updatePoint(hist[hist.length - 1], value)
     } else if (pointMinutesTs > currentPointMinutesTs) {
@@ -242,6 +243,8 @@ abstract class ChartDataBase {
 export default abstract class Chart extends ChartDataBase {
   container: HTMLElement | undefined
   options: ChartOptions = defaultChartOptions
+  ticker: Ticker
+
   position: ChartBoundingRect
   mousePosition = { x: 0, y: 0 }
 
@@ -285,6 +288,13 @@ export default abstract class Chart extends ChartDataBase {
       top: 0,
       bottom: this.mainCanvasHeight,
     }
+  }
+
+  setTicker(ticker: Ticker) {
+    this.ticker = ticker
+    setInterval(() => {
+      this.updateCurrentPoint(ticker.state)
+    }, 500)
   }
 
   createChart(): HTMLCanvasElement {

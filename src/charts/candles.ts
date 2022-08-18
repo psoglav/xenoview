@@ -12,14 +12,9 @@ export class CandlesChart extends Chart {
 
   constructor(
     container: HTMLElement | string,
-    data?: HistoryData,
     options?: ChartOptions,
   ) {
     super(container, options)
-
-    if (data) this.loadHistory(data)
-
-    this.draw()
   }
 
   draw() {

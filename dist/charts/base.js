@@ -27,10 +27,10 @@ class ChartDataBase {
             point.high = point.close;
     }
     updateCurrentPoint(value) {
-        if (!value.PRICE || !value.LASTUPDATE)
+        if (!(value === null || value === void 0 ? void 0 : value.PRICE) || !(value === null || value === void 0 ? void 0 : value.LASTUPDATE))
             return;
         let hist = this.history;
-        if (!hist)
+        if (!(hist === null || hist === void 0 ? void 0 : hist.length))
             return;
         let currentPoint = hist[hist.length - 1];
         let pointMinutesTs = (0, utils_1.toMinutes)(value.LASTUPDATE * 1000);
@@ -212,6 +212,12 @@ class Chart extends ChartDataBase {
             top: 0,
             bottom: this.mainCanvasHeight,
         };
+    }
+    setTicker(ticker) {
+        this.ticker = ticker;
+        setInterval(() => {
+            this.updateCurrentPoint(ticker.state);
+        }, 500);
     }
     createChart() {
         let canvas = this.chartContext.canvas;
