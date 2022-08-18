@@ -188,7 +188,7 @@ class Chart extends ChartDataBase {
         this.yZoomFactor = 1.2;
         this.init(this);
         if (options)
-            this.options = options;
+            this.options = Object.assign(Object.assign({}, this.options), options);
         this.chartContext = document.createElement('canvas').getContext('2d');
         this.yAxisContext = document.createElement('canvas').getContext('2d');
         this.xAxisContext = document.createElement('canvas').getContext('2d');

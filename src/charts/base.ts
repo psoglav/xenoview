@@ -259,7 +259,7 @@ export default abstract class Chart extends ChartDataBase {
     super()
     this.init(this)
 
-    if (options) this.options = options
+    if (options) this.options = {...this.options, ...options}
 
     this.chartContext = document.createElement('canvas').getContext('2d')!
     this.yAxisContext = document.createElement('canvas').getContext('2d')!
