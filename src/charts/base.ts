@@ -34,7 +34,7 @@ abstract class ChartDataBase {
     this.draw()
   }
 
-  updatePoint(point: HistoryPoint, value: { PRICE; LASTUPDATE }) {
+  updatePoint(point: HistoryPoint, value: { PRICE: number; LASTUPDATE: number }) {
     point.close = value.PRICE
     point.time = value.LASTUPDATE
 
@@ -42,7 +42,7 @@ abstract class ChartDataBase {
     if (point.close > point.high) point.high = point.close
   }
 
-  updateCurrentPoint(value: { PRICE; LASTUPDATE }) {
+  updateCurrentPoint(value: any) {
     if (!value?.PRICE || !value?.LASTUPDATE) return
 
     let hist = this.history
@@ -292,6 +292,7 @@ export default abstract class Chart extends ChartDataBase {
 
   setTicker(ticker: Ticker) {
     this.ticker = ticker
+    this.draw()
     setInterval(() => {
       this.updateCurrentPoint(ticker.state)
     }, 500)
