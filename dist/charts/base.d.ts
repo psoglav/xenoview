@@ -12,13 +12,10 @@ declare abstract class ChartDataBase {
     init(chart: Chart): void;
     loadHistory(value: HistoryData): void;
     updatePoint(point: HistoryPoint, value: {
-        PRICE: any;
-        LASTUPDATE: any;
+        PRICE: number;
+        LASTUPDATE: number;
     }): void;
-    updateCurrentPoint(value: {
-        PRICE: any;
-        LASTUPDATE: any;
-    }): void;
+    updateCurrentPoint(value: any): void;
     /**
      * Get point X position.
      * @param {number | HistoryPoint} value a point or an index of it

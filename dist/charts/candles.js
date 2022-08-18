@@ -1,8 +1,11 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CandlesChart = void 0;
 const utils_1 = require("../utils");
-const base_1 = require("./base");
+const base_1 = __importDefault(require("./base"));
 class CandlesChart extends base_1.default {
     constructor(container, options) {
         super(container, options);
@@ -31,6 +34,7 @@ class CandlesChart extends base_1.default {
         this.drawChart();
         this.drawPointer();
         this.drawCurrentMarketPriceMarker();
+        this.drawTopLabels();
         this.mainDebug();
     }
     zoomChart(side) {
@@ -148,6 +152,53 @@ class CandlesChart extends base_1.default {
         ctx.fillStyle = 'white';
         ctx.font = '11px Verdana';
         ctx.fillText(time, x - 50, 20);
+    }
+    // TODO: move these two functions to separate UI class
+    drawTopLabels() {
+        var _a;
+        if (!this.ticker)
+            return;
+        let ctx = this.chartContext;
+        ctx.font = '18px Arial';
+        let y = 30;
+        let x = 20;
+        ctx.fillStyle = (_a = this.options) === null || _a === void 0 ? void 0 : _a.textColor;
+        let currency = this.ticker.currency;
+        ctx.fillText(currency + ' / TetherUS - BINANCE - CryptoView', x, y);
+        this.drawCandleDataLabels(x + 380 + currency.length * 5, y);
+    }
+    drawCandleDataLabels(x, y) {
+        var _a, _b, _c;
+        let hist = this.history;
+        let ctx = this.chartContext;
+        let i = this.pointerIsVisible ? this.pointerYPosIndex : hist.length - 1;
+        let point = {
+            O: hist[i].open,
+            H: hist[i].high,
+            L: hist[i].low,
+            C: hist[i].close,
+        };
+        let res = '';
+        let gap = 8.5;
+        ctx.font = '15px Arial';
+        for (let k = 0; k < 4; k++) {
+            let [key, value] = Object.entries(point)[k];
+            res += key + value + '  ';
+        }
+        for (let i = 0; i < res.length; i++) {
+            let s = res[i];
+            let xx = i * gap + x;
+            let isKey = Object.keys(point).includes(s);
+            if (isKey) {
+                ctx.fillStyle = (_a = this.options) === null || _a === void 0 ? void 0 : _a.textColor;
+                xx -= 4;
+            }
+            else {
+                let { higher, lower } = (_c = (_b = this.options) === null || _b === void 0 ? void 0 : _b.candles) === null || _c === void 0 ? void 0 : _c.colors;
+                ctx.fillStyle = point.C > point.O ? higher : lower;
+            }
+            ctx.fillText(s, xx, y);
+        }
     }
     mainDebug() {
         // this.debug(, 10, 300)

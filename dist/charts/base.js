@@ -215,6 +215,7 @@ class Chart extends ChartDataBase {
     }
     setTicker(ticker) {
         this.ticker = ticker;
+        this.draw();
         setInterval(() => {
             this.updateCurrentPoint(ticker.state);
         }, 500);

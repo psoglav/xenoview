@@ -1,11 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Ticker = void 0;
+const utils_1 = require("./utils");
 class Ticker {
-    constructor(symbol) {
-        this.state = null;
+    constructor(symbol, apiKey) {
         this.apiKey = '';
+        this.symbol = symbol;
+        this.apiKey = apiKey;
         this.initBinance(symbol);
+    }
+    get currency() {
+        return (0, utils_1.symbolToCurrency)(this.symbol);
     }
     async fetchHistory(symbol, interval) {
         let params = {
@@ -29,16 +34,14 @@ class Ticker {
         const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}usdt@kline_1m`);
         ws.onmessage = (event) => {
             let data = JSON.parse(event.data);
-            if (!this.state) {
-                this.state = {
-                    PRICE: +data.k.c,
-                    LASTUPDATE: Math.floor(data.k.t / 1000),
-                };
-            }
-            else {
-                this.state.PRICE = +data.k.c;
-                this.state.LASTUPDATE = Math.floor(data.k.t / 1000);
-            }
+            this.state = {
+                PRICE: +data.k.c,
+                LASTUPDATE: Math.floor(data.k.t / 1000),
+                open: +data.k.o,
+                high: +data.k.h,
+                low: +data.k.l,
+                close: +data.k.c,
+            };
         };
     }
     initCryptoCompare(symbol) {
