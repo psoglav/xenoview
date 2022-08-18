@@ -1,17 +1,36 @@
-import { HistoryData } from "./types";
+import { HistoryData } from './types'
+import { symbolToCurrency } from './utils'
 
 type HistoryInterval = 'day' | 'hour' | 'minute'
 
 export class Ticker {
-  public state: { PRICE: number; LASTUPDATE: number } = null
+  public state: {
+    PRICE: number
+    LASTUPDATE: number
+    open: number
+    high: number
+    low: number
+    close: number
+  } | undefined
+
+  public symbol: string
 
   private apiKey = ''
 
-  constructor(symbol: string) {
+  constructor(symbol: string, apiKey?: string) {
+    this.symbol = symbol
+    this.apiKey = apiKey
     this.initBinance(symbol)
   }
 
-  async fetchHistory(symbol: string, interval: HistoryInterval): Promise<HistoryData> {
+  get currency() {
+    return symbolToCurrency(this.symbol)
+  }
+
+  async fetchHistory(
+    symbol: string,
+    interval: HistoryInterval
+  ): Promise<HistoryData> {
     let params = {
       // limit: 1000,
       fsym: symbol,
@@ -30,7 +49,7 @@ export class Ticker {
         headers: {
           Authorization: 'Apikey ' + this.apiKey,
         },
-      },
+      }
     )
 
     return (await response.json()).Data.Data
@@ -38,25 +57,24 @@ export class Ticker {
 
   initBinance(symbol: string) {
     const ws = new WebSocket(
-      `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}usdt@kline_1m`,
+      `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}usdt@kline_1m`
     )
     ws.onmessage = (event: any) => {
       let data = JSON.parse(event.data)
-      if (!this.state) {
-        this.state = {
-          PRICE: +data.k.c,
-          LASTUPDATE: Math.floor(data.k.t / 1000),
-        }
-      } else {
-        this.state.PRICE = +data.k.c
-        this.state.LASTUPDATE = Math.floor(data.k.t / 1000)
+      this.state = {
+        PRICE: +data.k.c,
+        LASTUPDATE: Math.floor(data.k.t / 1000),
+        open: +data.k.o,
+        high: +data.k.h,
+        low: +data.k.l,
+        close: +data.k.c,
       }
     }
   }
 
   initCryptoCompare(symbol: string) {
     const ws = new WebSocket(
-      'wss://streamer.cryptocompare.com/v2?api_key=' + this.apiKey,
+      'wss://streamer.cryptocompare.com/v2?api_key=' + this.apiKey
     )
     ws.onopen = () => {
       let subRequest = {

@@ -10,10 +10,7 @@ export class CandlesChart extends Chart {
   private isZoomingYAxis = false
   private isZoomingXAxis = false
 
-  constructor(
-    container: HTMLElement | string,
-    options?: ChartOptions,
-  ) {
+  constructor(container: HTMLElement | string, options?: ChartOptions) {
     super(container, options)
   }
 
@@ -38,6 +35,7 @@ export class CandlesChart extends Chart {
     this.drawChart()
     this.drawPointer()
     this.drawCurrentMarketPriceMarker()
+    this.drawTopLabels()
 
     this.mainDebug()
   }
@@ -167,8 +165,8 @@ export class CandlesChart extends Chart {
     )
     let point = data[i]
     if (!point) return
-    
-    if(point.time.toString().length != 13) point.time *= 1000
+
+    if (point.time.toString().length != 13) point.time *= 1000
     let time = getFullTimeFromTimestamp(point.time)
 
     x = this.getPointX(i)
@@ -180,6 +178,59 @@ export class CandlesChart extends Chart {
     ctx.fillStyle = 'white'
     ctx.font = '11px Verdana'
     ctx.fillText(time, x - 50, 20)
+  }
+
+  // TODO: move these two functions to separate UI class
+  drawTopLabels() {
+    if(!this.ticker) return
+
+    let ctx = this.chartContext
+    
+    ctx.font = '18px Arial'
+    let y = 30
+    let x = 20
+    ctx.fillStyle = this.options?.textColor
+    let currency = this.ticker.currency
+    ctx.fillText(currency + ' / TetherUS - BINANCE - CryptoView', x, y)
+
+    this.drawCandleDataLabels(x+380+currency.length*5, y,)
+  }
+
+  drawCandleDataLabels(x: number, y: number) {
+    let hist = this.history
+    let ctx = this.chartContext
+    let i = this.pointerIsVisible ? this.pointerYPosIndex : hist.length - 1
+    let point = {
+      O: hist[i].open,
+      H: hist[i].high,
+      L: hist[i].low,
+      C: hist[i].close,
+    }
+    let res = ''
+    let gap = 8.5
+
+    ctx.font = '15px Arial'
+
+    for (let k = 0; k < 4; k++) {
+      let [key, value] = Object.entries(point)[k]
+      res += key + value + '  '
+    }
+
+    for (let i = 0; i < res.length; i++) {
+      let s = res[i]
+      let xx = i * gap + x
+      let isKey = Object.keys(point).includes(s)
+
+      if (isKey) {
+        ctx.fillStyle = this.options?.textColor
+        xx -= 4
+      } else {
+        let { higher, lower } = this.options?.candles?.colors
+        ctx.fillStyle = point.C > point.O ? higher : lower
+      }
+
+      ctx.fillText(s, xx, y)
+    }
   }
 
   mainDebug() {
