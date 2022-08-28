@@ -5,7 +5,7 @@ export class UI {
     this.elements = elements
   }
 
-  draw(clear?: boolean) {
+  draw(clear?: boolean): void {
     if (clear) {
       for (let el of this.elements) {
         el.clearCanvas()
@@ -28,7 +28,7 @@ export abstract class UIElement {
 
   abstract draw(): void
 
-  clearCanvas() {
+  clearCanvas(): void {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
   }
 }
@@ -58,7 +58,7 @@ export class Label extends UIElement {
     this.color = opts.color
   }
 
-  get text() {
+  get text(): string {
     let result = ''
 
     if (typeof this.value != 'string') {
@@ -74,13 +74,13 @@ export class Label extends UIElement {
     return result
   }
 
-  get width() {
+  get width(): number {
     this.ctx.fillStyle = this.color
     this.ctx.font = this.size + 'px ' + this.font
     return this.ctx.measureText(this.text).width
   }
 
-  draw() {
+  draw(): void {
     this.ctx.fillStyle = this.color
     this.ctx.font = this.size + 'px ' + this.font
     this.ctx.fillText(this.text, this.position[0], this.position[1])
