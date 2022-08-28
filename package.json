@@ -6,6 +6,7 @@
   "types": "dist/index.d.js",
   "scripts": {
     "watch": "tsc --watch",
+    "dev": "cd sandbox && yarn dev",
     "build": "tsc",
     "prepublishOnly": "tsc",
     "test": "jest",
