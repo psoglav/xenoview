@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../utils");
 const config_1 = require("../config");
+const ui_1 = require("../ui");
 class ChartDataBase {
     constructor() {
         this.topHistoryPrice = [0, 0];
@@ -200,11 +201,6 @@ class Chart extends ChartDataBase {
             this.error('no container is found');
             return;
         }
-        else {
-            this.container.innerHTML = '';
-            this.container.style.display = 'grid';
-            this.container.style.grid = '1fr 28px / 1fr 70px';
-        }
         this.createChartMarkup();
         this.position = {
             left: 0,
@@ -212,6 +208,7 @@ class Chart extends ChartDataBase {
             top: 0,
             bottom: this.mainCanvasHeight,
         };
+        this.initUIElements();
     }
     setTicker(ticker) {
         this.ticker = ticker;
@@ -259,6 +256,9 @@ class Chart extends ChartDataBase {
         return canvas;
     }
     createChartMarkup() {
+        this.container.innerHTML = '';
+        this.container.style.display = 'grid';
+        this.container.style.grid = '1fr 28px / 1fr 70px';
         let chartCanvas = this.createChart();
         let yAxisCanvas = this.createYAxis();
         let xAxisCanvas = this.createXAxis();
@@ -280,6 +280,29 @@ class Chart extends ChartDataBase {
         this.rescale(this.chartContext);
         this.rescale(this.yAxisContext);
         this.rescale(this.xAxisContext);
+        this.ui = new ui_1.UI();
+    }
+    initUIElements() {
+        var _a, _b;
+        let title = new ui_1.Label({
+            value: () => { var _a; return ((_a = this.ticker) === null || _a === void 0 ? void 0 : _a.currency) + ' / TetherUS - BINANCE - CryptoView'; },
+            x: 10,
+            y: 23,
+            font: 'Arial',
+            size: 17,
+            color: (_a = this.options) === null || _a === void 0 ? void 0 : _a.textColor,
+            ctx: this.chartContext
+        });
+        let candleInfo = new ui_1.Label({
+            value: 'candle info here',
+            x: title.width + 20,
+            y: 23,
+            font: 'Arial',
+            size: 17,
+            color: (_b = this.options) === null || _b === void 0 ? void 0 : _b.textColor,
+            ctx: this.chartContext
+        });
+        this.ui.elements.push(title, candleInfo);
     }
     // abstract xAxisMouseLeaveHandler(e?: MouseEvent): void
     bindMouseListeners() {

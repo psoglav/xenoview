@@ -1,5 +1,6 @@
 import { ChartBoundingRect, ChartOptions, HistoryData, HistoryPoint } from '../types';
 import { Ticker } from '..';
+import { UI } from '../ui';
 declare abstract class ChartDataBase {
     history: HistoryData;
     chartData: HistoryData;
@@ -35,6 +36,7 @@ export default abstract class Chart extends ChartDataBase {
     container: HTMLElement | undefined;
     options: ChartOptions;
     ticker: Ticker;
+    ui: UI;
     position: ChartBoundingRect;
     mousePosition: {
         x: number;
@@ -51,6 +53,7 @@ export default abstract class Chart extends ChartDataBase {
     createXAxis(): HTMLCanvasElement;
     createYAxis(): HTMLCanvasElement;
     createChartMarkup(): void;
+    initUIElements(): void;
     abstract clampXPanning(): void;
     abstract windowMouseMoveHandler(e?: MouseEvent): void;
     abstract windowMouseUpHandler(e?: MouseEvent): void;

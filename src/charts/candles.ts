@@ -1,3 +1,4 @@
+import { Label } from '../ui'
 import { HistoryData, ChartOptions } from '../types'
 import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../utils'
 import Chart from './base'
@@ -183,17 +184,7 @@ export class CandlesChart extends Chart {
   // TODO: move these two functions to separate UI class
   drawTopLabels() {
     if(!this.ticker) return
-
-    let ctx = this.chartContext
-    
-    ctx.font = '18px Arial'
-    let y = 30
-    let x = 20
-    ctx.fillStyle = this.options?.textColor
-    let currency = this.ticker.currency
-    ctx.fillText(currency + ' / TetherUS - BINANCE - CryptoView', x, y)
-
-    this.drawCandleDataLabels(x+380+currency.length*5, y,)
+    // this.drawCandleDataLabels(320+this.ticker.currency.length*5, 23,)
   }
 
   drawCandleDataLabels(x: number, y: number) {
@@ -207,9 +198,9 @@ export class CandlesChart extends Chart {
       C: hist[i].close,
     }
     let res = ''
-    let gap = 8.5
+    let gap = 7.4
 
-    ctx.font = '15px Arial'
+    ctx.font = '13px Arial'
 
     for (let k = 0; k < 4; k++) {
       let [key, value] = Object.entries(point)[k]
@@ -234,7 +225,7 @@ export class CandlesChart extends Chart {
   }
 
   mainDebug() {
-    // this.debug(, 10, 300)
+    this.ui.draw()
   }
 
   getGridRows() {

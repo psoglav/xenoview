@@ -155,17 +155,9 @@ class CandlesChart extends base_1.default {
     }
     // TODO: move these two functions to separate UI class
     drawTopLabels() {
-        var _a;
         if (!this.ticker)
             return;
-        let ctx = this.chartContext;
-        ctx.font = '18px Arial';
-        let y = 30;
-        let x = 20;
-        ctx.fillStyle = (_a = this.options) === null || _a === void 0 ? void 0 : _a.textColor;
-        let currency = this.ticker.currency;
-        ctx.fillText(currency + ' / TetherUS - BINANCE - CryptoView', x, y);
-        this.drawCandleDataLabels(x + 380 + currency.length * 5, y);
+        // this.drawCandleDataLabels(320+this.ticker.currency.length*5, 23,)
     }
     drawCandleDataLabels(x, y) {
         var _a, _b, _c;
@@ -179,8 +171,8 @@ class CandlesChart extends base_1.default {
             C: hist[i].close,
         };
         let res = '';
-        let gap = 8.5;
-        ctx.font = '15px Arial';
+        let gap = 7.4;
+        ctx.font = '13px Arial';
         for (let k = 0; k < 4; k++) {
             let [key, value] = Object.entries(point)[k];
             res += key + value + '  ';
@@ -201,7 +193,7 @@ class CandlesChart extends base_1.default {
         }
     }
     mainDebug() {
-        // this.debug(, 10, 300)
+        this.ui.draw();
     }
     getGridRows() {
         let t = this.topHistoryPrice[1];
