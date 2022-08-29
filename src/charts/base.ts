@@ -7,6 +7,7 @@ import {
   HistoryPoint,
 } from '../types'
 import { Ticker } from '..'
+import { UI, Label } from '../ui'
 
 abstract class ChartDataBase {
   history: HistoryData
@@ -244,6 +245,7 @@ export default abstract class Chart extends ChartDataBase {
   container: HTMLElement | undefined
   options: ChartOptions = defaultChartOptions
   ticker: Ticker
+  ui: UI
 
   position: ChartBoundingRect
   mousePosition = { x: 0, y: 0 }
@@ -274,10 +276,6 @@ export default abstract class Chart extends ChartDataBase {
     if (!this.container) {
       this.error('no container is found')
       return
-    } else {
-      this.container.innerHTML = ''
-      this.container.style.display = 'grid'
-      this.container.style.grid = '1fr 28px / 1fr 70px'
     }
 
     this.createChartMarkup()
@@ -288,6 +286,8 @@ export default abstract class Chart extends ChartDataBase {
       top: 0,
       bottom: this.mainCanvasHeight,
     }
+
+    this.initUIElements()
   }
 
   setTicker(ticker: Ticker) {
@@ -353,6 +353,10 @@ export default abstract class Chart extends ChartDataBase {
   }
 
   createChartMarkup() {
+    this.container.innerHTML = ''
+    this.container.style.display = 'grid'
+    this.container.style.grid = '1fr 28px / 1fr 70px'
+    
     let chartCanvas = this.createChart()
     let yAxisCanvas = this.createYAxis()
     let xAxisCanvas = this.createXAxis()
@@ -381,6 +385,32 @@ export default abstract class Chart extends ChartDataBase {
     this.rescale(this.chartContext)
     this.rescale(this.yAxisContext)
     this.rescale(this.xAxisContext)
+
+    this.ui = new UI()
+  }
+
+  initUIElements() {
+    let title = new Label({
+      value: () => this.ticker?.currency + ' / TetherUS - BINANCE - CryptoView', 
+      x: 10,
+      y: 23,
+      font: 'Arial',
+      size: 17,
+      color: this.options?.textColor,
+      ctx: this.chartContext
+    })
+
+    let candleInfo = new Label({
+      value: 'candle info here',
+      x: title.width + 20,
+      y: 23,
+      font: 'Arial',
+      size: 17,
+      color: this.options?.textColor,
+      ctx: this.chartContext
+    })
+
+    this.ui.elements.push(title, candleInfo)
   }
 
   abstract clampXPanning(): void
