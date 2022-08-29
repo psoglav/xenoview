@@ -1,4 +1,3 @@
-import { HistoryData } from './types'
 import { symbolToCurrency } from './utils'
 
 type HistoryInterval = 'day' | 'hour' | 'minute'

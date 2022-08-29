@@ -1,5 +1,3 @@
-import { ChartOptions } from './types'
-
 export const defaultChartOptions: ChartOptions = {
   bgColor: '#161a25',
   textColor: '#9a9ea7',
