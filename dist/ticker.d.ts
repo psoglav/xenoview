@@ -1,4 +1,3 @@
-import { HistoryData } from './types';
 declare type HistoryInterval = 'day' | 'hour' | 'minute';
 export declare class Ticker {
     state: {

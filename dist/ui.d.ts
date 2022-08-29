@@ -4,30 +4,28 @@ export declare class UI {
     draw(clear?: boolean): void;
 }
 export declare abstract class UIElement {
-    position: [number, number];
+    position: UI.Position;
     ctx: CanvasRenderingContext2D;
-    constructor(x: number, y: number, ctx: CanvasRenderingContext2D);
+    constructor(opts: UI.ElementOptions);
     abstract draw(): void;
+    abstract width: number;
     clearCanvas(): void;
 }
-declare type UIElementValue = string | [object, string] | Function;
-declare type UILabelOptions = {
-    value: UIElementValue;
-    x: number;
-    y: number;
-    font: string;
-    size: number;
-    color: string;
-    ctx: CanvasRenderingContext2D;
-};
+export declare class UIElementGroup extends UIElement {
+    position: UI.Position;
+    elements: UIElement[];
+    gap: number;
+    constructor(opts: UI.ElementGroupOptions);
+    get width(): number;
+    draw(): void;
+}
 export declare class Label extends UIElement {
-    value: UIElementValue;
+    value: any;
     font: string;
     size: number;
     color: string;
-    constructor(opts: UILabelOptions);
+    constructor(opts: UI.LabelOptions);
     get text(): string;
     get width(): number;
     draw(): void;
 }
-export {};

@@ -1,4 +1,3 @@
-import { ChartOptions } from '../types';
 import Chart from './base';
 export declare class CandlesChart extends Chart {
     private pointerYPosIndex;

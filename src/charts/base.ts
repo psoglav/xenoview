@@ -1,13 +1,7 @@
 import { toMinutes } from '../utils'
 import { defaultChartOptions } from '../config'
-import {
-  ChartBoundingRect,
-  ChartOptions,
-  HistoryData,
-  HistoryPoint,
-} from '../types'
 import { Ticker } from '..'
-import { UI, Label } from '../ui'
+import { UI, Label, UIElementGroup } from '../ui'
 
 abstract class ChartDataBase {
   history: HistoryData
@@ -27,12 +21,6 @@ abstract class ChartDataBase {
 
   init(chart: Chart) {
     this.chart = chart
-  }
-
-  loadHistory(value: HistoryData) {
-    this.history = value
-    this.chartData = this.normalizeData()
-    this.draw()
   }
 
   updatePoint(point: HistoryPoint, value: { PRICE: number; LASTUPDATE: number }) {
@@ -286,8 +274,13 @@ export default abstract class Chart extends ChartDataBase {
       top: 0,
       bottom: this.mainCanvasHeight,
     }
+  }
 
+  loadHistory(value: HistoryData) {
+    this.history = value
+    this.chartData = this.normalizeData()
     this.initUIElements()
+    this.draw()
   }
 
   setTicker(ticker: Ticker) {
@@ -390,27 +383,69 @@ export default abstract class Chart extends ChartDataBase {
   }
 
   initUIElements() {
-    let title = new Label({
-      value: () => this.ticker?.currency + ' / TetherUS - BINANCE - CryptoView', 
+    let h =  this.history
+
+    let commonOpts = () => ({
+      x: 0,
+      y: 23,
+      font: 'Arial',
+      size: 13,
+      color: this.options?.textColor,
+      ctx: this.chartContext
+    })
+
+    let topbarGroup = new UIElementGroup({
       x: 10,
       y: 23,
-      font: 'Arial',
-      size: 17,
-      color: this.options?.textColor,
+      gap: 2,
+      elements: [
+        new Label({
+          value: () => this.ticker?.currency + ' / TetherUS - BINANCE - CryptoView', 
+          ...commonOpts(),
+          size: 17
+        }),
+        new Label({
+          value: 'O', 
+          ...commonOpts()
+        }),
+        new Label({
+          value: () => h[h.length - 1].open, 
+          ...commonOpts(),
+          color: this.options?.candles?.colors?.higher
+        }),
+        new Label({
+          value: 'H', 
+          ...commonOpts()
+        }),
+        new Label({
+          value: () => h[h.length - 1].high, 
+          ...commonOpts(),
+          color: this.options?.candles?.colors?.higher
+        }),
+        new Label({
+          value: 'L', 
+          ...commonOpts()
+        }),
+        new Label({
+          value: () => h[h.length - 1].low, 
+          ...commonOpts(),
+          color: this.options?.candles?.colors?.higher
+        }),
+        new Label({
+          value: 'C', 
+          ...commonOpts()
+        }),
+        new Label({
+          value: () => h[h.length - 1].close, 
+          ...commonOpts(),
+          color: this.options?.candles?.colors?.higher
+        }),
+      ],
       ctx: this.chartContext
     })
 
-    let candleInfo = new Label({
-      value: 'candle info here',
-      x: title.width + 20,
-      y: 23,
-      font: 'Arial',
-      size: 17,
-      color: this.options?.textColor,
-      ctx: this.chartContext
-    })
 
-    this.ui.elements.push(title, candleInfo)
+    this.ui.elements.push(topbarGroup)
   }
 
   abstract clampXPanning(): void

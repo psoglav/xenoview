@@ -14,11 +14,6 @@ class ChartDataBase {
     init(chart) {
         this.chart = chart;
     }
-    loadHistory(value) {
-        this.history = value;
-        this.chartData = this.normalizeData();
-        this.draw();
-    }
     updatePoint(point, value) {
         point.close = value.PRICE;
         point.time = value.LASTUPDATE;
@@ -208,7 +203,12 @@ class Chart extends ChartDataBase {
             top: 0,
             bottom: this.mainCanvasHeight,
         };
+    }
+    loadHistory(value) {
+        this.history = value;
+        this.chartData = this.normalizeData();
         this.initUIElements();
+        this.draw();
     }
     setTicker(ticker) {
         this.ticker = ticker;
@@ -283,26 +283,37 @@ class Chart extends ChartDataBase {
         this.ui = new ui_1.UI();
     }
     initUIElements() {
-        var _a, _b;
-        let title = new ui_1.Label({
-            value: () => { var _a; return ((_a = this.ticker) === null || _a === void 0 ? void 0 : _a.currency) + ' / TetherUS - BINANCE - CryptoView'; },
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+        let h = this.history;
+        let commonOpts = () => {
+            var _a;
+            return ({
+                x: 0,
+                y: 23,
+                font: 'Arial',
+                size: 13,
+                color: (_a = this.options) === null || _a === void 0 ? void 0 : _a.textColor,
+                ctx: this.chartContext
+            });
+        };
+        let topbarGroup = new ui_1.UIElementGroup({
             x: 10,
             y: 23,
-            font: 'Arial',
-            size: 17,
-            color: (_a = this.options) === null || _a === void 0 ? void 0 : _a.textColor,
+            gap: 2,
+            elements: [
+                new ui_1.Label(Object.assign(Object.assign({ value: () => { var _a; return ((_a = this.ticker) === null || _a === void 0 ? void 0 : _a.currency) + ' / TetherUS - BINANCE - CryptoView'; } }, commonOpts()), { size: 17 })),
+                new ui_1.Label(Object.assign({ value: 'O' }, commonOpts())),
+                new ui_1.Label(Object.assign(Object.assign({ value: () => h[h.length - 1].open }, commonOpts()), { color: (_c = (_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.candles) === null || _b === void 0 ? void 0 : _b.colors) === null || _c === void 0 ? void 0 : _c.higher })),
+                new ui_1.Label(Object.assign({ value: 'H' }, commonOpts())),
+                new ui_1.Label(Object.assign(Object.assign({ value: () => h[h.length - 1].high }, commonOpts()), { color: (_f = (_e = (_d = this.options) === null || _d === void 0 ? void 0 : _d.candles) === null || _e === void 0 ? void 0 : _e.colors) === null || _f === void 0 ? void 0 : _f.higher })),
+                new ui_1.Label(Object.assign({ value: 'L' }, commonOpts())),
+                new ui_1.Label(Object.assign(Object.assign({ value: () => h[h.length - 1].low }, commonOpts()), { color: (_j = (_h = (_g = this.options) === null || _g === void 0 ? void 0 : _g.candles) === null || _h === void 0 ? void 0 : _h.colors) === null || _j === void 0 ? void 0 : _j.higher })),
+                new ui_1.Label(Object.assign({ value: 'C' }, commonOpts())),
+                new ui_1.Label(Object.assign(Object.assign({ value: () => h[h.length - 1].close }, commonOpts()), { color: (_m = (_l = (_k = this.options) === null || _k === void 0 ? void 0 : _k.candles) === null || _l === void 0 ? void 0 : _l.colors) === null || _m === void 0 ? void 0 : _m.higher })),
+            ],
             ctx: this.chartContext
         });
-        let candleInfo = new ui_1.Label({
-            value: 'candle info here',
-            x: title.width + 20,
-            y: 23,
-            font: 'Arial',
-            size: 17,
-            color: (_b = this.options) === null || _b === void 0 ? void 0 : _b.textColor,
-            ctx: this.chartContext
-        });
-        this.ui.elements.push(title, candleInfo);
+        this.ui.elements.push(topbarGroup);
     }
     // abstract xAxisMouseLeaveHandler(e?: MouseEvent): void
     bindMouseListeners() {

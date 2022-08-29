@@ -1,5 +1,3 @@
-import { Label } from '../ui'
-import { HistoryData, ChartOptions } from '../types'
 import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../utils'
 import Chart from './base'
 

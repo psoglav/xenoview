@@ -1,4 +1,3 @@
-import { ChartBoundingRect, ChartOptions, HistoryData, HistoryPoint } from '../types';
 import { Ticker } from '..';
 import { UI } from '../ui';
 declare abstract class ChartDataBase {
@@ -11,7 +10,6 @@ declare abstract class ChartDataBase {
     get chartFullWidth(): number;
     constructor();
     init(chart: Chart): void;
-    loadHistory(value: HistoryData): void;
     updatePoint(point: HistoryPoint, value: {
         PRICE: number;
         LASTUPDATE: number;
@@ -48,6 +46,7 @@ export default abstract class Chart extends ChartDataBase {
     zoomSpeed: number;
     yZoomFactor: number;
     constructor(container: HTMLElement | string, options?: ChartOptions);
+    loadHistory(value: HistoryData): void;
     setTicker(ticker: Ticker): void;
     createChart(): HTMLCanvasElement;
     createXAxis(): HTMLCanvasElement;

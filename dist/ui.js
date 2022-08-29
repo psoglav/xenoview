@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Label = exports.UIElement = exports.UI = void 0;
+exports.Label = exports.UIElementGroup = exports.UIElement = exports.UI = void 0;
 class UI {
     constructor(...elements) {
         this.elements = elements;
@@ -18,37 +18,56 @@ class UI {
 }
 exports.UI = UI;
 class UIElement {
-    constructor(x, y, ctx) {
-        this.position = [x, y];
-        this.ctx = ctx;
+    constructor(opts) {
+        this.position = { x: opts.x, y: opts.y };
+        this.ctx = opts.ctx;
     }
     clearCanvas() {
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
 }
 exports.UIElement = UIElement;
+class UIElementGroup extends UIElement {
+    constructor(opts) {
+        super({ x: opts.x, y: opts.y, ctx: opts.ctx });
+        this.position = { x: opts.x, y: opts.y };
+        this.elements = opts.elements;
+        this.gap = opts.gap;
+    }
+    get width() {
+        let result = 0;
+        this.elements.forEach(el => {
+            result += el.width + this.gap;
+        });
+        return result;
+    }
+    draw() {
+        let xcur = this.position.x;
+        this.elements.forEach(el => {
+            el.position.x = xcur;
+            el.draw();
+            xcur += el.width + this.gap;
+        });
+    }
+}
+exports.UIElementGroup = UIElementGroup;
 class Label extends UIElement {
     constructor(opts) {
-        super(opts.x, opts.y, opts.ctx);
+        super({ x: opts.x, y: opts.y, ctx: opts.ctx });
         this.value = opts.value;
         this.font = opts.font;
         this.size = opts.size;
         this.color = opts.color;
     }
     get text() {
-        let result = '';
-        if (typeof this.value != 'string') {
-            if (typeof this.value == 'object') {
-                result = this.value[0][this.value[1]];
-            }
-            else if (typeof this.value == 'function') {
-                result = this.value();
-            }
+        let result = this.value;
+        if (typeof this.value == 'object') {
+            result = this.value[0][this.value[1]];
         }
-        else {
-            result = this.value;
+        else if (typeof this.value == 'function') {
+            result = this.value();
         }
-        return result;
+        return result.toString();
     }
     get width() {
         this.ctx.fillStyle = this.color;
@@ -58,7 +77,7 @@ class Label extends UIElement {
     draw() {
         this.ctx.fillStyle = this.color;
         this.ctx.font = this.size + 'px ' + this.font;
-        this.ctx.fillText(this.text, this.position[0], this.position[1]);
+        this.ctx.fillText(this.text, this.position.x, this.position.y);
     }
 }
 exports.Label = Label;
