@@ -9,7 +9,7 @@ const base_1 = __importDefault(require("./base"));
 class CandlesChart extends base_1.default {
     constructor(container, options) {
         super(container, options);
-        this.pointerYPosIndex = 4;
+        this.pointingPointIndex = 4;
         this.pointerIsVisible = false;
         this.panningIsActive = false;
         this.candlesSpace = 0;
@@ -38,12 +38,14 @@ class CandlesChart extends base_1.default {
         this.mainDebug();
     }
     zoomChart(side) {
+        var _a, _b;
         let zoomPoint = this.mainCanvasWidth;
         let d = 20 / this.zoomSpeed;
         this.position.right += ((this.position.right - zoomPoint) / d) * side;
         this.position.left += ((this.position.left - zoomPoint) / d) * side;
         this.clampXPanning();
-        this.filterVisiblePointsAndCache();
+        if ((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.yAxis) === null || _b === void 0 ? void 0 : _b.fit)
+            this.filterVisiblePointsAndCache();
     }
     moveChart(movement) {
         var _a, _b;
@@ -70,15 +72,16 @@ class CandlesChart extends base_1.default {
         let x = this.mousePosition.x - this.canvasRect.x;
         x = ((x - this.position.left) / this.chartFullWidth) * data.length;
         let i = Math.round(x);
-        this.pointerYPosIndex =
+        this.pointingPointIndex =
             i > data.length - 1 ? data.length - 1 : i < 0 ? 0 : i;
+        this.focusedPoint = this.history[this.pointingPointIndex];
     }
     drawPointer() {
         var _a;
         if (!((_a = this.chartData) === null || _a === void 0 ? void 0 : _a.length) || !this.pointerIsVisible)
             return;
         let ctx = this.chartContext;
-        let x = this.position.left + this.candlesSpace * this.pointerYPosIndex;
+        let x = this.position.left + this.candlesSpace * this.pointingPointIndex;
         let y = this.mousePosition.y;
         ctx.strokeStyle = this.options.pointer.fgColor;
         ctx.setLineDash([5, 4]);
@@ -156,7 +159,9 @@ class CandlesChart extends base_1.default {
         ctx.font = '11px Verdana';
         ctx.fillText(time, x - 50, 20);
     }
-    mainDebug() { }
+    mainDebug() {
+        this.debug(this.topHistoryPrice[1], 100, 100);
+    }
     getGridRows() {
         let t = this.topHistoryPrice[1];
         let b = this.bottomHistoryPrice[1];

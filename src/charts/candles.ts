@@ -2,7 +2,7 @@ import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../utils'
 import Chart from './base'
 
 export class CandlesChart extends Chart {
-  private pointerYPosIndex = 4
+  private pointingPointIndex = 4
   private pointerIsVisible = false
   private panningIsActive = false
   private candlesSpace = 0
@@ -47,7 +47,7 @@ export class CandlesChart extends Chart {
     this.position.left += ((this.position.left - zoomPoint) / d) * side
 
     this.clampXPanning()
-    this.filterVisiblePointsAndCache()
+    if(this.options?.yAxis?.fit) this.filterVisiblePointsAndCache()
   }
 
   moveChart(movement: number) {
@@ -78,15 +78,16 @@ export class CandlesChart extends Chart {
 
     let i = Math.round(x)
 
-    this.pointerYPosIndex =
+    this.pointingPointIndex =
       i > data.length - 1 ? data.length - 1 : i < 0 ? 0 : i
+    this.focusedPoint = this.history[this.pointingPointIndex]
   }
 
   drawPointer() {
     if (!this.chartData?.length || !this.pointerIsVisible) return
 
     let ctx = this.chartContext
-    let x = this.position.left + this.candlesSpace * this.pointerYPosIndex
+    let x = this.position.left + this.candlesSpace * this.pointingPointIndex
     let y = this.mousePosition.y
 
     ctx.strokeStyle = this.options.pointer.fgColor
@@ -180,7 +181,9 @@ export class CandlesChart extends Chart {
     ctx.fillText(time, x - 50, 20)
   }
 
-  mainDebug() {}
+  mainDebug() {
+    this.debug(this.topHistoryPrice[1], 100, 100)
+  }
 
   getGridRows() {
     let t = this.topHistoryPrice[1]

@@ -245,6 +245,8 @@ export default abstract class Chart extends ChartDataBase {
   zoomSpeed: number = 4
   yZoomFactor = 1.2
 
+  focusedPoint: HistoryPoint
+
   constructor(container: HTMLElement | string, options?: ChartOptions) {
     super()
     this.init(this)

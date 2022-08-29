@@ -1,6 +1,6 @@
 import Chart from './base';
 export declare class CandlesChart extends Chart {
-    private pointerYPosIndex;
+    private pointingPointIndex;
     private pointerIsVisible;
     private panningIsActive;
     private candlesSpace;
