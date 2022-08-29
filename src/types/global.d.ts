@@ -45,17 +45,17 @@ declare global {
       }
     }
     yAxis?: {
-      labels: {
+      labels?: {
         fontSize: number
       }
+      fit?: boolean
     }
   }
   
   export interface ChartBoundingRect {
+    y: number
     left: number
     right: number
-    top: number
-    bottom: number
   }
   
   export type LinearHistory = number[][]

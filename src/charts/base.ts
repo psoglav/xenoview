@@ -269,10 +269,9 @@ export default abstract class Chart extends ChartDataBase {
     this.createChartMarkup()
 
     this.position = {
+      y: 0,
       left: 0,
       right: this.mainCanvasWidth,
-      top: 0,
-      bottom: this.mainCanvasHeight,
     }
   }
 

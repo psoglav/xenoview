@@ -34,8 +34,8 @@ export class CandlesChart extends Chart {
     this.drawChart()
     this.drawPointer()
     this.drawCurrentMarketPriceMarker()
-    this.drawTopLabels()
 
+    this.ui.draw()
     this.mainDebug()
   }
 
@@ -59,6 +59,7 @@ export class CandlesChart extends Chart {
     this.position.right += movement
 
     this.clampXPanning()
+    if(this.options?.yAxis?.fit) this.filterVisiblePointsAndCache()
   }
 
   clampXPanning() {
@@ -179,52 +180,7 @@ export class CandlesChart extends Chart {
     ctx.fillText(time, x - 50, 20)
   }
 
-  // TODO: move these two functions to separate UI class
-  drawTopLabels() {
-    if(!this.ticker) return
-    // this.drawCandleDataLabels(320+this.ticker.currency.length*5, 23,)
-  }
-
-  drawCandleDataLabels(x: number, y: number) {
-    let hist = this.history
-    let ctx = this.chartContext
-    let i = this.pointerIsVisible ? this.pointerYPosIndex : hist.length - 1
-    let point = {
-      O: hist[i].open,
-      H: hist[i].high,
-      L: hist[i].low,
-      C: hist[i].close,
-    }
-    let res = ''
-    let gap = 7.4
-
-    ctx.font = '13px Arial'
-
-    for (let k = 0; k < 4; k++) {
-      let [key, value] = Object.entries(point)[k]
-      res += key + value + '  '
-    }
-
-    for (let i = 0; i < res.length; i++) {
-      let s = res[i]
-      let xx = i * gap + x
-      let isKey = Object.keys(point).includes(s)
-
-      if (isKey) {
-        ctx.fillStyle = this.options?.textColor
-        xx -= 4
-      } else {
-        let { higher, lower } = this.options?.candles?.colors
-        ctx.fillStyle = point.C > point.O ? higher : lower
-      }
-
-      ctx.fillText(s, xx, y)
-    }
-  }
-
-  mainDebug() {
-    this.ui.draw()
-  }
+  mainDebug() {}
 
   getGridRows() {
     let t = this.topHistoryPrice[1]
@@ -511,7 +467,7 @@ export class CandlesChart extends Chart {
         (((this.position.left - zoomPoint) / d) * e?.movementX) / 100
 
       this.clampXPanning()
-
+      if(this.options?.yAxis?.fit) this.filterVisiblePointsAndCache()
       this.draw()
     }
   }
