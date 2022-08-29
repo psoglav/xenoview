@@ -37,13 +37,20 @@ class UIElementGroup extends UIElement {
     get width() {
         let result = 0;
         this.elements.forEach(el => {
-            result += el.width + this.gap;
+            if (typeof el == 'number')
+                result += el;
+            else
+                result += el.width + this.gap;
         });
         return result;
     }
     draw() {
         let xcur = this.position.x;
         this.elements.forEach(el => {
+            if (typeof el == 'number') {
+                xcur += el;
+                return;
+            }
             el.position.x = xcur;
             el.draw();
             xcur += el.width + this.gap;
@@ -69,14 +76,16 @@ class Label extends UIElement {
         }
         return result.toString();
     }
-    get width() {
-        this.ctx.fillStyle = this.color;
+    setStyle() {
+        this.ctx.fillStyle = typeof this.color == 'function' ? this.color() : this.color;
         this.ctx.font = this.size + 'px ' + this.font;
+    }
+    get width() {
+        this.setStyle();
         return this.ctx.measureText(this.text).width;
     }
     draw() {
-        this.ctx.fillStyle = this.color;
-        this.ctx.font = this.size + 'px ' + this.font;
+        this.setStyle();
         this.ctx.fillText(this.text, this.position.x, this.position.y);
     }
 }

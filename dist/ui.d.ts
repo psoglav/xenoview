@@ -13,7 +13,7 @@ export declare abstract class UIElement {
 }
 export declare class UIElementGroup extends UIElement {
     position: UI.Position;
-    elements: UIElement[];
+    elements: (UIElement | number)[];
     gap: number;
     constructor(opts: UI.ElementGroupOptions);
     get width(): number;
@@ -23,9 +23,10 @@ export declare class Label extends UIElement {
     value: any;
     font: string;
     size: number;
-    color: string;
+    color: string | Function;
     constructor(opts: UI.LabelOptions);
     get text(): string;
+    setStyle(): void;
     get width(): number;
     draw(): void;
 }

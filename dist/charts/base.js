@@ -283,8 +283,12 @@ class Chart extends ChartDataBase {
         this.ui = new ui_1.UI();
     }
     initUIElements() {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
         let h = this.history;
+        let getCandleColor = () => {
+            var _a, _b, _c, _d, _e, _f;
+            let p = h[h.length - 1];
+            return p.close < p.open ? (_c = (_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.candles) === null || _b === void 0 ? void 0 : _b.colors) === null || _c === void 0 ? void 0 : _c.lower : (_f = (_e = (_d = this.options) === null || _d === void 0 ? void 0 : _d.candles) === null || _e === void 0 ? void 0 : _e.colors) === null || _f === void 0 ? void 0 : _f.higher;
+        };
         let commonOpts = () => {
             var _a;
             return ({
@@ -302,14 +306,18 @@ class Chart extends ChartDataBase {
             gap: 2,
             elements: [
                 new ui_1.Label(Object.assign(Object.assign({ value: () => { var _a; return ((_a = this.ticker) === null || _a === void 0 ? void 0 : _a.currency) + ' / TetherUS - BINANCE - CryptoView'; } }, commonOpts()), { size: 17 })),
+                30,
                 new ui_1.Label(Object.assign({ value: 'O' }, commonOpts())),
-                new ui_1.Label(Object.assign(Object.assign({ value: () => h[h.length - 1].open }, commonOpts()), { color: (_c = (_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.candles) === null || _b === void 0 ? void 0 : _b.colors) === null || _c === void 0 ? void 0 : _c.higher })),
+                new ui_1.Label(Object.assign(Object.assign({ value: () => h[h.length - 1].open }, commonOpts()), { color: getCandleColor })),
+                10,
                 new ui_1.Label(Object.assign({ value: 'H' }, commonOpts())),
-                new ui_1.Label(Object.assign(Object.assign({ value: () => h[h.length - 1].high }, commonOpts()), { color: (_f = (_e = (_d = this.options) === null || _d === void 0 ? void 0 : _d.candles) === null || _e === void 0 ? void 0 : _e.colors) === null || _f === void 0 ? void 0 : _f.higher })),
+                new ui_1.Label(Object.assign(Object.assign({ value: () => h[h.length - 1].high }, commonOpts()), { color: getCandleColor })),
+                10,
                 new ui_1.Label(Object.assign({ value: 'L' }, commonOpts())),
-                new ui_1.Label(Object.assign(Object.assign({ value: () => h[h.length - 1].low }, commonOpts()), { color: (_j = (_h = (_g = this.options) === null || _g === void 0 ? void 0 : _g.candles) === null || _h === void 0 ? void 0 : _h.colors) === null || _j === void 0 ? void 0 : _j.higher })),
+                new ui_1.Label(Object.assign(Object.assign({ value: () => h[h.length - 1].low }, commonOpts()), { color: getCandleColor })),
+                10,
                 new ui_1.Label(Object.assign({ value: 'C' }, commonOpts())),
-                new ui_1.Label(Object.assign(Object.assign({ value: () => h[h.length - 1].close }, commonOpts()), { color: (_m = (_l = (_k = this.options) === null || _k === void 0 ? void 0 : _k.candles) === null || _l === void 0 ? void 0 : _l.colors) === null || _m === void 0 ? void 0 : _m.higher })),
+                new ui_1.Label(Object.assign(Object.assign({ value: () => h[h.length - 1].close }, commonOpts()), { color: getCandleColor })),
             ],
             ctx: this.chartContext
         });

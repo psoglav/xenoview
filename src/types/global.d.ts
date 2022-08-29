@@ -9,7 +9,7 @@ declare global {
       y: number
       font: string
       size: number
-      color: string
+      color: string | Function
       ctx: CanvasRenderingContext2D
     }
     type ElementOptions = {
@@ -21,7 +21,7 @@ declare global {
       x: number
       y: number
       ctx: CanvasRenderingContext2D
-      elements: UIElement[]
+      elements: (UIElement | number)[]
       gap: number
     }
   }

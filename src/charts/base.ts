@@ -383,7 +383,11 @@ export default abstract class Chart extends ChartDataBase {
   }
 
   initUIElements() {
-    let h =  this.history
+    let h = this.history
+    let getCandleColor = () => {
+      let p = h[h.length - 1]
+      return p.close < p.open ? this.options?.candles?.colors?.lower :  this.options?.candles?.colors?.higher
+    }
 
     let commonOpts = () => ({
       x: 0,
@@ -396,7 +400,7 @@ export default abstract class Chart extends ChartDataBase {
 
     let topbarGroup = new UIElementGroup({
       x: 10,
-      y: 23,
+      y: 23,  
       gap: 2,
       elements: [
         new Label({
@@ -404,6 +408,7 @@ export default abstract class Chart extends ChartDataBase {
           ...commonOpts(),
           size: 17
         }),
+        30,
         new Label({
           value: 'O', 
           ...commonOpts()
@@ -411,8 +416,9 @@ export default abstract class Chart extends ChartDataBase {
         new Label({
           value: () => h[h.length - 1].open, 
           ...commonOpts(),
-          color: this.options?.candles?.colors?.higher
+          color: getCandleColor
         }),
+        10,
         new Label({
           value: 'H', 
           ...commonOpts()
@@ -420,8 +426,9 @@ export default abstract class Chart extends ChartDataBase {
         new Label({
           value: () => h[h.length - 1].high, 
           ...commonOpts(),
-          color: this.options?.candles?.colors?.higher
+          color: getCandleColor
         }),
+        10,
         new Label({
           value: 'L', 
           ...commonOpts()
@@ -429,8 +436,9 @@ export default abstract class Chart extends ChartDataBase {
         new Label({
           value: () => h[h.length - 1].low, 
           ...commonOpts(),
-          color: this.options?.candles?.colors?.higher
+          color: getCandleColor
         }),
+        10,
         new Label({
           value: 'C', 
           ...commonOpts()
@@ -438,7 +446,7 @@ export default abstract class Chart extends ChartDataBase {
         new Label({
           value: () => h[h.length - 1].close, 
           ...commonOpts(),
-          color: this.options?.candles?.colors?.higher
+          color: getCandleColor
         }),
       ],
       ctx: this.chartContext

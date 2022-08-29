@@ -36,7 +36,7 @@ export abstract class UIElement {
 
 export class UIElementGroup extends UIElement {
   position: UI.Position
-  elements: UIElement[]
+  elements: (UIElement | number)[]
   gap: number
 
   constructor(opts: UI.ElementGroupOptions) {
@@ -49,7 +49,8 @@ export class UIElementGroup extends UIElement {
   get width(): number {
     let result = 0
     this.elements.forEach(el => {
-      result += el.width + this.gap
+      if(typeof el == 'number') result += el
+      else result += el.width + this.gap
     })
     return result
   }
@@ -57,6 +58,10 @@ export class UIElementGroup extends UIElement {
   draw(): void {
     let xcur = this.position.x
     this.elements.forEach(el => {
+      if (typeof el == 'number') {
+        xcur += el
+        return
+      }
       el.position.x = xcur
       el.draw()
       xcur += el.width + this.gap
@@ -68,7 +73,7 @@ export class Label extends UIElement {
   value: any
   font: string
   size: number
-  color: string
+  color: string | Function
 
   constructor(opts: UI.LabelOptions) {
     super({ x: opts.x, y: opts.y, ctx: opts.ctx })
@@ -90,15 +95,18 @@ export class Label extends UIElement {
     return result.toString()
   }
 
-  get width(): number {
-    this.ctx.fillStyle = this.color
+  setStyle() {
+    this.ctx.fillStyle = typeof this.color == 'function' ? this.color() : this.color
     this.ctx.font = this.size + 'px ' + this.font
+  }
+
+  get width(): number {
+    this.setStyle()
     return this.ctx.measureText(this.text).width
   }
 
   draw(): void {
-    this.ctx.fillStyle = this.color
-    this.ctx.font = this.size + 'px ' + this.font
+    this.setStyle()
     this.ctx.fillText(this.text, this.position.x, this.position.y)
   }
 }
