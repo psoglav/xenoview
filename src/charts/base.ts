@@ -187,9 +187,8 @@ abstract class ChartDataBase {
   }
 
   getTopHistoryPrice(): [number, number] {
-    let history = this.visiblePoints
-      ? this.visiblePoints.map(({ high }) => high)
-      : this.filterVisiblePoints(this.history!.map(({ high }) => high))
+    let history: any = this.visiblePoints || this.filterVisiblePointsAndCache()
+    history = history.map(({high}) => high)
 
     let max = history[0]
     let i = 0
@@ -207,9 +206,8 @@ abstract class ChartDataBase {
   }
 
   getBottomHistoryPrice(): [number, number] {
-    let history = this.visiblePoints
-      ? this.visiblePoints.map(({ low }) => low)
-      : this.filterVisiblePoints(this.history!.map(({ low }) => low))
+    let history: any = this.visiblePoints || this.filterVisiblePointsAndCache()
+    history = history.map(({low}) => low)
 
     let min = history[0]
     let i = 0
