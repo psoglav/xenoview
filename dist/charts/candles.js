@@ -27,13 +27,13 @@ class CandlesChart extends base_1.default {
             this.drawYAxisLabels();
             // this.drawYAxis()
         }
+        this.drawChart();
+        this.drawPointer();
+        this.drawCurrentMarketPriceMarker();
         if (this.pointerIsVisible) {
             this.drawTimeMarker();
             this.drawPriceMarker();
         }
-        this.drawChart();
-        this.drawPointer();
-        this.drawCurrentMarketPriceMarker();
         this.ui.draw();
         this.mainDebug();
     }
@@ -47,14 +47,15 @@ class CandlesChart extends base_1.default {
         if ((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.yAxis) === null || _b === void 0 ? void 0 : _b.fit)
             this.filterVisiblePointsAndCache();
     }
-    moveChart(movement) {
+    moveChart(mx, my) {
         var _a, _b;
-        if (this.position.right == this.mainCanvasWidth - 200 && movement < 0)
+        this.position.y += my;
+        if (this.position.right == this.mainCanvasWidth - 200 && mx < 0)
             return;
-        if (this.position.left == 0 && movement > 0)
+        if (this.position.left == 0 && mx > 0)
             return;
-        this.position.left += movement;
-        this.position.right += movement;
+        this.position.left += mx;
+        this.position.right += mx;
         this.clampXPanning();
         if ((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.yAxis) === null || _b === void 0 ? void 0 : _b.fit)
             this.filterVisiblePointsAndCache();
@@ -101,7 +102,7 @@ class CandlesChart extends base_1.default {
             return;
         let point = data[data.length - 1];
         let npoint = this.normalizePoint(point);
-        let y = npoint.close;
+        let y = npoint.close + this.position.y;
         let type = npoint.close < npoint.open ? 'higher' : 'lower';
         ctx.strokeStyle = this.options.candles.colors[type];
         ctx.setLineDash([1, 2]);
@@ -121,13 +122,17 @@ class CandlesChart extends base_1.default {
         ctx.font = '11px Verdana';
         ctx.fillText(point.close.toFixed(2), 10, y + 5.5);
     }
+    // TODO: fix the price issue
     drawPriceMarker() {
         let ctx = this.yAxisContext;
         let y = this.mousePosition.y - this.canvasRect.top;
         let h = this.mainCanvasHeight;
-        let t = this.topHistoryPrice[1];
-        let b = this.bottomHistoryPrice[1];
+        let t = this.topHistoryPrice[1] + this.position.y;
+        let b = this.bottomHistoryPrice[1] + this.position.y;
+        let py = this.position.y;
+        let k = Math.abs(this.yZoomFactor);
         let price = (y / h) * (b - t) + t;
+        // return
         ctx.beginPath();
         ctx.fillStyle = this.options.pointer.bgColor;
         this.rect(0, y - 10, this.getWidth(ctx), 20, ctx);
@@ -160,7 +165,15 @@ class CandlesChart extends base_1.default {
         ctx.fillText(time, x - 50, 20);
     }
     mainDebug() {
-        this.debug(this.topHistoryPrice[1], 100, 100);
+        let y = this.mousePosition.y - this.canvasRect.top;
+        let h = this.mainCanvasHeight;
+        let k = Math.abs(this.yZoomFactor);
+        let t = (this.topHistoryPrice[1] + this.position.y);
+        let b = (this.bottomHistoryPrice[1] + this.position.y);
+        let py = this.position.y;
+        let price = (y / h) * ((b - t) / k) + t;
+        // this.debug(t + this.position.y, 100, 100,)
+        // this.debug(b + this.position.y, 100, 120,)
     }
     getGridRows() {
         let t = this.topHistoryPrice[1];
@@ -340,6 +353,7 @@ class CandlesChart extends base_1.default {
         for (let i = 0; i < data.length; i++) {
             this.candlesSpace = this.chartFullWidth / data.length;
             let x = this.position.left + i * this.candlesSpace;
+            let y = this.position.y;
             let halfCandle = this.candlesSpace / 4;
             if (x > this.mainCanvasWidth + halfCandle)
                 break;
@@ -350,12 +364,12 @@ class CandlesChart extends base_1.default {
                 ? (_b = (_a = this.options.candles) === null || _a === void 0 ? void 0 : _a.colors) === null || _b === void 0 ? void 0 : _b.lower
                 : (_d = (_c = this.options.candles) === null || _c === void 0 ? void 0 : _c.colors) === null || _d === void 0 ? void 0 : _d.higher;
             ctx.beginPath();
-            this.lineTo(x, high, ctx);
-            this.lineTo(x, low, ctx);
+            this.lineTo(x, high + y, ctx);
+            this.lineTo(x, low + y, ctx);
             ctx.strokeStyle = candleColor;
             ctx.stroke();
             if (halfCandle > 1) {
-                this.rect(x - this.candlesSpace / 4, open, this.candlesSpace / 2, close - open, ctx);
+                this.rect(x - this.candlesSpace / 4, open + y, this.candlesSpace / 2, close - open, ctx);
                 ctx.fillStyle = candleColor;
                 ctx.fill();
             }
@@ -382,7 +396,7 @@ class CandlesChart extends base_1.default {
     }
     mouseMoveHandler(e) {
         if (this.panningIsActive) {
-            this.moveChart(e.movementX);
+            this.moveChart(e.movementX, e.movementY);
         }
         this.movePointer();
         this.draw();

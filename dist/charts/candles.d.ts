@@ -9,7 +9,7 @@ export declare class CandlesChart extends Chart {
     constructor(container: HTMLElement | string, options?: ChartOptions);
     draw(): void;
     zoomChart(side: number): void;
-    moveChart(movement: number): void;
+    moveChart(mx: number, my: number): void;
     clampXPanning(): void;
     movePointer(): void;
     drawPointer(): void;

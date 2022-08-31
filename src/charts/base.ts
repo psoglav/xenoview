@@ -30,14 +30,14 @@ abstract class ChartDataBase {
     if (point.close < point.low) point.low = point.close
     if (point.close > point.high) point.high = point.close
   }
-
+  
   updateCurrentPoint(value: any) {
-    if (!value?.PRICE || !value?.LASTUPDATE) return
-
     let hist = this.history
     if (!hist?.length) return
-
     let currentPoint = hist[hist.length - 1]
+    
+    if (!value?.PRICE || !value?.LASTUPDATE || currentPoint.close === value.PRICE) return
+
     let pointMinutesTs = toMinutes(value.LASTUPDATE * 1000)
     let currentPointMinutesTs = toMinutes(currentPoint.time * 1000)
 
@@ -110,7 +110,7 @@ abstract class ChartDataBase {
     let k = Math.abs(this.chart.yZoomFactor)
     value = (value - hh) / k + hh
 
-    return value
+    return value + this.chart.position.y
   }
 
   normalizePoint(point: any) {

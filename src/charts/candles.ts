@@ -26,14 +26,15 @@ export class CandlesChart extends Chart {
       // this.drawYAxis()
     }
 
+    this.drawChart()
+
+    this.drawPointer()
+    this.drawCurrentMarketPriceMarker()
+
     if (this.pointerIsVisible) {
       this.drawTimeMarker()
       this.drawPriceMarker()
     }
-
-    this.drawChart()
-    this.drawPointer()
-    this.drawCurrentMarketPriceMarker()
 
     this.ui.draw()
     this.mainDebug()
@@ -47,19 +48,20 @@ export class CandlesChart extends Chart {
     this.position.left += ((this.position.left - zoomPoint) / d) * side
 
     this.clampXPanning()
-    if(this.options?.yAxis?.fit) this.filterVisiblePointsAndCache()
+    if (this.options?.yAxis?.fit) this.filterVisiblePointsAndCache()
   }
 
-  moveChart(movement: number) {
-    if (this.position.right == this.mainCanvasWidth - 200 && movement < 0)
-      return
-    if (this.position.left == 0 && movement > 0) return
+  moveChart(mx: number, my: number) {
+    this.position.y += my
 
-    this.position.left += movement
-    this.position.right += movement
+    if (this.position.right == this.mainCanvasWidth - 200 && mx < 0) return
+    if (this.position.left == 0 && mx > 0) return
+
+    this.position.left += mx
+    this.position.right += mx
 
     this.clampXPanning()
-    if(this.options?.yAxis?.fit) this.filterVisiblePointsAndCache()
+    if (this.options?.yAxis?.fit) this.filterVisiblePointsAndCache()
   }
 
   clampXPanning() {
@@ -110,7 +112,7 @@ export class CandlesChart extends Chart {
     if (!data || !data.length) return
     let point = data[data.length - 1]
     let npoint = this.normalizePoint(point)
-    let y = npoint.close
+    let y = npoint.close + this.position.y
 
     let type = npoint.close < npoint.open ? 'higher' : 'lower'
 
@@ -136,16 +138,19 @@ export class CandlesChart extends Chart {
     ctx.fillText(point.close.toFixed(2), 10, y + 5.5)
   }
 
+  // TODO: fix the price issue
   drawPriceMarker() {
     let ctx = this.yAxisContext
     let y = this.mousePosition.y - this.canvasRect.top
 
     let h = this.mainCanvasHeight
-    let t = this.topHistoryPrice[1]
-    let b = this.bottomHistoryPrice[1]
+    let t = this.topHistoryPrice[1] + this.position.y
+    let b = this.bottomHistoryPrice[1] + this.position.y
+    let py = this.position.y
+    let k = Math.abs(this.yZoomFactor)
 
     let price = (y / h) * (b - t) + t
-
+    // return
     ctx.beginPath()
     ctx.fillStyle = this.options.pointer.bgColor
     this.rect(0, y - 10, this.getWidth(ctx), 20, ctx)
@@ -182,7 +187,17 @@ export class CandlesChart extends Chart {
   }
 
   mainDebug() {
-    this.debug(this.topHistoryPrice[1], 100, 100)
+    let y = this.mousePosition.y - this.canvasRect.top
+
+    let h = this.mainCanvasHeight
+    let k = Math.abs(this.yZoomFactor)
+    let t = (this.topHistoryPrice[1] + this.position.y)
+    let b = (this.bottomHistoryPrice[1] + this.position.y)
+    let py = this.position.y
+
+    let price = (y / h) * ((b - t) / k) + t
+    // this.debug(t + this.position.y, 100, 100,)
+    // this.debug(b + this.position.y, 100, 120,)
   }
 
   getGridRows() {
@@ -422,6 +437,7 @@ export class CandlesChart extends Chart {
     for (let i = 0; i < data.length; i++) {
       this.candlesSpace = this.chartFullWidth! / data.length
       let x = this.position.left + i * this.candlesSpace
+      let y = this.position.y
       let halfCandle = this.candlesSpace / 4
 
       if (x > this.mainCanvasWidth + halfCandle) break
@@ -436,8 +452,8 @@ export class CandlesChart extends Chart {
 
       ctx.beginPath()
 
-      this.lineTo(x, high, ctx)
-      this.lineTo(x, low, ctx)
+      this.lineTo(x, high + y, ctx)
+      this.lineTo(x, low + y, ctx)
 
       ctx.strokeStyle = candleColor
       ctx.stroke()
@@ -445,7 +461,7 @@ export class CandlesChart extends Chart {
       if (halfCandle > 1) {
         this.rect(
           x - this.candlesSpace / 4,
-          open,
+          open + y,
           this.candlesSpace / 2,
           close - open,
           ctx,
@@ -470,7 +486,7 @@ export class CandlesChart extends Chart {
         (((this.position.left - zoomPoint) / d) * e?.movementX) / 100
 
       this.clampXPanning()
-      if(this.options?.yAxis?.fit) this.filterVisiblePointsAndCache()
+      if (this.options?.yAxis?.fit) this.filterVisiblePointsAndCache()
       this.draw()
     }
   }
@@ -481,7 +497,7 @@ export class CandlesChart extends Chart {
 
   mouseMoveHandler(e: MouseEvent) {
     if (this.panningIsActive) {
-      this.moveChart(e.movementX)
+      this.moveChart(e.movementX, e.movementY)
     }
 
     this.movePointer()

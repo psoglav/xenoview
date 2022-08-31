@@ -23,12 +23,12 @@ class ChartDataBase {
             point.high = point.close;
     }
     updateCurrentPoint(value) {
-        if (!(value === null || value === void 0 ? void 0 : value.PRICE) || !(value === null || value === void 0 ? void 0 : value.LASTUPDATE))
-            return;
         let hist = this.history;
         if (!(hist === null || hist === void 0 ? void 0 : hist.length))
             return;
         let currentPoint = hist[hist.length - 1];
+        if (!(value === null || value === void 0 ? void 0 : value.PRICE) || !(value === null || value === void 0 ? void 0 : value.LASTUPDATE) || currentPoint.close === value.PRICE)
+            return;
         let pointMinutesTs = (0, utils_1.toMinutes)(value.LASTUPDATE * 1000);
         let currentPointMinutesTs = (0, utils_1.toMinutes)(currentPoint.time * 1000);
         if (currentPointMinutesTs == pointMinutesTs) {
@@ -89,7 +89,7 @@ class ChartDataBase {
         let hh = Math.abs((max - min) / 2);
         let k = Math.abs(this.chart.yZoomFactor);
         value = (value - hh) / k + hh;
-        return value;
+        return value + this.chart.position.y;
     }
     normalizePoint(point) {
         let h = this.chart.mainCanvasHeight;
