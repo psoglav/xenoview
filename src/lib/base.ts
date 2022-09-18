@@ -1,6 +1,6 @@
 import { toMinutes } from '../utils/datetime'
 import { Ticker } from '..'
-import { UI, Label, UIElementGroup } from '../ui'
+import { UI, Label, UIElementGroup } from './ui'
 
 import '../public/styles/main.css'
 

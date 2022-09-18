@@ -1,10 +1,6 @@
-import {
-  TLinearChartOptions,
-  LinearHistory,
-  ChartData,
-} from '../types'
+import { TLinearChartOptions, LinearHistory, ChartData } from '../types'
 
-import Chart from './base'
+import Chart from '../base'
 
 export class LinearChart extends Chart {
   private CHART_HOVER_STROKE_WIDTH = 1.5
@@ -31,7 +27,7 @@ export class LinearChart extends Chart {
   constructor(
     container: HTMLElement | string,
     data?: LinearHistory,
-    opts?: TLinearChartOptions
+    opts?: TLinearChartOptions,
   ) {
     super(container)
 
@@ -61,7 +57,7 @@ export class LinearChart extends Chart {
           0,
           0,
           0,
-          this.height
+          this.height,
         )
         this.CHART_GRADIENT.addColorStop(0, gradientStart)
         this.CHART_GRADIENT.addColorStop(1, gradientEnd)
@@ -268,7 +264,7 @@ export class LinearChart extends Chart {
     ctx.fillText(
       new Date(this.history![this.pointerYPosIndex][0] * 1000).toString(),
       10,
-      70
+      70,
     )
   }
 

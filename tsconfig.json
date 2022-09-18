@@ -15,5 +15,5 @@
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "src/charts/linear.ts"]
+  "exclude": ["node_modules", "src/lib/charts/linear.ts"]
 }

@@ -1,4 +1,4 @@
-import { symbolToCurrency } from './utils/crypto'
+import { symbolToCurrency } from '../utils/crypto'
 
 type HistoryInterval = 'day' | 'hour' | 'minute'
 

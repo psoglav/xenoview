@@ -1,5 +1,5 @@
-import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../utils/datetime'
-import Chart from './base'
+import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../../utils/datetime'
+import Chart from '../base'
 
 export class CandlesChart extends Chart {
   private pointingPointIndex = 4

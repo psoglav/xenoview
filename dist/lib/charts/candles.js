@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CandlesChart = void 0;
-const datetime_1 = require("../utils/datetime");
-const base_1 = __importDefault(require("./base"));
+const datetime_1 = require("../../utils/datetime");
+const base_1 = __importDefault(require("../base"));
 class CandlesChart extends base_1.default {
     constructor(container, options) {
         super(container, options);

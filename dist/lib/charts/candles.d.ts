@@ -1,4 +1,4 @@
-import Chart from './base';
+import Chart from '../base';
 export declare class CandlesChart extends Chart {
     private pointingPointIndex;
     private pointerIsVisible;

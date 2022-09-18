@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const datetime_1 = require("../utils/datetime");
-const ui_1 = require("../ui");
+const ui_1 = require("./ui");
 require("../public/styles/main.css");
 const defaultChartOptions = {
     bgColor: '#151924',
