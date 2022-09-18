@@ -3,6 +3,8 @@ import { defaultChartOptions } from '../config'
 import { Ticker } from '..'
 import { UI, Label, UIElementGroup } from '../ui'
 
+import '../styles/main.css'
+
 abstract class ChartDataBase {
   history: HistoryData
   chartData: HistoryData
