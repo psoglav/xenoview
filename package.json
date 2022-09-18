@@ -5,12 +5,13 @@
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "scripts": {
-    "watch": "tsc --watch",
+    "build": "yarn remove-build && tsc && yarn copy-public",
     "dev": "cd sandbox && yarn dev",
-    "build": "tsc",
-    "prepublishOnly": "tsc",
+    "watch": "tsc --watch",
     "test": "jest",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "remove-build": "rm -rf ./dist",
+    "copy-public": "cp -r ./src/public/ ./dist/"
   },
   "license": "ISC",
   "devDependencies": {
