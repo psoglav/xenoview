@@ -197,7 +197,7 @@ class Chart extends ChartDataBase {
         this.createChartMarkup();
         this.position = {
             y: 0,
-            left: 0,
+            left: this.mainCanvasWidth * -10,
             right: this.mainCanvasWidth,
         };
     }

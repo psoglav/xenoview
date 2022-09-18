@@ -12,6 +12,7 @@ export declare class CandlesChart extends Chart {
     moveChart(mx: number, my: number): void;
     clampXPanning(): void;
     movePointer(): void;
+    loading(): void;
     drawPointer(): void;
     drawCurrentMarketPriceMarker(): void;
     drawPriceMarker(): void;

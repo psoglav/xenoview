@@ -20,22 +20,24 @@ class CandlesChart extends base_1.default {
         this.clear(this.chartContext);
         this.clear(this.xAxisContext);
         this.clear(this.yAxisContext);
-        if (this.chartData) {
+        if (!this.history) {
+            this.loading();
+        }
+        else {
             this.drawGridColumns();
             this.drawGridRows();
             this.drawXAxisLabels();
             this.drawYAxisLabels();
-            // this.drawYAxis()
+            this.drawChart();
+            this.drawPointer();
+            this.drawCurrentMarketPriceMarker();
+            if (this.pointerIsVisible) {
+                this.drawTimeMarker();
+                this.drawPriceMarker();
+            }
+            this.ui.draw();
+            this.mainDebug();
         }
-        this.drawChart();
-        this.drawPointer();
-        this.drawCurrentMarketPriceMarker();
-        if (this.pointerIsVisible) {
-            this.drawTimeMarker();
-            this.drawPriceMarker();
-        }
-        this.ui.draw();
-        this.mainDebug();
     }
     zoomChart(side) {
         var _a, _b;
@@ -77,6 +79,7 @@ class CandlesChart extends base_1.default {
             i > data.length - 1 ? data.length - 1 : i < 0 ? 0 : i;
         this.focusedPoint = this.history[this.pointingPointIndex];
     }
+    loading() { }
     drawPointer() {
         var _a;
         if (!((_a = this.chartData) === null || _a === void 0 ? void 0 : _a.length) || !this.pointerIsVisible)
