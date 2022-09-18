@@ -1,5 +1,6 @@
 import { Ticker } from '..';
 import { UI } from '../ui';
+import '../styles/main.css';
 declare abstract class ChartDataBase {
     history: HistoryData;
     chartData: HistoryData;
@@ -52,7 +53,7 @@ export default abstract class Chart extends ChartDataBase {
     createChart(): HTMLCanvasElement;
     createXAxis(): HTMLCanvasElement;
     createYAxis(): HTMLCanvasElement;
-    createChartMarkup(): void;
+    createChartMarkup(container: HTMLElement | string): void;
     initUIElements(): void;
     abstract clampXPanning(): void;
     abstract windowMouseMoveHandler(e?: MouseEvent): void;

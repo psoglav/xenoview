@@ -23,20 +23,28 @@ abstract class ChartDataBase {
     this.chart = chart
   }
 
-  updatePoint(point: HistoryPoint, value: { PRICE: number; LASTUPDATE: number }) {
+  updatePoint(
+    point: HistoryPoint,
+    value: { PRICE: number; LASTUPDATE: number },
+  ) {
     point.close = value.PRICE
     point.time = value.LASTUPDATE
 
     if (point.close < point.low) point.low = point.close
     if (point.close > point.high) point.high = point.close
   }
-  
+
   updateCurrentPoint(value: any) {
     let hist = this.history
     if (!hist?.length) return
     let currentPoint = hist[hist.length - 1]
-    
-    if (!value?.PRICE || !value?.LASTUPDATE || currentPoint.close === value.PRICE) return
+
+    if (
+      !value?.PRICE ||
+      !value?.LASTUPDATE ||
+      currentPoint.close === value.PRICE
+    )
+      return
 
     let pointMinutesTs = toMinutes(value.LASTUPDATE * 1000)
     let currentPointMinutesTs = toMinutes(currentPoint.time * 1000)
@@ -188,7 +196,7 @@ abstract class ChartDataBase {
 
   getTopHistoryPrice(): [number, number] {
     let history: any = this.visiblePoints || this.filterVisiblePointsAndCache()
-    history = history.map(({high}) => high)
+    history = history.map(({ high }) => high)
 
     let max = history[0]
     let i = 0
@@ -207,7 +215,7 @@ abstract class ChartDataBase {
 
   getBottomHistoryPrice(): [number, number] {
     let history: any = this.visiblePoints || this.filterVisiblePointsAndCache()
-    history = history.map(({low}) => low)
+    history = history.map(({ low }) => low)
 
     let min = history[0]
     let i = 0
@@ -249,24 +257,9 @@ export default abstract class Chart extends ChartDataBase {
     super()
     this.init(this)
 
-    if (options) this.options = {...this.options, ...options}
+    if (options) this.options = { ...this.options, ...options }
 
-    this.chartContext = document.createElement('canvas').getContext('2d')!
-    this.yAxisContext = document.createElement('canvas').getContext('2d')!
-    this.xAxisContext = document.createElement('canvas').getContext('2d')!
-
-    this.chartContext.lineWidth = 1 * this.getPixelRatio(this.chartContext)
-
-    if (typeof container === 'string') {
-      this.container = document.querySelector<HTMLElement>(container)!
-    }
-
-    if (!this.container) {
-      this.error('no container is found')
-      return
-    }
-
-    this.createChartMarkup()
+    this.createChartMarkup(container)
 
     this.position = {
       y: 0,
@@ -344,11 +337,27 @@ export default abstract class Chart extends ChartDataBase {
     return canvas
   }
 
-  createChartMarkup() {
+  createChartMarkup(container: HTMLElement | string) {
+    this.chartContext = document.createElement('canvas').getContext('2d')!
+    this.yAxisContext = document.createElement('canvas').getContext('2d')!
+    this.xAxisContext = document.createElement('canvas').getContext('2d')!
+
+    this.chartContext.lineWidth = 1 * this.getPixelRatio(this.chartContext)
+
+    if (typeof container === 'string') {
+      this.container = document.querySelector<HTMLElement>(container)!
+    }
+
+    if (!this.container) {
+      this.error('no container is found')
+      return
+    }
+
+    this.container.classList.add('chart-container')
     this.container.innerHTML = ''
     this.container.style.display = 'grid'
     this.container.style.grid = '1fr 28px / 1fr 70px'
-    
+
     let chartCanvas = this.createChart()
     let yAxisCanvas = this.createYAxis()
     let xAxisCanvas = this.createXAxis()
@@ -385,7 +394,9 @@ export default abstract class Chart extends ChartDataBase {
     let h = this.history
     let getCandleColor = () => {
       let p = h[h.length - 1]
-      return p.close < p.open ? this.options?.candles?.colors?.lower :  this.options?.candles?.colors?.higher
+      return p.close < p.open
+        ? this.options?.candles?.colors?.lower
+        : this.options?.candles?.colors?.higher
     }
 
     let commonOpts = () => ({
@@ -394,63 +405,63 @@ export default abstract class Chart extends ChartDataBase {
       font: 'Arial',
       size: 13,
       color: this.options?.textColor,
-      ctx: this.chartContext
+      ctx: this.chartContext,
     })
 
     let topbarGroup = new UIElementGroup({
       x: 10,
-      y: 23,  
+      y: 23,
       gap: 2,
       elements: [
         new Label({
-          value: () => this.ticker?.currency + ' / TetherUS - BINANCE - CryptoView', 
+          value: () =>
+            this.ticker?.currency + ' / TetherUS - BINANCE - CryptoView',
           ...commonOpts(),
-          size: 17
+          size: 17,
         }),
         30,
         new Label({
-          value: 'O', 
-          ...commonOpts()
+          value: 'O',
+          ...commonOpts(),
         }),
         new Label({
-          value: () => h[h.length - 1].open, 
+          value: () => h[h.length - 1].open,
           ...commonOpts(),
-          color: getCandleColor
+          color: getCandleColor,
         }),
         10,
         new Label({
-          value: 'H', 
-          ...commonOpts()
+          value: 'H',
+          ...commonOpts(),
         }),
         new Label({
-          value: () => h[h.length - 1].high, 
+          value: () => h[h.length - 1].high,
           ...commonOpts(),
-          color: getCandleColor
+          color: getCandleColor,
         }),
         10,
         new Label({
-          value: 'L', 
-          ...commonOpts()
+          value: 'L',
+          ...commonOpts(),
         }),
         new Label({
-          value: () => h[h.length - 1].low, 
+          value: () => h[h.length - 1].low,
           ...commonOpts(),
-          color: getCandleColor
+          color: getCandleColor,
         }),
         10,
         new Label({
-          value: 'C', 
-          ...commonOpts()
+          value: 'C',
+          ...commonOpts(),
         }),
         new Label({
-          value: () => h[h.length - 1].close, 
+          value: () => h[h.length - 1].close,
           ...commonOpts(),
-          color: getCandleColor
+          color: getCandleColor,
         }),
       ],
-      ctx: this.chartContext
+      ctx: this.chartContext,
     })
-
 
     this.ui.elements.push(topbarGroup)
   }

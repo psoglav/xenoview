@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("../utils");
 const config_1 = require("../config");
 const ui_1 = require("../ui");
+require("../styles/main.css");
 class ChartDataBase {
     constructor() {
         this.topHistoryPrice = [0, 0];
@@ -27,7 +28,9 @@ class ChartDataBase {
         if (!(hist === null || hist === void 0 ? void 0 : hist.length))
             return;
         let currentPoint = hist[hist.length - 1];
-        if (!(value === null || value === void 0 ? void 0 : value.PRICE) || !(value === null || value === void 0 ? void 0 : value.LASTUPDATE) || currentPoint.close === value.PRICE)
+        if (!(value === null || value === void 0 ? void 0 : value.PRICE) ||
+            !(value === null || value === void 0 ? void 0 : value.LASTUPDATE) ||
+            currentPoint.close === value.PRICE)
             return;
         let pointMinutesTs = (0, utils_1.toMinutes)(value.LASTUPDATE * 1000);
         let currentPointMinutesTs = (0, utils_1.toMinutes)(currentPoint.time * 1000);
@@ -183,18 +186,7 @@ class Chart extends ChartDataBase {
         this.init(this);
         if (options)
             this.options = Object.assign(Object.assign({}, this.options), options);
-        this.chartContext = document.createElement('canvas').getContext('2d');
-        this.yAxisContext = document.createElement('canvas').getContext('2d');
-        this.xAxisContext = document.createElement('canvas').getContext('2d');
-        this.chartContext.lineWidth = 1 * this.getPixelRatio(this.chartContext);
-        if (typeof container === 'string') {
-            this.container = document.querySelector(container);
-        }
-        if (!this.container) {
-            this.error('no container is found');
-            return;
-        }
-        this.createChartMarkup();
+        this.createChartMarkup(container);
         this.position = {
             y: 0,
             left: this.mainCanvasWidth * -10,
@@ -252,7 +244,19 @@ class Chart extends ChartDataBase {
         this.bindYAxisListeners();
         return canvas;
     }
-    createChartMarkup() {
+    createChartMarkup(container) {
+        this.chartContext = document.createElement('canvas').getContext('2d');
+        this.yAxisContext = document.createElement('canvas').getContext('2d');
+        this.xAxisContext = document.createElement('canvas').getContext('2d');
+        this.chartContext.lineWidth = 1 * this.getPixelRatio(this.chartContext);
+        if (typeof container === 'string') {
+            this.container = document.querySelector(container);
+        }
+        if (!this.container) {
+            this.error('no container is found');
+            return;
+        }
+        this.container.classList.add('chart-container');
         this.container.innerHTML = '';
         this.container.style.display = 'grid';
         this.container.style.grid = '1fr 28px / 1fr 70px';
@@ -284,7 +288,9 @@ class Chart extends ChartDataBase {
         let getCandleColor = () => {
             var _a, _b, _c, _d, _e, _f;
             let p = h[h.length - 1];
-            return p.close < p.open ? (_c = (_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.candles) === null || _b === void 0 ? void 0 : _b.colors) === null || _c === void 0 ? void 0 : _c.lower : (_f = (_e = (_d = this.options) === null || _d === void 0 ? void 0 : _d.candles) === null || _e === void 0 ? void 0 : _e.colors) === null || _f === void 0 ? void 0 : _f.higher;
+            return p.close < p.open
+                ? (_c = (_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.candles) === null || _b === void 0 ? void 0 : _b.colors) === null || _c === void 0 ? void 0 : _c.lower
+                : (_f = (_e = (_d = this.options) === null || _d === void 0 ? void 0 : _d.candles) === null || _e === void 0 ? void 0 : _e.colors) === null || _f === void 0 ? void 0 : _f.higher;
         };
         let commonOpts = () => {
             var _a;
@@ -294,7 +300,7 @@ class Chart extends ChartDataBase {
                 font: 'Arial',
                 size: 13,
                 color: (_a = this.options) === null || _a === void 0 ? void 0 : _a.textColor,
-                ctx: this.chartContext
+                ctx: this.chartContext,
             });
         };
         let topbarGroup = new ui_1.UIElementGroup({
@@ -316,7 +322,7 @@ class Chart extends ChartDataBase {
                 new ui_1.Label(Object.assign({ value: 'C' }, commonOpts())),
                 new ui_1.Label(Object.assign(Object.assign({ value: () => h[h.length - 1].close }, commonOpts()), { color: getCandleColor })),
             ],
-            ctx: this.chartContext
+            ctx: this.chartContext,
         });
         this.ui.elements.push(topbarGroup);
     }
