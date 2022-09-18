@@ -1,9 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const datetime_1 = require("../utils/datetime");
-const config_1 = require("../config");
 const ui_1 = require("../ui");
 require("../public/styles/main.css");
+const defaultChartOptions = {
+    bgColor: '#151924',
+    textColor: '#b2b5be',
+    pointer: {
+        bgColor: '#363a45',
+        fgColor: '#9598a1',
+    },
+    candles: {
+        colors: {
+            higher: '#089981',
+            lower: '#f23645',
+        },
+    },
+};
 class ChartDataBase {
     constructor() {
         this.topHistoryPrice = [0, 0];
@@ -179,7 +192,7 @@ class ChartDataBase {
 class Chart extends ChartDataBase {
     constructor(container, options) {
         super();
-        this.options = config_1.defaultChartOptions;
+        this.options = defaultChartOptions;
         this.mousePosition = { x: 0, y: 0 };
         this.zoomSpeed = 4;
         this.yZoomFactor = 1.2;
