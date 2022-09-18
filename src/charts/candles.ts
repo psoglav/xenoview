@@ -18,26 +18,25 @@ export class CandlesChart extends Chart {
     this.clear(this.xAxisContext)
     this.clear(this.yAxisContext)
 
-    if (this.chartData) {
+    if (!this.history) {
+      this.loading()
+    } else {
       this.drawGridColumns()
       this.drawGridRows()
       this.drawXAxisLabels()
       this.drawYAxisLabels()
-      // this.drawYAxis()
+      this.drawChart()
+      this.drawPointer()
+      this.drawCurrentMarketPriceMarker()
+
+      if (this.pointerIsVisible) {
+        this.drawTimeMarker()
+        this.drawPriceMarker()
+      }
+
+      this.ui.draw()
+      this.mainDebug()
     }
-
-    this.drawChart()
-
-    this.drawPointer()
-    this.drawCurrentMarketPriceMarker()
-
-    if (this.pointerIsVisible) {
-      this.drawTimeMarker()
-      this.drawPriceMarker()
-    }
-
-    this.ui.draw()
-    this.mainDebug()
   }
 
   zoomChart(side: number) {
@@ -84,6 +83,8 @@ export class CandlesChart extends Chart {
       i > data.length - 1 ? data.length - 1 : i < 0 ? 0 : i
     this.focusedPoint = this.history[this.pointingPointIndex]
   }
+
+  loading() {}
 
   drawPointer() {
     if (!this.chartData?.length || !this.pointerIsVisible) return
