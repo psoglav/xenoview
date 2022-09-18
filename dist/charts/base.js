@@ -186,7 +186,7 @@ class Chart extends ChartDataBase {
         this.init(this);
         if (options)
             this.options = Object.assign(Object.assign({}, this.options), options);
-        this.createChartMarkup(container);
+        this.createChartLayout(container);
         this.position = {
             y: 0,
             left: this.mainCanvasWidth * -10,
@@ -244,7 +244,7 @@ class Chart extends ChartDataBase {
         this.bindYAxisListeners();
         return canvas;
     }
-    createChartMarkup(container) {
+    createChartLayout(container) {
         this.chartContext = document.createElement('canvas').getContext('2d');
         this.yAxisContext = document.createElement('canvas').getContext('2d');
         this.xAxisContext = document.createElement('canvas').getContext('2d');

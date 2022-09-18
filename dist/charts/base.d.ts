@@ -53,7 +53,7 @@ export default abstract class Chart extends ChartDataBase {
     createChart(): HTMLCanvasElement;
     createXAxis(): HTMLCanvasElement;
     createYAxis(): HTMLCanvasElement;
-    createChartMarkup(container: HTMLElement | string): void;
+    createChartLayout(container: HTMLElement | string): void;
     initUIElements(): void;
     abstract clampXPanning(): void;
     abstract windowMouseMoveHandler(e?: MouseEvent): void;

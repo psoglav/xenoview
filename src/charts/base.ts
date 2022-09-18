@@ -259,7 +259,7 @@ export default abstract class Chart extends ChartDataBase {
 
     if (options) this.options = { ...this.options, ...options }
 
-    this.createChartMarkup(container)
+    this.createChartLayout(container)
 
     this.position = {
       y: 0,
@@ -337,7 +337,7 @@ export default abstract class Chart extends ChartDataBase {
     return canvas
   }
 
-  createChartMarkup(container: HTMLElement | string) {
+  createChartLayout(container: HTMLElement | string) {
     this.chartContext = document.createElement('canvas').getContext('2d')!
     this.yAxisContext = document.createElement('canvas').getContext('2d')!
     this.xAxisContext = document.createElement('canvas').getContext('2d')!
