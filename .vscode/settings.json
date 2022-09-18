@@ -1,0 +1,8 @@
+{
+  "liveSassCompile.settings.formats": [
+    {
+      "extensionName": ".css",
+      "savePath": "./src/public/styles"
+    }
+  ]
+}
