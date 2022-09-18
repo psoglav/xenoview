@@ -1,14 +1,6 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.symbolToCurrency = exports.toMinutes = exports.getFullTimeFromTimestamp = exports.getTimeFromTimestamp = exports.lerp = void 0;
-const scmap_json_1 = __importDefault(require("./data/scmap.json"));
-const lerp = (start, end, t) => {
-    return start + (end - start) * t;
-};
-exports.lerp = lerp;
+exports.toMinutes = exports.getFullTimeFromTimestamp = exports.getTimeFromTimestamp = void 0;
 const getTimeFromTimestamp = (ts) => {
     let date = new Date(ts);
     let h = date.getHours().toString().padStart(2, '0');
@@ -32,6 +24,4 @@ const toMinutes = (ts) => {
     return +new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes());
 };
 exports.toMinutes = toMinutes;
-const symbolToCurrency = (value) => scmap_json_1.default[value.toUpperCase()];
-exports.symbolToCurrency = symbolToCurrency;
-//# sourceMappingURL=utils.js.map
+//# sourceMappingURL=datetime.js.map

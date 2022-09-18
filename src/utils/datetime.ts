@@ -1,9 +1,3 @@
-import scmap from './data/scmap.json'
-
-export const lerp = (start: number, end: number, t: number) => {
-  return start + (end - start) * t
-}
-
 export const getTimeFromTimestamp = (ts: number): string => {
   let date = new Date(ts)
   let h = date.getHours().toString().padStart(2, '0')
@@ -34,5 +28,3 @@ export const toMinutes = (ts: number): number => {
     date.getMinutes(),
   )
 }
-
-export const symbolToCurrency = (value: string) => scmap[value.toUpperCase()]

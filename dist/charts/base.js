@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const utils_1 = require("../utils");
+const datetime_1 = require("../utils/datetime");
 const config_1 = require("../config");
 const ui_1 = require("../ui");
-require("../styles/main.css");
+require("../public/styles/main.css");
 class ChartDataBase {
     constructor() {
         this.topHistoryPrice = [0, 0];
@@ -32,8 +32,8 @@ class ChartDataBase {
             !(value === null || value === void 0 ? void 0 : value.LASTUPDATE) ||
             currentPoint.close === value.PRICE)
             return;
-        let pointMinutesTs = (0, utils_1.toMinutes)(value.LASTUPDATE * 1000);
-        let currentPointMinutesTs = (0, utils_1.toMinutes)(currentPoint.time * 1000);
+        let pointMinutesTs = (0, datetime_1.toMinutes)(value.LASTUPDATE * 1000);
+        let currentPointMinutesTs = (0, datetime_1.toMinutes)(currentPoint.time * 1000);
         if (currentPointMinutesTs == pointMinutesTs) {
             this.updatePoint(hist[hist.length - 1], value);
         }

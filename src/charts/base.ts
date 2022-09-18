@@ -1,4 +1,4 @@
-import { toMinutes } from '../utils'
+import { toMinutes } from '../utils/datetime'
 import { defaultChartOptions } from '../config'
 import { Ticker } from '..'
 import { UI, Label, UIElementGroup } from '../ui'

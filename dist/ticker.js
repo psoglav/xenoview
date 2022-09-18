@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Ticker = void 0;
-const utils_1 = require("./utils");
+const crypto_1 = require("./utils/crypto");
 class Ticker {
     constructor(symbol, apiKey) {
         this.apiKey = '';
@@ -10,7 +10,7 @@ class Ticker {
         this.initBinance(symbol);
     }
     get currency() {
-        return (0, utils_1.symbolToCurrency)(this.symbol);
+        return (0, crypto_1.symbolToCurrency)(this.symbol);
     }
     async fetchHistory(symbol, interval) {
         let params = {

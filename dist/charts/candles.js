@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CandlesChart = void 0;
-const utils_1 = require("../utils");
+const datetime_1 = require("../utils/datetime");
 const base_1 = __importDefault(require("./base"));
 class CandlesChart extends base_1.default {
     constructor(container, options) {
@@ -158,7 +158,7 @@ class CandlesChart extends base_1.default {
             return;
         if (point.time.toString().length != 13)
             point.time *= 1000;
-        let time = (0, utils_1.getFullTimeFromTimestamp)(point.time);
+        let time = (0, datetime_1.getFullTimeFromTimestamp)(point.time);
         x = this.getPointX(i);
         ctx.beginPath();
         ctx.fillStyle = this.options.pointer.bgColor;
@@ -275,7 +275,7 @@ class CandlesChart extends base_1.default {
         for (let i of cols) {
             let point = this.history[i];
             let x = this.getPointX(i);
-            let time = (0, utils_1.getTimeFromTimestamp)(point.time * 1000);
+            let time = (0, datetime_1.getTimeFromTimestamp)(point.time * 1000);
             ctx.fillText(time, x - 16, 16);
         }
         ctx.stroke();

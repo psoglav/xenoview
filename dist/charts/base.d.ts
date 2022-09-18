@@ -1,6 +1,6 @@
 import { Ticker } from '..';
 import { UI } from '../ui';
-import '../styles/main.css';
+import '../public/styles/main.css';
 declare abstract class ChartDataBase {
     history: HistoryData;
     chartData: HistoryData;
