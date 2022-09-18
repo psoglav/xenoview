@@ -16,7 +16,6 @@ export declare class CandlesChart extends Chart {
     drawCurrentMarketPriceMarker(): void;
     drawPriceMarker(): void;
     drawTimeMarker(): void;
-    mainDebug(): void;
     getGridRows(): any[];
     getGridColumns(): number[];
     drawGridRows(): void;
@@ -38,4 +37,5 @@ export declare class CandlesChart extends Chart {
     yAxisMouseUpHandler(e?: MouseEvent): void;
     xAxisMouseDownHandler(e?: MouseEvent): void;
     xAxisMouseUpHandler(e?: MouseEvent): void;
+    mainDebug(): void;
 }

@@ -164,6 +164,7 @@ export class CandlesChart extends Chart {
   drawTimeMarker() {
     let ctx = this.xAxisContext
     let data = this.history
+    if (!data) return
     let h = this.getHeight(ctx)
     let x = this.mousePosition.x - this.canvasRect.x
     let i = Math.round(
@@ -184,20 +185,6 @@ export class CandlesChart extends Chart {
     ctx.fillStyle = 'white'
     ctx.font = '11px Verdana'
     ctx.fillText(time, x - 50, 20)
-  }
-
-  mainDebug() {
-    let y = this.mousePosition.y - this.canvasRect.top
-
-    let h = this.mainCanvasHeight
-    let k = Math.abs(this.yZoomFactor)
-    let t = (this.topHistoryPrice[1] + this.position.y)
-    let b = (this.bottomHistoryPrice[1] + this.position.y)
-    let py = this.position.y
-
-    let price = (y / h) * ((b - t) / k) + t
-    // this.debug(t + this.position.y, 100, 100,)
-    // this.debug(b + this.position.y, 100, 120,)
   }
 
   getGridRows() {
@@ -567,4 +554,6 @@ export class CandlesChart extends Chart {
   xAxisMouseUpHandler(e?: MouseEvent): void {
     this.isZoomingXAxis = false
   }
+
+  mainDebug() {}
 }

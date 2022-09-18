@@ -145,6 +145,8 @@ class CandlesChart extends base_1.default {
     drawTimeMarker() {
         let ctx = this.xAxisContext;
         let data = this.history;
+        if (!data)
+            return;
         let h = this.getHeight(ctx);
         let x = this.mousePosition.x - this.canvasRect.x;
         let i = Math.round(((x - this.position.left) / this.chartFullWidth) * data.length);
@@ -163,17 +165,6 @@ class CandlesChart extends base_1.default {
         ctx.fillStyle = 'white';
         ctx.font = '11px Verdana';
         ctx.fillText(time, x - 50, 20);
-    }
-    mainDebug() {
-        let y = this.mousePosition.y - this.canvasRect.top;
-        let h = this.mainCanvasHeight;
-        let k = Math.abs(this.yZoomFactor);
-        let t = (this.topHistoryPrice[1] + this.position.y);
-        let b = (this.bottomHistoryPrice[1] + this.position.y);
-        let py = this.position.y;
-        let price = (y / h) * ((b - t) / k) + t;
-        // this.debug(t + this.position.y, 100, 100,)
-        // this.debug(b + this.position.y, 100, 120,)
     }
     getGridRows() {
         let t = this.topHistoryPrice[1];
@@ -455,6 +446,7 @@ class CandlesChart extends base_1.default {
     xAxisMouseUpHandler(e) {
         this.isZoomingXAxis = false;
     }
+    mainDebug() { }
 }
 exports.CandlesChart = CandlesChart;
 //# sourceMappingURL=candles.js.map
