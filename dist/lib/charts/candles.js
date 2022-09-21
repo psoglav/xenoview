@@ -403,6 +403,7 @@ class CandlesChart extends base_1.default {
     mouseLeaveHandler() {
         this.pointerIsVisible = false;
         this.panningIsActive = false;
+        this.focusedPoint = null;
         this.draw();
     }
     mouseDownHandler(e) {

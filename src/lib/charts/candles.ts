@@ -501,6 +501,7 @@ export class CandlesChart extends Chart {
   mouseLeaveHandler() {
     this.pointerIsVisible = false
     this.panningIsActive = false
+    this.focusedPoint = null
 
     this.draw()
   }

@@ -46,13 +46,14 @@ export default abstract class Chart extends ChartDataBase {
     xAxisContext: CanvasRenderingContext2D;
     zoomSpeed: number;
     yZoomFactor: number;
-    focusedPoint: HistoryPoint;
+    focusedPoint: HistoryPoint | null;
     constructor(container: HTMLElement | string, options?: ChartOptions);
     loadHistory(value: HistoryData): void;
     setTicker(ticker: Ticker): void;
     createChart(): HTMLCanvasElement;
     createXAxis(): HTMLCanvasElement;
     createYAxis(): HTMLCanvasElement;
+    createChartToolbar(): void;
     createChartLayout(container: HTMLElement | string): void;
     initUIElements(): void;
     abstract clampXPanning(): void;

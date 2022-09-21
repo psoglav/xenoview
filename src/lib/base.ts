@@ -267,7 +267,7 @@ export default abstract class Chart extends ChartDataBase {
   zoomSpeed: number = 4
   yZoomFactor = 1.2
 
-  focusedPoint: HistoryPoint
+  focusedPoint: HistoryPoint | null
 
   constructor(container: HTMLElement | string, options?: ChartOptions) {
     super()
@@ -353,6 +353,8 @@ export default abstract class Chart extends ChartDataBase {
     return canvas
   }
 
+  createChartToolbar() {}
+
   createChartLayout(container: HTMLElement | string) {
     this.chartContext = document.createElement('canvas').getContext('2d')!
     this.yAxisContext = document.createElement('canvas').getContext('2d')!
@@ -408,8 +410,9 @@ export default abstract class Chart extends ChartDataBase {
 
   initUIElements() {
     let h = this.history
+    let getPoint = () => this.focusedPoint || h[h.length - 1]
     let getCandleColor = () => {
-      let p = h[h.length - 1]
+      let p = getPoint()
       return p.close < p.open
         ? this.options?.candles?.colors?.lower
         : this.options?.candles?.colors?.higher
@@ -441,7 +444,7 @@ export default abstract class Chart extends ChartDataBase {
           ...commonOpts(),
         }),
         new Label({
-          value: () => h[h.length - 1].open,
+          value: () => getPoint().open,
           ...commonOpts(),
           color: getCandleColor,
         }),
@@ -451,7 +454,7 @@ export default abstract class Chart extends ChartDataBase {
           ...commonOpts(),
         }),
         new Label({
-          value: () => h[h.length - 1].high,
+          value: () => getPoint().high,
           ...commonOpts(),
           color: getCandleColor,
         }),
@@ -461,7 +464,7 @@ export default abstract class Chart extends ChartDataBase {
           ...commonOpts(),
         }),
         new Label({
-          value: () => h[h.length - 1].low,
+          value: () => getPoint().low,
           ...commonOpts(),
           color: getCandleColor,
         }),
@@ -471,7 +474,7 @@ export default abstract class Chart extends ChartDataBase {
           ...commonOpts(),
         }),
         new Label({
-          value: () => h[h.length - 1].close,
+          value: () => getPoint().close,
           ...commonOpts(),
           color: getCandleColor,
         }),
