@@ -19,7 +19,7 @@ class CandlesChart extends base_1.default {
     draw() {
         this.clear(this.chartContext);
         this.clear(this.xAxisContext);
-        this.clear(this.yAxisContext);
+        this.clear(this.priceAxisContext);
         if (!this.history) {
             this.loading();
         }
@@ -46,7 +46,7 @@ class CandlesChart extends base_1.default {
         this.position.right += ((this.position.right - zoomPoint) / d) * side;
         this.position.left += ((this.position.left - zoomPoint) / d) * side;
         this.clampXPanning();
-        if ((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.yAxis) === null || _b === void 0 ? void 0 : _b.fit)
+        if ((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.priceAxis) === null || _b === void 0 ? void 0 : _b.fit)
             this.filterVisiblePointsAndCache();
     }
     moveChart(mx, my) {
@@ -59,7 +59,7 @@ class CandlesChart extends base_1.default {
         this.position.left += mx;
         this.position.right += mx;
         this.clampXPanning();
-        if ((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.yAxis) === null || _b === void 0 ? void 0 : _b.fit)
+        if ((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.priceAxis) === null || _b === void 0 ? void 0 : _b.fit)
             this.filterVisiblePointsAndCache();
     }
     clampXPanning() {
@@ -115,7 +115,7 @@ class CandlesChart extends base_1.default {
         ctx.closePath();
         ctx.stroke();
         ctx.setLineDash([]);
-        ctx = this.yAxisContext;
+        ctx = this.priceAxisContext;
         ctx.beginPath();
         ctx.fillStyle = this.options.candles.colors[type];
         this.rect(0, y - 10, this.getWidth(ctx), 20, ctx);
@@ -127,7 +127,7 @@ class CandlesChart extends base_1.default {
     }
     // TODO: fix the price issue
     drawPriceMarker() {
-        let ctx = this.yAxisContext;
+        let ctx = this.priceAxisContext;
         let y = this.mousePosition.y - this.canvasRect.top;
         let h = this.mainCanvasHeight;
         let t = this.topHistoryPrice[1] + this.position.y;
@@ -251,7 +251,7 @@ class CandlesChart extends base_1.default {
         ctx.closePath();
     }
     drawYAxisLabels() {
-        let ctx = this.yAxisContext;
+        let ctx = this.priceAxisContext;
         let rows = this.getGridRows();
         for (let i of rows) {
             let y = this.normalizeY(i);
@@ -283,7 +283,7 @@ class CandlesChart extends base_1.default {
     }
     drawYAxis() {
         let ctx = this.chartContext;
-        let yAxisCtx = this.yAxisContext;
+        let priceAxisCtx = this.priceAxisContext;
         let segments = 20, h = this.mainCanvasHeight, w = this.mainCanvasWidth;
         let t = this.topHistoryPrice[1];
         let b = this.bottomHistoryPrice[1];
@@ -298,7 +298,7 @@ class CandlesChart extends base_1.default {
         let normalize = (y) => ((y - br) / (tr - br)) * h;
         let reverse = (y) => h - y;
         let convert = (y) => reverse(normalize(y));
-        this.clear(yAxisCtx);
+        this.clear(priceAxisCtx);
         ctx.beginPath();
         ctx.strokeStyle = '#7777aa33';
         tr = convert(tr);
@@ -325,10 +325,10 @@ class CandlesChart extends base_1.default {
             this.moveTo(0, y + br, ctx);
             this.lineTo(w, y + br, ctx);
             let fz = 11;
-            yAxisCtx.fillStyle = this.options.textColor;
-            yAxisCtx.font = fz + 'px Verdana';
+            priceAxisCtx.fillStyle = this.options.textColor;
+            priceAxisCtx.font = fz + 'px Verdana';
             let price = i * ((t - b) / segments);
-            yAxisCtx.fillText(round(price + b).toFixed(2), 10, y + br - 2 + fz / 2);
+            priceAxisCtx.fillText(round(price + b).toFixed(2), 10, y + br - 2 + fz / 2);
         }
         ctx.stroke();
         ctx.closePath();
@@ -387,7 +387,7 @@ class CandlesChart extends base_1.default {
                 (((this.position.right - zoomPoint) / d) * mx) / 100;
             this.position.left += (((this.position.left - zoomPoint) / d) * mx) / 100;
             this.clampXPanning();
-            if ((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.yAxis) === null || _b === void 0 ? void 0 : _b.fit)
+            if ((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.priceAxis) === null || _b === void 0 ? void 0 : _b.fit)
                 this.filterVisiblePointsAndCache();
             this.draw();
         }
@@ -442,10 +442,10 @@ class CandlesChart extends base_1.default {
         this.drawPriceMarker();
         this.drawTimeMarker();
     }
-    yAxisMouseDownHandler(e) {
+    priceAxisMouseDownHandler(e) {
         this.isZoomingYAxis = true;
     }
-    yAxisMouseUpHandler(e) {
+    priceAxisMouseUpHandler(e) {
         this.isZoomingYAxis = false;
     }
     xAxisMouseDownHandler(e) {

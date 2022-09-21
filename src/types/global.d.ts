@@ -44,7 +44,7 @@ declare global {
         fontSize: number
       }
     }
-    yAxis?: {
+    priceAxis?: {
       labels?: {
         fontSize: number
       }

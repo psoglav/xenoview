@@ -261,7 +261,7 @@ export default abstract class Chart extends ChartDataBase {
   mousePosition = { x: 0, y: 0 }
 
   chartContext: CanvasRenderingContext2D
-  yAxisContext: CanvasRenderingContext2D
+  priceAxisContext: CanvasRenderingContext2D
   xAxisContext: CanvasRenderingContext2D
 
   zoomSpeed: number = 4
@@ -338,10 +338,10 @@ export default abstract class Chart extends ChartDataBase {
   }
 
   createYAxis(): HTMLCanvasElement {
-    let canvas = this.yAxisContext.canvas
+    let canvas = this.priceAxisContext.canvas
     let ctx = canvas.getContext('2d')!
 
-    this.yAxisContext = ctx
+    this.priceAxisContext = ctx
 
     canvas.style.gridArea = '1 / 2 / 2 / 3'
     canvas.style.width = '70px'
@@ -357,7 +357,7 @@ export default abstract class Chart extends ChartDataBase {
 
   createChartLayout(container: HTMLElement | string) {
     this.chartContext = document.createElement('canvas').getContext('2d')!
-    this.yAxisContext = document.createElement('canvas').getContext('2d')!
+    this.priceAxisContext = document.createElement('canvas').getContext('2d')!
     this.xAxisContext = document.createElement('canvas').getContext('2d')!
 
     this.chartContext.lineWidth = 1 * this.getPixelRatio(this.chartContext)
@@ -377,7 +377,7 @@ export default abstract class Chart extends ChartDataBase {
     this.container.style.grid = '1fr 28px / 1fr 70px'
 
     let chartCanvas = this.createChart()
-    let yAxisCanvas = this.createYAxis()
+    let priceAxisCanvas = this.createYAxis()
     let xAxisCanvas = this.createXAxis()
 
     let rect = this.container!.getBoundingClientRect()
@@ -388,7 +388,7 @@ export default abstract class Chart extends ChartDataBase {
       rect = this.container!.getBoundingClientRect()
       this.setSize(rect.width - 70, rect.height - 28, chartCanvas)
       this.setSize(rect.width - 70, 28, xAxisCanvas)
-      this.setSize(70, rect.height - 28, yAxisCanvas)
+      this.setSize(70, rect.height - 28, priceAxisCanvas)
       this.clampXPanning()
       this.draw()
     })
@@ -399,10 +399,10 @@ export default abstract class Chart extends ChartDataBase {
 
     this.container!.appendChild(chartCanvas)
     this.container!.appendChild(xAxisCanvas)
-    this.container!.appendChild(yAxisCanvas)
+    this.container!.appendChild(priceAxisCanvas)
 
     this.rescale(this.chartContext)
-    this.rescale(this.yAxisContext)
+    this.rescale(this.priceAxisContext)
     this.rescale(this.xAxisContext)
 
     this.ui = new UI()
@@ -497,10 +497,10 @@ export default abstract class Chart extends ChartDataBase {
   abstract mouseUpHandler(e?: MouseEvent): void
   abstract wheelHandler(e?: WheelEvent): void
 
-  // abstract yAxisMouseMoveHandler(e?: MouseEvent): void
-  abstract yAxisMouseDownHandler(e?: MouseEvent): void
-  abstract yAxisMouseUpHandler(e?: MouseEvent): void
-  // abstract yAxisMouseLeaveHandler(e?: MouseEvent): void
+  // abstract priceAxisMouseMoveHandler(e?: MouseEvent): void
+  abstract priceAxisMouseDownHandler(e?: MouseEvent): void
+  abstract priceAxisMouseUpHandler(e?: MouseEvent): void
+  // abstract priceAxisMouseLeaveHandler(e?: MouseEvent): void
 
   // abstract xAxisMouseMoveHandler(e?: MouseEvent): void
   abstract xAxisMouseDownHandler(e?: MouseEvent): void
@@ -522,11 +522,11 @@ export default abstract class Chart extends ChartDataBase {
   }
 
   bindYAxisListeners() {
-    let canvas = this.yAxisContext.canvas
-    // canvas.addEventListener('mousemove', (e) => this.yAxisMouseMoveHandler(e))
-    canvas.addEventListener('mousedown', (e) => this.yAxisMouseDownHandler(e))
-    canvas.addEventListener('mouseup', (e) => this.yAxisMouseUpHandler(e))
-    // canvas.addEventListener('mouseleave', (e) => this.yAxisMouseLeaveHandler(e))
+    let canvas = this.priceAxisContext.canvas
+    // canvas.addEventListener('mousemove', (e) => this.priceAxisMouseMoveHandler(e))
+    canvas.addEventListener('mousedown', (e) => this.priceAxisMouseDownHandler(e))
+    canvas.addEventListener('mouseup', (e) => this.priceAxisMouseUpHandler(e))
+    // canvas.addEventListener('mouseleave', (e) => this.priceAxisMouseLeaveHandler(e))
   }
 
   bindXAxisListeners() {

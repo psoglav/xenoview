@@ -42,7 +42,7 @@ export default abstract class Chart extends ChartDataBase {
         y: number;
     };
     chartContext: CanvasRenderingContext2D;
-    yAxisContext: CanvasRenderingContext2D;
+    priceAxisContext: CanvasRenderingContext2D;
     xAxisContext: CanvasRenderingContext2D;
     zoomSpeed: number;
     yZoomFactor: number;
@@ -65,8 +65,8 @@ export default abstract class Chart extends ChartDataBase {
     abstract mouseDownHandler(e?: MouseEvent): void;
     abstract mouseUpHandler(e?: MouseEvent): void;
     abstract wheelHandler(e?: WheelEvent): void;
-    abstract yAxisMouseDownHandler(e?: MouseEvent): void;
-    abstract yAxisMouseUpHandler(e?: MouseEvent): void;
+    abstract priceAxisMouseDownHandler(e?: MouseEvent): void;
+    abstract priceAxisMouseUpHandler(e?: MouseEvent): void;
     abstract xAxisMouseDownHandler(e?: MouseEvent): void;
     abstract xAxisMouseUpHandler(e?: MouseEvent): void;
     bindMouseListeners(): void;

@@ -19,7 +19,7 @@ export class CandlesChart extends Chart {
   draw() {
     this.clear(this.chartContext)
     this.clear(this.xAxisContext)
-    this.clear(this.yAxisContext)
+    this.clear(this.priceAxisContext)
 
     if (!this.history) {
       this.loading()
@@ -50,7 +50,7 @@ export class CandlesChart extends Chart {
     this.position.left += ((this.position.left - zoomPoint) / d) * side
 
     this.clampXPanning()
-    if (this.options?.yAxis?.fit) this.filterVisiblePointsAndCache()
+    if (this.options?.priceAxis?.fit) this.filterVisiblePointsAndCache()
   }
 
   moveChart(mx: number, my: number) {
@@ -63,7 +63,7 @@ export class CandlesChart extends Chart {
     this.position.right += mx
 
     this.clampXPanning()
-    if (this.options?.yAxis?.fit) this.filterVisiblePointsAndCache()
+    if (this.options?.priceAxis?.fit) this.filterVisiblePointsAndCache()
   }
 
   clampXPanning() {
@@ -130,7 +130,7 @@ export class CandlesChart extends Chart {
 
     ctx.setLineDash([])
 
-    ctx = this.yAxisContext
+    ctx = this.priceAxisContext
 
     ctx.beginPath()
     ctx.fillStyle = this.options.candles.colors[type]
@@ -144,7 +144,7 @@ export class CandlesChart extends Chart {
 
   // TODO: fix the price issue
   drawPriceMarker() {
-    let ctx = this.yAxisContext
+    let ctx = this.priceAxisContext
     let y = this.mousePosition.y - this.canvasRect.top
 
     let h = this.mainCanvasHeight
@@ -296,7 +296,7 @@ export class CandlesChart extends Chart {
   }
 
   drawYAxisLabels() {
-    let ctx = this.yAxisContext
+    let ctx = this.priceAxisContext
     let rows = this.getGridRows()
 
     for (let i of rows) {
@@ -335,7 +335,7 @@ export class CandlesChart extends Chart {
 
   drawYAxis() {
     let ctx = this.chartContext
-    let yAxisCtx = this.yAxisContext
+    let priceAxisCtx = this.priceAxisContext
 
     let segments = 20,
       h = this.mainCanvasHeight,
@@ -361,7 +361,7 @@ export class CandlesChart extends Chart {
 
     let convert = (y: number) => reverse(normalize(y))
 
-    this.clear(yAxisCtx)
+    this.clear(priceAxisCtx)
     ctx.beginPath()
 
     ctx.strokeStyle = '#7777aa33'
@@ -400,10 +400,10 @@ export class CandlesChart extends Chart {
       this.lineTo(w, y + br, ctx)
 
       let fz = 11
-      yAxisCtx.fillStyle = this.options.textColor
-      yAxisCtx.font = fz + 'px Verdana'
+      priceAxisCtx.fillStyle = this.options.textColor
+      priceAxisCtx.font = fz + 'px Verdana'
       let price = i * ((t - b) / segments)
-      yAxisCtx.fillText(round(price + b).toFixed(2), 10, y + br - 2 + fz / 2)
+      priceAxisCtx.fillText(round(price + b).toFixed(2), 10, y + br - 2 + fz / 2)
     }
 
     ctx.stroke()
@@ -485,7 +485,7 @@ export class CandlesChart extends Chart {
       this.position.left += (((this.position.left - zoomPoint) / d) * mx) / 100
 
       this.clampXPanning()
-      if (this.options?.yAxis?.fit) this.filterVisiblePointsAndCache()
+      if (this.options?.priceAxis?.fit) this.filterVisiblePointsAndCache()
       this.draw()
     }
   }
@@ -549,11 +549,11 @@ export class CandlesChart extends Chart {
     this.drawTimeMarker()
   }
 
-  yAxisMouseDownHandler(e?: MouseEvent): void {
+  priceAxisMouseDownHandler(e?: MouseEvent): void {
     this.isZoomingYAxis = true
   }
 
-  yAxisMouseUpHandler(e?: MouseEvent): void {
+  priceAxisMouseUpHandler(e?: MouseEvent): void {
     this.isZoomingYAxis = false
   }
 
