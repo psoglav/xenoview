@@ -357,7 +357,7 @@ class Chart extends ChartDataBase {
     }
     bindYAxisListeners() {
         let canvas = this.yAxisContext.canvas;
-        canvas.addEventListener('mousemove', (e) => this.yAxisMouseMoveHandler(e));
+        // canvas.addEventListener('mousemove', (e) => this.yAxisMouseMoveHandler(e))
         canvas.addEventListener('mousedown', (e) => this.yAxisMouseDownHandler(e));
         canvas.addEventListener('mouseup', (e) => this.yAxisMouseUpHandler(e));
         // canvas.addEventListener('mouseleave', (e) => this.yAxisMouseLeaveHandler(e))

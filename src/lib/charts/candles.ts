@@ -1,4 +1,7 @@
-import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../../utils/datetime'
+import {
+  getFullTimeFromTimestamp,
+  getTimeFromTimestamp,
+} from '../../utils/datetime'
 import Chart from '../base'
 
 export class CandlesChart extends Chart {
@@ -463,15 +466,23 @@ export class CandlesChart extends Chart {
     }
   }
 
-  windowMouseMoveHandler(e: MouseEvent) {
-    if (this.isZoomingXAxis && e?.movementX) {
+  zoomPriceAxis(my) {
+    if (this.isZoomingYAxis && my) {
+      let f = this.yZoomFactor
+      f += (my / 300) * f
+      this.yZoomFactor = f
+      this.draw()
+    }
+  }
+
+  zoomTimeAxis(mx) {
+    if (this.isZoomingXAxis && mx) {
       let zoomPoint = this.mainCanvasWidth
       let d = 20 / this.zoomSpeed
 
       this.position.right +=
-        (((this.position.right - zoomPoint) / d) * e?.movementX) / 100
-      this.position.left +=
-        (((this.position.left - zoomPoint) / d) * e?.movementX) / 100
+        (((this.position.right - zoomPoint) / d) * mx) / 100
+      this.position.left += (((this.position.left - zoomPoint) / d) * mx) / 100
 
       this.clampXPanning()
       if (this.options?.yAxis?.fit) this.filterVisiblePointsAndCache()
@@ -479,8 +490,14 @@ export class CandlesChart extends Chart {
     }
   }
 
+  windowMouseMoveHandler(e: MouseEvent) {
+    this.zoomTimeAxis(e?.movementX)
+    this.zoomPriceAxis(e?.movementY)
+  }
+
   windowMouseUpHandler(e: MouseEvent) {
     this.isZoomingXAxis = false
+    this.isZoomingYAxis = false
   }
 
   mouseMoveHandler(e: MouseEvent) {
@@ -530,15 +547,6 @@ export class CandlesChart extends Chart {
     this.draw()
     this.drawPriceMarker()
     this.drawTimeMarker()
-  }
-
-  yAxisMouseMoveHandler(e?: MouseEvent): void {
-    if (this.isZoomingYAxis && e?.movementY) {
-      let f = this.yZoomFactor
-      f += (e?.movementY / 300) * f
-      this.yZoomFactor = f
-      this.draw()
-    }
   }
 
   yAxisMouseDownHandler(e?: MouseEvent): void {

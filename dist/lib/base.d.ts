@@ -65,7 +65,6 @@ export default abstract class Chart extends ChartDataBase {
     abstract mouseDownHandler(e?: MouseEvent): void;
     abstract mouseUpHandler(e?: MouseEvent): void;
     abstract wheelHandler(e?: WheelEvent): void;
-    abstract yAxisMouseMoveHandler(e?: MouseEvent): void;
     abstract yAxisMouseDownHandler(e?: MouseEvent): void;
     abstract yAxisMouseUpHandler(e?: MouseEvent): void;
     abstract xAxisMouseDownHandler(e?: MouseEvent): void;

@@ -25,6 +25,8 @@ export declare class CandlesChart extends Chart {
     drawXAxisLabels(): void;
     drawYAxis(): void;
     drawChart(): void;
+    zoomPriceAxis(my: any): void;
+    zoomTimeAxis(mx: any): void;
     windowMouseMoveHandler(e: MouseEvent): void;
     windowMouseUpHandler(e: MouseEvent): void;
     mouseMoveHandler(e: MouseEvent): void;
@@ -33,7 +35,6 @@ export declare class CandlesChart extends Chart {
     mouseDownHandler(e: MouseEvent): void;
     mouseUpHandler(e: MouseEvent): void;
     wheelHandler(e: any): void;
-    yAxisMouseMoveHandler(e?: MouseEvent): void;
     yAxisMouseDownHandler(e?: MouseEvent): void;
     yAxisMouseUpHandler(e?: MouseEvent): void;
     xAxisMouseDownHandler(e?: MouseEvent): void;

@@ -497,7 +497,7 @@ export default abstract class Chart extends ChartDataBase {
   abstract mouseUpHandler(e?: MouseEvent): void
   abstract wheelHandler(e?: WheelEvent): void
 
-  abstract yAxisMouseMoveHandler(e?: MouseEvent): void
+  // abstract yAxisMouseMoveHandler(e?: MouseEvent): void
   abstract yAxisMouseDownHandler(e?: MouseEvent): void
   abstract yAxisMouseUpHandler(e?: MouseEvent): void
   // abstract yAxisMouseLeaveHandler(e?: MouseEvent): void
@@ -523,7 +523,7 @@ export default abstract class Chart extends ChartDataBase {
 
   bindYAxisListeners() {
     let canvas = this.yAxisContext.canvas
-    canvas.addEventListener('mousemove', (e) => this.yAxisMouseMoveHandler(e))
+    // canvas.addEventListener('mousemove', (e) => this.yAxisMouseMoveHandler(e))
     canvas.addEventListener('mousedown', (e) => this.yAxisMouseDownHandler(e))
     canvas.addEventListener('mouseup', (e) => this.yAxisMouseUpHandler(e))
     // canvas.addEventListener('mouseleave', (e) => this.yAxisMouseLeaveHandler(e))

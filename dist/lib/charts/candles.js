@@ -370,23 +370,35 @@ class CandlesChart extends base_1.default {
             ctx.closePath();
         }
     }
-    windowMouseMoveHandler(e) {
+    zoomPriceAxis(my) {
+        if (this.isZoomingYAxis && my) {
+            let f = this.yZoomFactor;
+            f += (my / 300) * f;
+            this.yZoomFactor = f;
+            this.draw();
+        }
+    }
+    zoomTimeAxis(mx) {
         var _a, _b;
-        if (this.isZoomingXAxis && (e === null || e === void 0 ? void 0 : e.movementX)) {
+        if (this.isZoomingXAxis && mx) {
             let zoomPoint = this.mainCanvasWidth;
             let d = 20 / this.zoomSpeed;
             this.position.right +=
-                (((this.position.right - zoomPoint) / d) * (e === null || e === void 0 ? void 0 : e.movementX)) / 100;
-            this.position.left +=
-                (((this.position.left - zoomPoint) / d) * (e === null || e === void 0 ? void 0 : e.movementX)) / 100;
+                (((this.position.right - zoomPoint) / d) * mx) / 100;
+            this.position.left += (((this.position.left - zoomPoint) / d) * mx) / 100;
             this.clampXPanning();
             if ((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.yAxis) === null || _b === void 0 ? void 0 : _b.fit)
                 this.filterVisiblePointsAndCache();
             this.draw();
         }
     }
+    windowMouseMoveHandler(e) {
+        this.zoomTimeAxis(e === null || e === void 0 ? void 0 : e.movementX);
+        this.zoomPriceAxis(e === null || e === void 0 ? void 0 : e.movementY);
+    }
     windowMouseUpHandler(e) {
         this.isZoomingXAxis = false;
+        this.isZoomingYAxis = false;
     }
     mouseMoveHandler(e) {
         if (this.panningIsActive) {
@@ -429,14 +441,6 @@ class CandlesChart extends base_1.default {
         this.draw();
         this.drawPriceMarker();
         this.drawTimeMarker();
-    }
-    yAxisMouseMoveHandler(e) {
-        if (this.isZoomingYAxis && (e === null || e === void 0 ? void 0 : e.movementY)) {
-            let f = this.yZoomFactor;
-            f += ((e === null || e === void 0 ? void 0 : e.movementY) / 300) * f;
-            this.yZoomFactor = f;
-            this.draw();
-        }
     }
     yAxisMouseDownHandler(e) {
         this.isZoomingYAxis = true;
