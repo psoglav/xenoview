@@ -14,7 +14,7 @@ class CandlesChart extends base_1.default {
         this.panningIsActive = false;
         this.candlesSpace = 0;
         this.isZoomingYAxis = false;
-        this.isZoomingXAxis = false;
+        this.isZoomingTimeAxis = false;
     }
     draw() {
         this.clear(this.chartContext);
@@ -26,7 +26,7 @@ class CandlesChart extends base_1.default {
         else {
             this.drawGridColumns();
             this.drawGridRows();
-            this.drawXAxisLabels();
+            this.drawTimeAxisLabels();
             this.drawYAxisLabels();
             this.drawChart();
             this.drawPointer();
@@ -263,7 +263,7 @@ class CandlesChart extends base_1.default {
             ctx.fillText(i.toFixed(2), 10, y - 2 + fz / 2);
         }
     }
-    drawXAxisLabels() {
+    drawTimeAxisLabels() {
         var _a, _b;
         let ctx = this.timeAxisContext;
         let cols = this.getGridColumns();
@@ -380,7 +380,7 @@ class CandlesChart extends base_1.default {
     }
     zoomTimeAxis(mx) {
         var _a, _b;
-        if (this.isZoomingXAxis && mx) {
+        if (this.isZoomingTimeAxis && mx) {
             let zoomPoint = this.mainCanvasWidth;
             let d = 20 / this.zoomSpeed;
             this.position.right +=
@@ -397,7 +397,7 @@ class CandlesChart extends base_1.default {
         this.zoomPriceAxis(e === null || e === void 0 ? void 0 : e.movementY);
     }
     windowMouseUpHandler(e) {
-        this.isZoomingXAxis = false;
+        this.isZoomingTimeAxis = false;
         this.isZoomingYAxis = false;
     }
     mouseMoveHandler(e) {
@@ -449,10 +449,10 @@ class CandlesChart extends base_1.default {
         this.isZoomingYAxis = false;
     }
     timeAxisMouseDownHandler(e) {
-        this.isZoomingXAxis = true;
+        this.isZoomingTimeAxis = true;
     }
     timeAxisMouseUpHandler(e) {
-        this.isZoomingXAxis = false;
+        this.isZoomingTimeAxis = false;
     }
     mainDebug() { }
 }

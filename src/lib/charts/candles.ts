@@ -10,7 +10,7 @@ export class CandlesChart extends Chart {
   private panningIsActive = false
   private candlesSpace = 0
   private isZoomingYAxis = false
-  private isZoomingXAxis = false
+  private isZoomingTimeAxis = false
 
   constructor(container: HTMLElement | string, options?: ChartOptions) {
     super(container, options)
@@ -26,7 +26,7 @@ export class CandlesChart extends Chart {
     } else {
       this.drawGridColumns()
       this.drawGridRows()
-      this.drawXAxisLabels()
+      this.drawTimeAxisLabels()
       this.drawYAxisLabels()
       this.drawChart()
       this.drawPointer()
@@ -311,7 +311,7 @@ export class CandlesChart extends Chart {
     }
   }
 
-  drawXAxisLabels() {
+  drawTimeAxisLabels() {
     let ctx = this.timeAxisContext
     let cols = this.getGridColumns()
 
@@ -476,7 +476,7 @@ export class CandlesChart extends Chart {
   }
 
   zoomTimeAxis(mx) {
-    if (this.isZoomingXAxis && mx) {
+    if (this.isZoomingTimeAxis && mx) {
       let zoomPoint = this.mainCanvasWidth
       let d = 20 / this.zoomSpeed
 
@@ -496,7 +496,7 @@ export class CandlesChart extends Chart {
   }
 
   windowMouseUpHandler(e: MouseEvent) {
-    this.isZoomingXAxis = false
+    this.isZoomingTimeAxis = false
     this.isZoomingYAxis = false
   }
 
@@ -558,11 +558,11 @@ export class CandlesChart extends Chart {
   }
 
   timeAxisMouseDownHandler(e?: MouseEvent): void {
-    this.isZoomingXAxis = true
+    this.isZoomingTimeAxis = true
   }
 
   timeAxisMouseUpHandler(e?: MouseEvent): void {
-    this.isZoomingXAxis = false
+    this.isZoomingTimeAxis = false
   }
 
   mainDebug() {}

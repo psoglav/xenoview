@@ -235,7 +235,7 @@ class Chart extends ChartDataBase {
         this.bindMouseListeners();
         return canvas;
     }
-    createXAxis() {
+    createTimeAxis() {
         let canvas = this.timeAxisContext.canvas;
         let ctx = canvas.getContext('2d');
         this.timeAxisContext = ctx;
@@ -243,7 +243,7 @@ class Chart extends ChartDataBase {
         canvas.style.width = 'calc(100% - 70px)';
         canvas.style.height = '28px';
         canvas.style.cursor = 'e-resize';
-        this.bindXAxisListeners();
+        this.bindTimeAxisListeners();
         return canvas;
     }
     createYAxis() {
@@ -276,7 +276,7 @@ class Chart extends ChartDataBase {
         this.container.style.grid = '1fr 28px / 1fr 70px';
         let chartCanvas = this.createChart();
         let priceAxisCanvas = this.createYAxis();
-        let timeAxisCanvas = this.createXAxis();
+        let timeAxisCanvas = this.createTimeAxis();
         let rect = this.container.getBoundingClientRect();
         this.setSize(rect.width - 70, rect.height - 28, chartCanvas);
         window.addEventListener('resize', () => {
@@ -362,7 +362,7 @@ class Chart extends ChartDataBase {
         canvas.addEventListener('mouseup', (e) => this.priceAxisMouseUpHandler(e));
         // canvas.addEventListener('mouseleave', (e) => this.priceAxisMouseLeaveHandler(e))
     }
-    bindXAxisListeners() {
+    bindTimeAxisListeners() {
         let canvas = this.timeAxisContext.canvas;
         // canvas.addEventListener('mousemove', (e) => this.timeAxisMouseMoveHandler(e))
         canvas.addEventListener('mousedown', (e) => this.timeAxisMouseDownHandler(e));

@@ -51,7 +51,7 @@ export default abstract class Chart extends ChartDataBase {
     loadHistory(value: HistoryData): void;
     setTicker(ticker: Ticker): void;
     createChart(): HTMLCanvasElement;
-    createXAxis(): HTMLCanvasElement;
+    createTimeAxis(): HTMLCanvasElement;
     createYAxis(): HTMLCanvasElement;
     createChartToolbar(): void;
     createChartLayout(container: HTMLElement | string): void;
@@ -71,7 +71,7 @@ export default abstract class Chart extends ChartDataBase {
     abstract timeAxisMouseUpHandler(e?: MouseEvent): void;
     bindMouseListeners(): void;
     bindYAxisListeners(): void;
-    bindXAxisListeners(): void;
+    bindTimeAxisListeners(): void;
     getWidth(ctx: CanvasRenderingContext2D): number;
     getHeight(ctx: CanvasRenderingContext2D): number;
     get mainCanvasWidth(): number;

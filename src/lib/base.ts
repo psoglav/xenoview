@@ -321,7 +321,7 @@ export default abstract class Chart extends ChartDataBase {
     return canvas
   }
 
-  createXAxis(): HTMLCanvasElement {
+  createTimeAxis(): HTMLCanvasElement {
     let canvas = this.timeAxisContext.canvas
     let ctx = canvas.getContext('2d')!
 
@@ -332,7 +332,7 @@ export default abstract class Chart extends ChartDataBase {
     canvas.style.height = '28px'
     canvas.style.cursor = 'e-resize'
 
-    this.bindXAxisListeners()
+    this.bindTimeAxisListeners()
 
     return canvas
   }
@@ -378,7 +378,7 @@ export default abstract class Chart extends ChartDataBase {
 
     let chartCanvas = this.createChart()
     let priceAxisCanvas = this.createYAxis()
-    let timeAxisCanvas = this.createXAxis()
+    let timeAxisCanvas = this.createTimeAxis()
 
     let rect = this.container!.getBoundingClientRect()
 
@@ -529,7 +529,7 @@ export default abstract class Chart extends ChartDataBase {
     // canvas.addEventListener('mouseleave', (e) => this.priceAxisMouseLeaveHandler(e))
   }
 
-  bindXAxisListeners() {
+  bindTimeAxisListeners() {
     let canvas = this.timeAxisContext.canvas
     // canvas.addEventListener('mousemove', (e) => this.timeAxisMouseMoveHandler(e))
     canvas.addEventListener('mousedown', (e) => this.timeAxisMouseDownHandler(e))
