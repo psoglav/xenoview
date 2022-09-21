@@ -18,7 +18,7 @@ class CandlesChart extends base_1.default {
     }
     draw() {
         this.clear(this.chartContext);
-        this.clear(this.xAxisContext);
+        this.clear(this.timeAxisContext);
         this.clear(this.priceAxisContext);
         if (!this.history) {
             this.loading();
@@ -146,7 +146,7 @@ class CandlesChart extends base_1.default {
         ctx.fillText(price.toFixed(2), 10, y + 5.5);
     }
     drawTimeMarker() {
-        let ctx = this.xAxisContext;
+        let ctx = this.timeAxisContext;
         let data = this.history;
         if (!data)
             return;
@@ -265,11 +265,11 @@ class CandlesChart extends base_1.default {
     }
     drawXAxisLabels() {
         var _a, _b;
-        let ctx = this.xAxisContext;
+        let ctx = this.timeAxisContext;
         let cols = this.getGridColumns();
         this.clear(ctx);
         ctx.beginPath();
-        let size = ((_b = (_a = this.options.xAxis) === null || _a === void 0 ? void 0 : _a.labels) === null || _b === void 0 ? void 0 : _b.fontSize) || 11;
+        let size = ((_b = (_a = this.options.timeAxis) === null || _a === void 0 ? void 0 : _a.labels) === null || _b === void 0 ? void 0 : _b.fontSize) || 11;
         ctx.fillStyle = this.options.textColor;
         ctx.font = size + 'px Verdana';
         for (let i of cols) {
@@ -448,10 +448,10 @@ class CandlesChart extends base_1.default {
     priceAxisMouseUpHandler(e) {
         this.isZoomingYAxis = false;
     }
-    xAxisMouseDownHandler(e) {
+    timeAxisMouseDownHandler(e) {
         this.isZoomingXAxis = true;
     }
-    xAxisMouseUpHandler(e) {
+    timeAxisMouseUpHandler(e) {
         this.isZoomingXAxis = false;
     }
     mainDebug() { }

@@ -126,8 +126,8 @@ export class LinearChart extends Chart {
   windowMouseMoveHandler(e?: MouseEvent | undefined): void {}
   windowMouseUpHandler(e?: MouseEvent | undefined): void {}
 
-  xAxisMouseDownHandler(e?: MouseEvent | undefined): void {}
-  xAxisMouseUpHandler(e?: MouseEvent | undefined): void {}
+  timeAxisMouseDownHandler(e?: MouseEvent | undefined): void {}
+  timeAxisMouseUpHandler(e?: MouseEvent | undefined): void {}
 
   yAxisMouseDownHandler(e?: MouseEvent | undefined): void {}
   yAxisMouseMoveHandler(e?: MouseEvent | undefined): void {}

@@ -37,7 +37,7 @@ export declare class CandlesChart extends Chart {
     wheelHandler(e: any): void;
     priceAxisMouseDownHandler(e?: MouseEvent): void;
     priceAxisMouseUpHandler(e?: MouseEvent): void;
-    xAxisMouseDownHandler(e?: MouseEvent): void;
-    xAxisMouseUpHandler(e?: MouseEvent): void;
+    timeAxisMouseDownHandler(e?: MouseEvent): void;
+    timeAxisMouseUpHandler(e?: MouseEvent): void;
     mainDebug(): void;
 }

@@ -18,7 +18,7 @@ export class CandlesChart extends Chart {
 
   draw() {
     this.clear(this.chartContext)
-    this.clear(this.xAxisContext)
+    this.clear(this.timeAxisContext)
     this.clear(this.priceAxisContext)
 
     if (!this.history) {
@@ -166,7 +166,7 @@ export class CandlesChart extends Chart {
   }
 
   drawTimeMarker() {
-    let ctx = this.xAxisContext
+    let ctx = this.timeAxisContext
     let data = this.history
     if (!data) return
     let h = this.getHeight(ctx)
@@ -312,12 +312,12 @@ export class CandlesChart extends Chart {
   }
 
   drawXAxisLabels() {
-    let ctx = this.xAxisContext
+    let ctx = this.timeAxisContext
     let cols = this.getGridColumns()
 
     this.clear(ctx)
     ctx.beginPath()
-    let size = this.options.xAxis?.labels?.fontSize || 11
+    let size = this.options.timeAxis?.labels?.fontSize || 11
     ctx.fillStyle = this.options.textColor
     ctx.font = size + 'px Verdana'
 
@@ -557,11 +557,11 @@ export class CandlesChart extends Chart {
     this.isZoomingYAxis = false
   }
 
-  xAxisMouseDownHandler(e?: MouseEvent): void {
+  timeAxisMouseDownHandler(e?: MouseEvent): void {
     this.isZoomingXAxis = true
   }
 
-  xAxisMouseUpHandler(e?: MouseEvent): void {
+  timeAxisMouseUpHandler(e?: MouseEvent): void {
     this.isZoomingXAxis = false
   }
 

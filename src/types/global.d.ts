@@ -39,7 +39,7 @@ declare global {
         lower: string
       }
     }
-    xAxis?: {
+    timeAxis?: {
       labels: {
         fontSize: number
       }
