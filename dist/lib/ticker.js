@@ -4,13 +4,18 @@ exports.Ticker = void 0;
 const crypto_1 = require("../utils/crypto");
 class Ticker {
     constructor(symbol, apiKey) {
+        this.ws = null;
         this.apiKey = '';
-        this.symbol = symbol;
+        this.sym = symbol;
         this.apiKey = apiKey;
-        this.initBinance(symbol);
+        this.init();
     }
     get currency() {
-        return (0, crypto_1.symbolToCurrency)(this.symbol);
+        return (0, crypto_1.symbolToCurrency)(this.sym);
+    }
+    set symbol(value) {
+        this.sym = value;
+        this.init();
     }
     async fetchHistory(symbol, interval) {
         let params = {
@@ -30,9 +35,14 @@ class Ticker {
         });
         return (await response.json()).Data.Data;
     }
+    init() {
+        var _a;
+        (_a = this.ws) === null || _a === void 0 ? void 0 : _a.close(0, 'reconnect');
+        this.initBinance(this.sym);
+    }
     initBinance(symbol) {
-        const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}usdt@kline_1m`);
-        ws.onmessage = (event) => {
+        this.ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}usdt@kline_1m`);
+        this.ws.onmessage = (event) => {
             let data = JSON.parse(event.data);
             this.state = {
                 PRICE: +data.k.c,
@@ -45,15 +55,15 @@ class Ticker {
         };
     }
     initCryptoCompare(symbol) {
-        const ws = new WebSocket('wss://streamer.cryptocompare.com/v2?api_key=' + this.apiKey);
-        ws.onopen = () => {
+        this.ws = new WebSocket('wss://streamer.cryptocompare.com/v2?api_key=' + this.apiKey);
+        this.ws.onopen = () => {
             let subRequest = {
                 action: 'SubAdd',
                 subs: [`2~Coinbase~${symbol}~USD`],
             };
-            ws.send(JSON.stringify(subRequest));
+            this.ws.send(JSON.stringify(subRequest));
         };
-        ws.onmessage = (event) => {
+        this.ws.onmessage = (event) => {
             let data = JSON.parse(event.data);
             if (data.TYPE == 2) {
                 this.state = data;

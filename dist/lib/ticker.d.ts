@@ -8,11 +8,14 @@ export declare class Ticker {
         low: number;
         close: number;
     } | undefined;
-    symbol: string;
+    sym: string;
+    private ws;
     private apiKey;
     constructor(symbol: string, apiKey?: string);
     get currency(): any;
+    set symbol(value: any);
     fetchHistory(symbol: string, interval: HistoryInterval): Promise<HistoryData>;
+    init(): void;
     initBinance(symbol: string): void;
     initCryptoCompare(symbol: string): void;
 }
