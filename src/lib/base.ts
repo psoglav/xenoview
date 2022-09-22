@@ -264,7 +264,7 @@ export default abstract class Chart extends ChartDataBase {
   priceAxisContext: CanvasRenderingContext2D
   timeAxisContext: CanvasRenderingContext2D
 
-  zoomSpeed: number = 4
+  zoomSpeed: number = 1.8
   yZoomFactor = 1.2
 
   focusedPoint: HistoryPoint | null

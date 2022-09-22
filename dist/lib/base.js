@@ -194,7 +194,7 @@ class Chart extends ChartDataBase {
         super();
         this.options = defaultChartOptions;
         this.mousePosition = { x: 0, y: 0 };
-        this.zoomSpeed = 4;
+        this.zoomSpeed = 1.8;
         this.yZoomFactor = 1.2;
         this.init(this);
         if (options)
