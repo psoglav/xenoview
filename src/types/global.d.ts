@@ -2,7 +2,7 @@ import { UIElement } from '../lib/ui'
 
 declare global {
   namespace UI {
-    type Position = {x: number, y: number}
+    type Position = { x: number; y: number }
     type LabelOptions = {
       value: any
       x: number
@@ -29,6 +29,7 @@ declare global {
   export interface ChartOptions {
     bgColor?: string
     textColor?: string
+    autoScale: boolean
     pointer?: {
       fgColor: string
       bgColor: string
@@ -48,18 +49,17 @@ declare global {
       labels?: {
         fontSize: number
       }
-      fit?: boolean
     }
   }
-  
+
   export interface ChartBoundingRect {
     y: number
     left: number
     right: number
   }
-  
+
   export type LinearHistory = number[][]
-  
+
   export type HistoryPoint = {
     close: number
     high: number
@@ -69,12 +69,12 @@ declare global {
     // volumefrom: number
     // volumeto: number
   }
-  
+
   export type HistoryData = HistoryPoint[]
-  
+
   export type ChartData = number[]
-  
+
   export type ChartContainer = Element | string
 }
 
-export { }
+export {}

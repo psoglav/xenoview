@@ -50,7 +50,7 @@ export class CandlesChart extends Chart {
     this.position.left += ((this.position.left - zoomPoint) / d) * side
 
     this.clampXPanning()
-    if (this.options?.priceAxis?.fit) this.filterVisiblePointsAndCache()
+    if (this.options?.autoScale) this.filterVisiblePointsAndCache()
   }
 
   moveChart(mx: number, my: number) {
@@ -63,7 +63,7 @@ export class CandlesChart extends Chart {
     this.position.right += mx
 
     this.clampXPanning()
-    if (this.options?.priceAxis?.fit) this.filterVisiblePointsAndCache()
+    if (this.options?.autoScale) this.filterVisiblePointsAndCache()
   }
 
   clampXPanning() {
@@ -485,7 +485,7 @@ export class CandlesChart extends Chart {
       this.position.left += (((this.position.left - zoomPoint) / d) * mx) / 100
 
       this.clampXPanning()
-      if (this.options?.priceAxis?.fit) this.filterVisiblePointsAndCache()
+      if (this.options?.autoScale) this.filterVisiblePointsAndCache()
       this.draw()
     }
   }

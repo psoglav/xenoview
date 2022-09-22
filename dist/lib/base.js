@@ -6,6 +6,7 @@ require("../public/styles/main.css");
 const defaultChartOptions = {
     bgColor: '#151924',
     textColor: '#b2b5be',
+    autoScale: false,
     pointer: {
         bgColor: '#363a45',
         fgColor: '#9598a1',
@@ -385,6 +386,11 @@ class Chart extends ChartDataBase {
     }
     get canvasRect() {
         return this.chartContext.canvas.getBoundingClientRect();
+    }
+    toggleAutoScale() {
+        this.options.autoScale = !this.options.autoScale;
+        if (this.options.autoScale)
+            this.position.y = 0;
     }
     setSize(w, h, canvas) {
         canvas.width = w;

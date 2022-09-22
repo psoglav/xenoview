@@ -7,6 +7,7 @@ import '../public/styles/main.css'
 const defaultChartOptions: ChartOptions = {
   bgColor: '#151924',
   textColor: '#b2b5be',
+  autoScale: false,
   pointer: {
     bgColor: '#363a45',
     fgColor: '#9598a1',
@@ -524,7 +525,9 @@ export default abstract class Chart extends ChartDataBase {
   bindYAxisListeners() {
     let canvas = this.priceAxisContext.canvas
     // canvas.addEventListener('mousemove', (e) => this.priceAxisMouseMoveHandler(e))
-    canvas.addEventListener('mousedown', (e) => this.priceAxisMouseDownHandler(e))
+    canvas.addEventListener('mousedown', (e) =>
+      this.priceAxisMouseDownHandler(e),
+    )
     canvas.addEventListener('mouseup', (e) => this.priceAxisMouseUpHandler(e))
     // canvas.addEventListener('mouseleave', (e) => this.priceAxisMouseLeaveHandler(e))
   }
@@ -532,7 +535,9 @@ export default abstract class Chart extends ChartDataBase {
   bindTimeAxisListeners() {
     let canvas = this.timeAxisContext.canvas
     // canvas.addEventListener('mousemove', (e) => this.timeAxisMouseMoveHandler(e))
-    canvas.addEventListener('mousedown', (e) => this.timeAxisMouseDownHandler(e))
+    canvas.addEventListener('mousedown', (e) =>
+      this.timeAxisMouseDownHandler(e),
+    )
     canvas.addEventListener('mouseup', (e) => this.timeAxisMouseUpHandler(e))
     // canvas.addEventListener('mouseleave', (e) => this.timeAxisMouseLeaveHandler(e))
   }
@@ -561,6 +566,11 @@ export default abstract class Chart extends ChartDataBase {
 
   get canvasRect() {
     return this.chartContext.canvas.getBoundingClientRect()
+  }
+
+  toggleAutoScale() {
+    this.options.autoScale = !this.options.autoScale
+    if (this.options.autoScale) this.position.y = 0
   }
 
   setSize(w: number, h: number, canvas: HTMLCanvasElement) {

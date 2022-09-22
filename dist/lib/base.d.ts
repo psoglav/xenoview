@@ -77,6 +77,7 @@ export default abstract class Chart extends ChartDataBase {
     get mainCanvasWidth(): number;
     get mainCanvasHeight(): number;
     get canvasRect(): DOMRect;
+    toggleAutoScale(): void;
     setSize(w: number, h: number, canvas: HTMLCanvasElement): void;
     rescale(ctx: CanvasRenderingContext2D): void;
     getSharpPixel(pos: number, ctx: CanvasRenderingContext2D, thickness?: number): number;

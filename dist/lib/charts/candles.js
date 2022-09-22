@@ -40,17 +40,17 @@ class CandlesChart extends base_1.default {
         }
     }
     zoomChart(side) {
-        var _a, _b;
+        var _a;
         let zoomPoint = this.mainCanvasWidth;
         let d = 20 / this.zoomSpeed;
         this.position.right += ((this.position.right - zoomPoint) / d) * side;
         this.position.left += ((this.position.left - zoomPoint) / d) * side;
         this.clampXPanning();
-        if ((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.priceAxis) === null || _b === void 0 ? void 0 : _b.fit)
+        if ((_a = this.options) === null || _a === void 0 ? void 0 : _a.autoScale)
             this.filterVisiblePointsAndCache();
     }
     moveChart(mx, my) {
-        var _a, _b;
+        var _a;
         this.position.y += my;
         if (this.position.right == this.mainCanvasWidth - 200 && mx < 0)
             return;
@@ -59,7 +59,7 @@ class CandlesChart extends base_1.default {
         this.position.left += mx;
         this.position.right += mx;
         this.clampXPanning();
-        if ((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.priceAxis) === null || _b === void 0 ? void 0 : _b.fit)
+        if ((_a = this.options) === null || _a === void 0 ? void 0 : _a.autoScale)
             this.filterVisiblePointsAndCache();
     }
     clampXPanning() {
@@ -379,7 +379,7 @@ class CandlesChart extends base_1.default {
         }
     }
     zoomTimeAxis(mx) {
-        var _a, _b;
+        var _a;
         if (this.isZoomingTimeAxis && mx) {
             let zoomPoint = this.mainCanvasWidth;
             let d = 20 / this.zoomSpeed;
@@ -387,7 +387,7 @@ class CandlesChart extends base_1.default {
                 (((this.position.right - zoomPoint) / d) * mx) / 100;
             this.position.left += (((this.position.left - zoomPoint) / d) * mx) / 100;
             this.clampXPanning();
-            if ((_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.priceAxis) === null || _b === void 0 ? void 0 : _b.fit)
+            if ((_a = this.options) === null || _a === void 0 ? void 0 : _a.autoScale)
                 this.filterVisiblePointsAndCache();
             this.draw();
         }
