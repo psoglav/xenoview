@@ -570,7 +570,12 @@ export default abstract class Chart extends ChartDataBase {
 
   toggleAutoScale() {
     this.options.autoScale = !this.options.autoScale
-    if (this.options.autoScale) this.position.y = 0
+    if (this.options.autoScale) {
+      this.position.y = 0
+      this.yZoomFactor = 1.2
+      this.filterVisiblePointsAndCache()
+      this.draw()
+    }
   }
 
   setSize(w: number, h: number, canvas: HTMLCanvasElement) {

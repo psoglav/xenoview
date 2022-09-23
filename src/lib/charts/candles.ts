@@ -403,7 +403,11 @@ export class CandlesChart extends Chart {
       priceAxisCtx.fillStyle = this.options.textColor
       priceAxisCtx.font = fz + 'px Verdana'
       let price = i * ((t - b) / segments)
-      priceAxisCtx.fillText(round(price + b).toFixed(2), 10, y + br - 2 + fz / 2)
+      priceAxisCtx.fillText(
+        round(price + b).toFixed(2),
+        10,
+        y + br - 2 + fz / 2,
+      )
     }
 
     ctx.stroke()
@@ -502,7 +506,9 @@ export class CandlesChart extends Chart {
 
   mouseMoveHandler(e: MouseEvent) {
     if (this.panningIsActive) {
-      this.moveChart(e.movementX, e.movementY)
+      let mx = e.movementX
+      let my = this.options.autoScale ? 0 : e.movementY
+      this.moveChart(mx, my)
     }
 
     this.movePointer()
@@ -543,8 +549,6 @@ export class CandlesChart extends Chart {
     this.zoomChart(wd > 1 ? 1 : -1)
     this.movePointer()
     this.draw()
-    this.drawPriceMarker()
-    this.drawTimeMarker()
   }
 
   priceAxisMouseDownHandler(e?: MouseEvent): void {

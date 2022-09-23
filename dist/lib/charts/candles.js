@@ -402,12 +402,12 @@ class CandlesChart extends base_1.default {
     }
     mouseMoveHandler(e) {
         if (this.panningIsActive) {
-            this.moveChart(e.movementX, e.movementY);
+            let mx = e.movementX;
+            let my = this.options.autoScale ? 0 : e.movementY;
+            this.moveChart(mx, my);
         }
         this.movePointer();
         this.draw();
-        this.drawPriceMarker();
-        this.drawTimeMarker();
     }
     mouseEnterHandler() {
         this.pointerIsVisible = true;
@@ -439,8 +439,6 @@ class CandlesChart extends base_1.default {
         this.zoomChart(wd > 1 ? 1 : -1);
         this.movePointer();
         this.draw();
-        this.drawPriceMarker();
-        this.drawTimeMarker();
     }
     priceAxisMouseDownHandler(e) {
         this.isZoomingYAxis = true;
