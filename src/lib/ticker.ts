@@ -78,13 +78,15 @@ export class Ticker {
     )
     this.ws.onmessage = (event: any) => {
       let data = JSON.parse(event.data)
-      this.state = {
-        PRICE: +data.k.c,
-        LASTUPDATE: Math.floor(data.k.t / 1000),
-        open: +data.k.o,
-        high: +data.k.h,
-        low: +data.k.l,
-        close: +data.k.c,
+      if (data.s?.startsWith(this.sym)) {
+        this.state = {
+          PRICE: +data.k.c,
+          LASTUPDATE: Math.floor(data.k.t / 1000),
+          open: +data.k.o,
+          high: +data.k.h,
+          low: +data.k.l,
+          close: +data.k.c,
+        }
       }
     }
   }
