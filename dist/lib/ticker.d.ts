@@ -13,7 +13,8 @@ export declare class Ticker {
     private apiKey;
     constructor(symbol: string, apiKey?: string);
     get currency(): any;
-    set symbol(value: any);
+    get symbol(): string;
+    set symbol(value: string);
     fetchHistory(symbol: string, interval: HistoryInterval): Promise<HistoryData>;
     init(): void;
     initBinance(symbol: string): void;

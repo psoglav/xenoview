@@ -13,6 +13,9 @@ class Ticker {
     get currency() {
         return (0, crypto_1.symbolToCurrency)(this.sym);
     }
+    get symbol() {
+        return this.sym;
+    }
     set symbol(value) {
         this.sym = value;
         this.init();

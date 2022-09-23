@@ -30,6 +30,10 @@ export class Ticker {
     return symbolToCurrency(this.sym)
   }
 
+  get symbol() {
+    return this.sym
+  }
+
   set symbol(value) {
     this.sym = value
     this.init()
