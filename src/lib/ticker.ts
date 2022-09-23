@@ -69,6 +69,7 @@ export class Ticker {
 
   init() {
     this.ws?.close()
+    this.state = null
     this.initBinance(this.sym)
   }
 
@@ -78,6 +79,7 @@ export class Ticker {
     )
     this.ws.onmessage = (event: any) => {
       let data = JSON.parse(event.data)
+      console.log(data.s, this.sym)
       if (data.s?.startsWith(this.sym)) {
         this.state = {
           PRICE: +data.k.c,

@@ -205,6 +205,7 @@ class Chart extends ChartDataBase {
     loadHistory(value) {
         this.resetChartPosition();
         this.history = value;
+        this.visiblePoints = null;
         this.chartData = this.normalizeData();
         this.initUIElements();
         this.draw();

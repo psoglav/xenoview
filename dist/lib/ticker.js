@@ -41,20 +41,25 @@ class Ticker {
     init() {
         var _a;
         (_a = this.ws) === null || _a === void 0 ? void 0 : _a.close();
+        this.state = null;
         this.initBinance(this.sym);
     }
     initBinance(symbol) {
         this.ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}usdt@kline_1m`);
         this.ws.onmessage = (event) => {
+            var _a;
             let data = JSON.parse(event.data);
-            this.state = {
-                PRICE: +data.k.c,
-                LASTUPDATE: Math.floor(data.k.t / 1000),
-                open: +data.k.o,
-                high: +data.k.h,
-                low: +data.k.l,
-                close: +data.k.c,
-            };
+            console.log(data.s, this.sym);
+            if ((_a = data.s) === null || _a === void 0 ? void 0 : _a.startsWith(this.sym)) {
+                this.state = {
+                    PRICE: +data.k.c,
+                    LASTUPDATE: Math.floor(data.k.t / 1000),
+                    open: +data.k.o,
+                    high: +data.k.h,
+                    low: +data.k.l,
+                    close: +data.k.c,
+                };
+            }
         };
     }
     initCryptoCompare(symbol) {
