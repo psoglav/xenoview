@@ -507,8 +507,6 @@ export class CandlesChart extends Chart {
 
     this.movePointer()
     this.draw()
-    this.drawPriceMarker()
-    this.drawTimeMarker()
   }
 
   mouseEnterHandler() {
