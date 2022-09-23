@@ -114,7 +114,7 @@ abstract class ChartDataBase {
     return this.visiblePoints
   }
 
-  normalizeY(value: number) {
+  normalizeToY(value: number) {
     let h = this.chart.mainCanvasHeight
 
     let min = this.bottomHistoryPrice[1]

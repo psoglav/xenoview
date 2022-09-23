@@ -209,7 +209,7 @@ export class CandlesChart extends Chart {
     let step = 1
 
     while (
-      this.normalizeY((start / length) * delta + b) <
+      this.normalizeToY((start / length) * delta + b) <
       this.getWidth(this.chartContext)
     ) {
       start -= step
@@ -219,7 +219,7 @@ export class CandlesChart extends Chart {
 
     step = 0
 
-    while (this.normalizeY((end / length) * delta + b) > 0) {
+    while (this.normalizeToY((end / length) * delta + b) > 0) {
       end += step
       step += 5
       if (end > 5000) break
@@ -232,8 +232,8 @@ export class CandlesChart extends Chart {
     let prev = 0
 
     return result.filter((i) => {
-      let y = this.normalizeY(i)
-      let py = this.normalizeY(prev)
+      let y = this.normalizeToY(i)
+      let py = this.normalizeToY(prev)
 
       if (py - y < 30 && y != py) {
         return 0
@@ -269,7 +269,7 @@ export class CandlesChart extends Chart {
     ctx.strokeStyle = '#7777aa33'
 
     for (let i of rows) {
-      let y = this.normalizeY(i)
+      let y = this.normalizeToY(i)
       this.moveTo(0, y, ctx)
       this.lineTo(this.getWidth(ctx), y, ctx)
     }
@@ -300,7 +300,7 @@ export class CandlesChart extends Chart {
     let rows = this.getGridRows()
 
     for (let i of rows) {
-      let y = this.normalizeY(i)
+      let y = this.normalizeToY(i)
       this.moveTo(0, y, ctx)
       this.lineTo(this.getWidth(ctx), y, ctx)
 
