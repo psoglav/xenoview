@@ -338,7 +338,7 @@ export default abstract class Chart extends ChartDataBase {
     return canvas
   }
 
-  createYAxis(): HTMLCanvasElement {
+  createPriceAxis(): HTMLCanvasElement {
     let canvas = this.priceAxisContext.canvas
     let ctx = canvas.getContext('2d')!
 
@@ -349,7 +349,7 @@ export default abstract class Chart extends ChartDataBase {
     canvas.style.height = '100%'
     canvas.style.cursor = 'n-resize'
 
-    this.bindYAxisListeners()
+    this.bindPriceAxisListeners()
 
     return canvas
   }
@@ -378,7 +378,7 @@ export default abstract class Chart extends ChartDataBase {
     this.container.style.grid = '1fr 28px / 1fr 70px'
 
     let chartCanvas = this.createChart()
-    let priceAxisCanvas = this.createYAxis()
+    let priceAxisCanvas = this.createPriceAxis()
     let timeAxisCanvas = this.createTimeAxis()
 
     let rect = this.container!.getBoundingClientRect()
@@ -522,7 +522,7 @@ export default abstract class Chart extends ChartDataBase {
     canvas.addEventListener('wheel', (e) => this.wheelHandler(e))
   }
 
-  bindYAxisListeners() {
+  bindPriceAxisListeners() {
     let canvas = this.priceAxisContext.canvas
     // canvas.addEventListener('mousemove', (e) => this.priceAxisMouseMoveHandler(e))
     canvas.addEventListener('mousedown', (e) =>

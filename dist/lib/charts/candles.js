@@ -13,7 +13,7 @@ class CandlesChart extends base_1.default {
         this.pointerIsVisible = false;
         this.panningIsActive = false;
         this.candlesSpace = 0;
-        this.isZoomingYAxis = false;
+        this.isZoomingPriceAxis = false;
         this.isZoomingTimeAxis = false;
     }
     draw() {
@@ -27,7 +27,7 @@ class CandlesChart extends base_1.default {
             this.drawGridColumns();
             this.drawGridRows();
             this.drawTimeAxisLabels();
-            this.drawYAxisLabels();
+            this.drawPriceAxisLabels();
             this.drawChart();
             this.drawPointer();
             this.drawCurrentMarketPriceMarker();
@@ -250,7 +250,7 @@ class CandlesChart extends base_1.default {
         ctx.stroke();
         ctx.closePath();
     }
-    drawYAxisLabels() {
+    drawPriceAxisLabels() {
         let ctx = this.priceAxisContext;
         let rows = this.getGridRows();
         for (let i of rows) {
@@ -281,7 +281,7 @@ class CandlesChart extends base_1.default {
         ctx.stroke();
         ctx.closePath();
     }
-    drawYAxis() {
+    drawPriceAxis() {
         let ctx = this.chartContext;
         let priceAxisCtx = this.priceAxisContext;
         let segments = 20, h = this.mainCanvasHeight, w = this.mainCanvasWidth;
@@ -371,7 +371,7 @@ class CandlesChart extends base_1.default {
         }
     }
     zoomPriceAxis(my) {
-        if (this.isZoomingYAxis && my) {
+        if (this.isZoomingPriceAxis && my) {
             let f = this.yZoomFactor;
             f += (my / 300) * f;
             this.yZoomFactor = f;
@@ -398,7 +398,7 @@ class CandlesChart extends base_1.default {
     }
     windowMouseUpHandler(e) {
         this.isZoomingTimeAxis = false;
-        this.isZoomingYAxis = false;
+        this.isZoomingPriceAxis = false;
     }
     mouseMoveHandler(e) {
         if (this.panningIsActive) {
@@ -441,10 +441,10 @@ class CandlesChart extends base_1.default {
         this.draw();
     }
     priceAxisMouseDownHandler(e) {
-        this.isZoomingYAxis = true;
+        this.isZoomingPriceAxis = true;
     }
     priceAxisMouseUpHandler(e) {
-        this.isZoomingYAxis = false;
+        this.isZoomingPriceAxis = false;
     }
     timeAxisMouseDownHandler(e) {
         this.isZoomingTimeAxis = true;

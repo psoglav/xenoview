@@ -52,7 +52,7 @@ export default abstract class Chart extends ChartDataBase {
     setTicker(ticker: Ticker): void;
     createChart(): HTMLCanvasElement;
     createTimeAxis(): HTMLCanvasElement;
-    createYAxis(): HTMLCanvasElement;
+    createPriceAxis(): HTMLCanvasElement;
     createChartToolbar(): void;
     createChartLayout(container: HTMLElement | string): void;
     initUIElements(): void;
@@ -70,7 +70,7 @@ export default abstract class Chart extends ChartDataBase {
     abstract timeAxisMouseDownHandler(e?: MouseEvent): void;
     abstract timeAxisMouseUpHandler(e?: MouseEvent): void;
     bindMouseListeners(): void;
-    bindYAxisListeners(): void;
+    bindPriceAxisListeners(): void;
     bindTimeAxisListeners(): void;
     getWidth(ctx: CanvasRenderingContext2D): number;
     getHeight(ctx: CanvasRenderingContext2D): number;

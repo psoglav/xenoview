@@ -4,7 +4,7 @@ export declare class CandlesChart extends Chart {
     private pointerIsVisible;
     private panningIsActive;
     private candlesSpace;
-    private isZoomingYAxis;
+    private isZoomingPriceAxis;
     private isZoomingTimeAxis;
     constructor(container: HTMLElement | string, options?: ChartOptions);
     draw(): void;
@@ -21,9 +21,9 @@ export declare class CandlesChart extends Chart {
     getGridColumns(): number[];
     drawGridRows(): void;
     drawGridColumns(): void;
-    drawYAxisLabels(): void;
+    drawPriceAxisLabels(): void;
     drawTimeAxisLabels(): void;
-    drawYAxis(): void;
+    drawPriceAxis(): void;
     drawChart(): void;
     zoomPriceAxis(my: any): void;
     zoomTimeAxis(mx: any): void;
