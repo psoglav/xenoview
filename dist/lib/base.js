@@ -201,13 +201,9 @@ class Chart extends ChartDataBase {
         if (options)
             this.options = Object.assign(Object.assign({}, this.options), options);
         this.createChartLayout(container);
-        this.position = {
-            y: 0,
-            left: this.mainCanvasWidth * -10,
-            right: this.mainCanvasWidth,
-        };
     }
     loadHistory(value) {
+        this.resetChartPosition();
         this.history = value;
         this.chartData = this.normalizeData();
         this.initUIElements();
@@ -219,6 +215,13 @@ class Chart extends ChartDataBase {
         setInterval(() => {
             this.updateCurrentPoint(ticker.state);
         }, 500);
+    }
+    resetChartPosition() {
+        this.position = {
+            y: 0,
+            left: this.mainCanvasWidth * -10,
+            right: this.mainCanvasWidth,
+        };
     }
     createChart() {
         let canvas = this.chartContext.canvas;

@@ -50,6 +50,7 @@ export default abstract class Chart extends ChartDataBase {
     constructor(container: HTMLElement | string, options?: ChartOptions);
     loadHistory(value: HistoryData): void;
     setTicker(ticker: Ticker): void;
+    resetChartPosition(): void;
     createChart(): HTMLCanvasElement;
     createTimeAxis(): HTMLCanvasElement;
     createPriceAxis(): HTMLCanvasElement;

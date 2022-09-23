@@ -277,15 +277,10 @@ export default abstract class Chart extends ChartDataBase {
     if (options) this.options = { ...this.options, ...options }
 
     this.createChartLayout(container)
-
-    this.position = {
-      y: 0,
-      left: this.mainCanvasWidth * -10,
-      right: this.mainCanvasWidth,
-    }
   }
 
   loadHistory(value: HistoryData) {
+    this.resetChartPosition()
     this.history = value
     this.chartData = this.normalizeData()
     this.initUIElements()
@@ -298,6 +293,14 @@ export default abstract class Chart extends ChartDataBase {
     setInterval(() => {
       this.updateCurrentPoint(ticker.state)
     }, 500)
+  }
+
+  resetChartPosition() {
+    this.position = {
+      y: 0,
+      left: this.mainCanvasWidth * -10,
+      right: this.mainCanvasWidth,
+    }
   }
 
   createChart(): HTMLCanvasElement {
