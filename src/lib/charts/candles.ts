@@ -1,4 +1,8 @@
-import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../../utils'
+import {
+  getFullTimeFromTimestamp,
+  getTimeFromTimestamp,
+  normalize,
+} from '../../utils'
 import Chart from '../base'
 
 export class CandlesChart extends Chart {
@@ -51,7 +55,8 @@ export class CandlesChart extends Chart {
   }
 
   moveChart(mx: number, my: number) {
-    this.position.y += my
+    this.position.top += my
+    this.position.bottom += my
 
     if (this.position.right == this.mainCanvasWidth - 200 && mx < 0) return
     if (this.position.left == 0 && mx > 0) return
@@ -112,10 +117,10 @@ export class CandlesChart extends Chart {
     let data = this.history
     if (!data || !data.length) return
     let point = data[data.length - 1]
-    let npoint = this.normalizePoint(point)
-    let y = npoint.close + this.position.y
+    let { close, open } = this.normalizePoint(point)
+    let y = close
 
-    let type = npoint.close < npoint.open ? 'higher' : 'lower'
+    let type = close < open ? 'higher' : 'lower'
 
     ctx.strokeStyle = this.options.candles.colors[type]
     ctx.setLineDash([1, 2])
@@ -139,19 +144,11 @@ export class CandlesChart extends Chart {
     ctx.fillText(point.close.toFixed(2), 10, y + 5.5)
   }
 
-  // TODO: fix the price issue
   drawPriceMarker() {
     let ctx = this.priceAxisContext
     let y = this.mousePosition.y - this.canvasRect.top
+    let price = this.normalizeToPrice(y)
 
-    let h = this.mainCanvasHeight
-    let t = this.topHistoryPrice[1] + this.position.y
-    let b = this.bottomHistoryPrice[1] + this.position.y
-    let py = this.position.y
-    let k = Math.abs(this.yZoomFactor)
-
-    let price = (y / h) * (b - t) + t
-    // return
     ctx.beginPath()
     ctx.fillStyle = this.options.pointer.bgColor
     this.rect(0, y - 10, this.getWidth(ctx), 20, ctx)
@@ -429,13 +426,17 @@ export class CandlesChart extends Chart {
     for (let i = 0; i < data.length; i++) {
       this.candlesSpace = this.chartFullWidth! / data.length
       let x = this.position.left + i * this.candlesSpace
-      let y = this.position.y
       let halfCandle = this.candlesSpace / 4
 
       if (x > this.mainCanvasWidth + halfCandle) break
       else if (x < -halfCandle) continue
 
-      let { close, open, low, high } = this.normalizePoint(data[i])
+      let { close, open, low, high } = data[i]
+
+      close = this.normalizeToY(close)
+      open = this.normalizeToY(open)
+      low = this.normalizeToY(low)
+      high = this.normalizeToY(high)
 
       let candleColor =
         close > open
@@ -444,8 +445,8 @@ export class CandlesChart extends Chart {
 
       ctx.beginPath()
 
-      this.lineTo(x, high + y, ctx)
-      this.lineTo(x, low + y, ctx)
+      this.lineTo(x, high, ctx)
+      this.lineTo(x, low, ctx)
 
       ctx.strokeStyle = candleColor
       ctx.stroke()
@@ -453,7 +454,7 @@ export class CandlesChart extends Chart {
       if (halfCandle > 1) {
         this.rect(
           x - this.candlesSpace / 4,
-          open + y,
+          open,
           this.candlesSpace / 2,
           close - open,
           ctx,
@@ -467,11 +468,14 @@ export class CandlesChart extends Chart {
     }
   }
 
-  zoomPriceAxis(my) {
-    if (this.isZoomingPriceAxis && my) {
-      let f = this.yZoomFactor
-      f += (my / 300) * f
-      this.yZoomFactor = f
+  zoomPriceAxis(dy: number) {
+    if (this.isZoomingPriceAxis && dy) {
+      let origin = this.mainCanvasHeight / 2
+      let d = 20 / (this.zoomSpeed * 2)
+
+      this.position.top -= (((this.position.top - origin) / d) * dy) / 100
+      this.position.bottom -= (((this.position.bottom - origin) / d) * dy) / 100
+
       this.draw()
     }
   }
@@ -564,5 +568,24 @@ export class CandlesChart extends Chart {
     this.isZoomingTimeAxis = false
   }
 
-  mainDebug() {}
+  mainDebug() {
+    // let { top, bottom } = this.position
+    // let y = 50
+    // let minY = this.position.top
+    // let maxY = this.position.bottom
+    // let minPrice = this.bottomHistoryPrice[1]
+    // let maxPrice = this.topHistoryPrice[1]
+    // this.debug('top: ' + top, 100, (y += 20))
+    // this.debug('bottom: ' + bottom, 100, (y += 20))
+    // this.debug('my: ' + this.mousePosition.y, 100, (y += 20))
+    // this.debug('minY: ' + minY, 100, (y += 20))
+    // this.debug('maxY: ' + maxY, 100, (y += 20))
+    // this.debug('minPrice: ' + minPrice, 100, (y += 20))
+    // this.debug('maxPrice: ' + maxPrice, 100, (y += 20))
+    // this.debug(
+    //   'myPrice: ' + this.normalizeToPrice(this.mousePosition.y),
+    //   100,
+    //   (y += 20),
+    // )
+  }
 }

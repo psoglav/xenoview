@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const datetime_1 = require("../utils/datetime");
+const utils_1 = require("../utils");
 const ui_1 = require("./ui");
 require("../public/styles/main.css");
 const defaultChartOptions = {
@@ -46,8 +46,8 @@ class ChartDataBase {
             !(value === null || value === void 0 ? void 0 : value.LASTUPDATE) ||
             currentPoint.close === value.PRICE)
             return;
-        let pointMinutesTs = (0, datetime_1.toMinutes)(value.LASTUPDATE * 1000);
-        let currentPointMinutesTs = (0, datetime_1.toMinutes)(currentPoint.time * 1000);
+        let pointMinutesTs = (0, utils_1.toMinutes)(value.LASTUPDATE * 1000);
+        let currentPointMinutesTs = (0, utils_1.toMinutes)(currentPoint.time * 1000);
         if (currentPointMinutesTs == pointMinutesTs) {
             this.updatePoint(hist[hist.length - 1], value);
         }
@@ -93,73 +93,28 @@ class ChartDataBase {
         this.visiblePoints = this.filterVisiblePoints(this.history);
         return this.visiblePoints;
     }
-    normalizeY(value) {
-        let h = this.chart.mainCanvasHeight;
-        let min = this.bottomHistoryPrice[1];
-        let max = this.topHistoryPrice[1];
-        let normalize = (y) => ((y - min) / (max - min)) * h;
-        let reverse = (y) => h - y;
-        let convert = (y) => reverse(normalize(y));
-        value = convert(value);
-        min = convert(min);
-        max = convert(max);
-        let hh = Math.abs((max - min) / 2);
-        let k = Math.abs(this.chart.yZoomFactor);
-        value = (value - hh) / k + hh;
-        return value + this.chart.position.y;
+    normalizeToPrice(y) {
+        let minY = this.chart.position.bottom;
+        let maxY = this.chart.position.top;
+        let minPrice = this.bottomHistoryPrice[1];
+        let maxPrice = this.topHistoryPrice[1];
+        return minPrice + (0, utils_1.normalizeTo)(y, minY, maxY, minPrice, maxPrice);
+    }
+    normalizeToY(price) {
+        let minY = this.chart.position.bottom;
+        let maxY = this.chart.position.top;
+        let minPrice = this.bottomHistoryPrice[1];
+        let maxPrice = this.topHistoryPrice[1];
+        return minY + (0, utils_1.normalizeTo)(price, minPrice, maxPrice, minY, maxY);
     }
     normalizePoint(point) {
-        let h = this.chart.mainCanvasHeight;
-        let min = this.bottomHistoryPrice[1];
-        let max = this.topHistoryPrice[1];
-        let normalize = (y) => ((y - min) / (max - min)) * h;
-        let reverse = (y) => h - y;
-        let convert = (y) => reverse(normalize(y));
-        let p = Object.create(point);
-        p.close = convert(p.close);
-        p.open = convert(p.open);
-        p.high = convert(p.high);
-        p.low = convert(p.low);
-        min = convert(min);
-        max = convert(max);
-        let hh = Math.abs((max - min) / 2);
-        let k = Math.abs(this.chart.yZoomFactor);
-        p.close = (p.close - hh) / k + hh;
-        p.open = (p.open - hh) / k + hh;
-        p.high = (p.high - hh) / k + hh;
-        p.low = (p.low - hh) / k + hh;
-        return p;
+        return Object.assign(Object.assign({}, point), { close: this.normalizeToY(point.close), open: this.normalizeToY(point.open), high: this.normalizeToY(point.high), low: this.normalizeToY(point.low) });
     }
     normalizeData() {
         let hist = this.history;
         if (!(hist === null || hist === void 0 ? void 0 : hist.length))
             return [];
-        let result = hist === null || hist === void 0 ? void 0 : hist.map((n) => (Object.assign({}, n)));
-        let h = this.chart.mainCanvasHeight;
-        let min = this.getBottomHistoryPrice()[1];
-        let max = this.getTopHistoryPrice()[1];
-        let normalize = (y) => ((y - min) / (max - min)) * h;
-        let reverse = (y) => h - y;
-        let convert = (y) => reverse(normalize(y));
-        for (let i = 0; i < hist.length; i++) {
-            result[i].close = convert(result[i].close);
-            result[i].open = convert(result[i].open);
-            result[i].high = convert(result[i].high);
-            result[i].low = convert(result[i].low);
-        }
-        min = convert(min);
-        max = convert(max);
-        let hh = Math.abs((max - min) / 2);
-        result = result.map((point) => {
-            let p = Object.create(point);
-            let k = Math.abs(this.chart.yZoomFactor);
-            p.close = (p.close - hh) / k + hh;
-            p.open = (p.open - hh) / k + hh;
-            p.high = (p.high - hh) / k + hh;
-            p.low = (p.low - hh) / k + hh;
-            return p;
-        });
-        return result;
+        return hist.map((point) => this.normalizePoint(point));
     }
     getTopHistoryPrice() {
         let history = this.visiblePoints || this.filterVisiblePointsAndCache();
@@ -219,7 +174,8 @@ class Chart extends ChartDataBase {
     }
     resetChartPosition() {
         this.position = {
-            y: 0,
+            top: 35,
+            bottom: this.mainCanvasHeight - 35,
             left: this.mainCanvasWidth * -10,
             right: this.mainCanvasWidth,
         };
@@ -394,7 +350,8 @@ class Chart extends ChartDataBase {
     toggleAutoScale() {
         this.options.autoScale = !this.options.autoScale;
         if (this.options.autoScale) {
-            this.position.y = 0;
+            this.position.top = 0;
+            this.position.bottom = this.mainCanvasHeight;
             this.yZoomFactor = 1.2;
             this.filterVisiblePointsAndCache();
             this.draw();
@@ -450,7 +407,7 @@ class Chart extends ChartDataBase {
     }
     debug(text, x, y) {
         this.chartContext.fillStyle = 'white';
-        this.chartContext.font = '20px Arial';
+        this.chartContext.font = '12px Arial';
         this.chartContext.fillText(text, x, y);
     }
 }

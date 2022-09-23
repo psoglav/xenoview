@@ -53,9 +53,10 @@ declare global {
   }
 
   export interface ChartBoundingRect {
-    y: number
     left: number
     right: number
+    top: number
+    bottom: number
   }
 
   export type LinearHistory = number[][]

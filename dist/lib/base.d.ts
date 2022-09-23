@@ -24,8 +24,9 @@ declare abstract class ChartDataBase {
     getPointX(value: any): number;
     filterVisiblePoints(data: any[]): any[];
     filterVisiblePointsAndCache(): HistoryData;
-    normalizeY(value: number): number;
-    normalizePoint(point: any): any;
+    normalizeToPrice(y: number): number;
+    normalizeToY(price: number): number;
+    normalizePoint(point: HistoryPoint): HistoryPoint;
     normalizeData(): HistoryData;
     getTopHistoryPrice(): [number, number];
     getBottomHistoryPrice(): [number, number];

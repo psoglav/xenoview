@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CandlesChart = void 0;
-const datetime_1 = require("../../utils/datetime");
+const utils_1 = require("../../utils");
 const base_1 = __importDefault(require("../base"));
 class CandlesChart extends base_1.default {
     constructor(container, options) {
@@ -51,7 +51,8 @@ class CandlesChart extends base_1.default {
     }
     moveChart(mx, my) {
         var _a;
-        this.position.y += my;
+        this.position.top += my;
+        this.position.bottom += my;
         if (this.position.right == this.mainCanvasWidth - 200 && mx < 0)
             return;
         if (this.position.left == 0 && mx > 0)
@@ -104,9 +105,9 @@ class CandlesChart extends base_1.default {
         if (!data || !data.length)
             return;
         let point = data[data.length - 1];
-        let npoint = this.normalizePoint(point);
-        let y = npoint.close + this.position.y;
-        let type = npoint.close < npoint.open ? 'higher' : 'lower';
+        let { close, open } = this.normalizePoint(point);
+        let y = close;
+        let type = close < open ? 'higher' : 'lower';
         ctx.strokeStyle = this.options.candles.colors[type];
         ctx.setLineDash([1, 2]);
         ctx.beginPath();
@@ -125,17 +126,10 @@ class CandlesChart extends base_1.default {
         ctx.font = '11px Verdana';
         ctx.fillText(point.close.toFixed(2), 10, y + 5.5);
     }
-    // TODO: fix the price issue
     drawPriceMarker() {
         let ctx = this.priceAxisContext;
         let y = this.mousePosition.y - this.canvasRect.top;
-        let h = this.mainCanvasHeight;
-        let t = this.topHistoryPrice[1] + this.position.y;
-        let b = this.bottomHistoryPrice[1] + this.position.y;
-        let py = this.position.y;
-        let k = Math.abs(this.yZoomFactor);
-        let price = (y / h) * (b - t) + t;
-        // return
+        let price = this.normalizeToPrice(y);
         ctx.beginPath();
         ctx.fillStyle = this.options.pointer.bgColor;
         this.rect(0, y - 10, this.getWidth(ctx), 20, ctx);
@@ -158,7 +152,7 @@ class CandlesChart extends base_1.default {
             return;
         if (point.time.toString().length != 13)
             point.time *= 1000;
-        let time = (0, datetime_1.getFullTimeFromTimestamp)(point.time);
+        let time = (0, utils_1.getFullTimeFromTimestamp)(point.time);
         x = this.getPointX(i);
         ctx.beginPath();
         ctx.fillStyle = this.options.pointer.bgColor;
@@ -182,7 +176,7 @@ class CandlesChart extends base_1.default {
         let start = 0;
         let end = length;
         let step = 1;
-        while (this.normalizeY((start / length) * delta + b) <
+        while (this.normalizeToY((start / length) * delta + b) <
             this.getWidth(this.chartContext)) {
             start -= step;
             step += 5;
@@ -190,7 +184,7 @@ class CandlesChart extends base_1.default {
                 break;
         }
         step = 0;
-        while (this.normalizeY((end / length) * delta + b) > 0) {
+        while (this.normalizeToY((end / length) * delta + b) > 0) {
             end += step;
             step += 5;
             if (end > 5000)
@@ -201,8 +195,8 @@ class CandlesChart extends base_1.default {
         }
         let prev = 0;
         return result.filter((i) => {
-            let y = this.normalizeY(i);
-            let py = this.normalizeY(prev);
+            let y = this.normalizeToY(i);
+            let py = this.normalizeToY(prev);
             if (py - y < 30 && y != py) {
                 return 0;
             }
@@ -230,7 +224,7 @@ class CandlesChart extends base_1.default {
         ctx.beginPath();
         ctx.strokeStyle = '#7777aa33';
         for (let i of rows) {
-            let y = this.normalizeY(i);
+            let y = this.normalizeToY(i);
             this.moveTo(0, y, ctx);
             this.lineTo(this.getWidth(ctx), y, ctx);
         }
@@ -254,7 +248,7 @@ class CandlesChart extends base_1.default {
         let ctx = this.priceAxisContext;
         let rows = this.getGridRows();
         for (let i of rows) {
-            let y = this.normalizeY(i);
+            let y = this.normalizeToY(i);
             this.moveTo(0, y, ctx);
             this.lineTo(this.getWidth(ctx), y, ctx);
             let fz = 11;
@@ -275,7 +269,7 @@ class CandlesChart extends base_1.default {
         for (let i of cols) {
             let point = this.history[i];
             let x = this.getPointX(i);
-            let time = (0, datetime_1.getTimeFromTimestamp)(point.time * 1000);
+            let time = (0, utils_1.getTimeFromTimestamp)(point.time * 1000);
             ctx.fillText(time, x - 16, 16);
         }
         ctx.stroke();
@@ -347,34 +341,38 @@ class CandlesChart extends base_1.default {
         for (let i = 0; i < data.length; i++) {
             this.candlesSpace = this.chartFullWidth / data.length;
             let x = this.position.left + i * this.candlesSpace;
-            let y = this.position.y;
             let halfCandle = this.candlesSpace / 4;
             if (x > this.mainCanvasWidth + halfCandle)
                 break;
             else if (x < -halfCandle)
                 continue;
-            let { close, open, low, high } = this.normalizePoint(data[i]);
+            let { close, open, low, high } = data[i];
+            close = this.normalizeToY(close);
+            open = this.normalizeToY(open);
+            low = this.normalizeToY(low);
+            high = this.normalizeToY(high);
             let candleColor = close > open
                 ? (_b = (_a = this.options.candles) === null || _a === void 0 ? void 0 : _a.colors) === null || _b === void 0 ? void 0 : _b.lower
                 : (_d = (_c = this.options.candles) === null || _c === void 0 ? void 0 : _c.colors) === null || _d === void 0 ? void 0 : _d.higher;
             ctx.beginPath();
-            this.lineTo(x, high + y, ctx);
-            this.lineTo(x, low + y, ctx);
+            this.lineTo(x, high, ctx);
+            this.lineTo(x, low, ctx);
             ctx.strokeStyle = candleColor;
             ctx.stroke();
             if (halfCandle > 1) {
-                this.rect(x - this.candlesSpace / 4, open + y, this.candlesSpace / 2, close - open, ctx);
+                this.rect(x - this.candlesSpace / 4, open, this.candlesSpace / 2, close - open, ctx);
                 ctx.fillStyle = candleColor;
                 ctx.fill();
             }
             ctx.closePath();
         }
     }
-    zoomPriceAxis(my) {
-        if (this.isZoomingPriceAxis && my) {
-            let f = this.yZoomFactor;
-            f += (my / 300) * f;
-            this.yZoomFactor = f;
+    zoomPriceAxis(dy) {
+        if (this.isZoomingPriceAxis && dy) {
+            let origin = this.mainCanvasHeight / 2;
+            let d = 20 / (this.zoomSpeed * 2);
+            this.position.top -= (((this.position.top - origin) / d) * dy) / 100;
+            this.position.bottom -= (((this.position.bottom - origin) / d) * dy) / 100;
             this.draw();
         }
     }
@@ -452,7 +450,26 @@ class CandlesChart extends base_1.default {
     timeAxisMouseUpHandler(e) {
         this.isZoomingTimeAxis = false;
     }
-    mainDebug() { }
+    mainDebug() {
+        // let { top, bottom } = this.position
+        // let y = 50
+        // let minY = this.position.top
+        // let maxY = this.position.bottom
+        // let minPrice = this.bottomHistoryPrice[1]
+        // let maxPrice = this.topHistoryPrice[1]
+        // this.debug('top: ' + top, 100, (y += 20))
+        // this.debug('bottom: ' + bottom, 100, (y += 20))
+        // this.debug('my: ' + this.mousePosition.y, 100, (y += 20))
+        // this.debug('minY: ' + minY, 100, (y += 20))
+        // this.debug('maxY: ' + maxY, 100, (y += 20))
+        // this.debug('minPrice: ' + minPrice, 100, (y += 20))
+        // this.debug('maxPrice: ' + maxPrice, 100, (y += 20))
+        // this.debug(
+        //   'myPrice: ' + this.normalizeToPrice(this.mousePosition.y),
+        //   100,
+        //   (y += 20),
+        // )
+    }
 }
 exports.CandlesChart = CandlesChart;
 //# sourceMappingURL=candles.js.map

@@ -1,4 +1,4 @@
-import { toMinutes } from '../utils'
+import { toMinutes, normalizeTo } from '../utils'
 import { Ticker } from '..'
 import { UI, Label, UIElementGroup } from './ui'
 
@@ -114,101 +114,40 @@ abstract class ChartDataBase {
     return this.visiblePoints
   }
 
-  normalizeToY(value: number) {
-    let h = this.chart.mainCanvasHeight
+  normalizeToPrice(y: number) {
+    let minY = this.chart.position.bottom
+    let maxY = this.chart.position.top
 
-    let min = this.bottomHistoryPrice[1]
-    let max = this.topHistoryPrice[1]
+    let minPrice = this.bottomHistoryPrice[1]
+    let maxPrice = this.topHistoryPrice[1]
 
-    let normalize = (y: number) => ((y - min) / (max - min)) * h
-    let reverse = (y: number) => h - y
-
-    let convert = (y: number) => reverse(normalize(y))
-
-    value = convert(value)
-
-    min = convert(min)
-    max = convert(max)
-
-    let hh = Math.abs((max - min) / 2)
-
-    let k = Math.abs(this.chart.yZoomFactor)
-    value = (value - hh) / k + hh
-
-    return value + this.chart.position.y
+    return minPrice + normalizeTo(y, minY, maxY, minPrice, maxPrice)
   }
 
-  normalizePoint(point: any) {
-    let h = this.chart.mainCanvasHeight
+  normalizeToY(price: number) {
+    let minY = this.chart.position.bottom
+    let maxY = this.chart.position.top
 
-    let min = this.bottomHistoryPrice[1]
-    let max = this.topHistoryPrice[1]
+    let minPrice = this.bottomHistoryPrice[1]
+    let maxPrice = this.topHistoryPrice[1]
 
-    let normalize = (y: number) => ((y - min) / (max - min)) * h
-    let reverse = (y: number) => h - y
+    return minY + normalizeTo(price, minPrice, maxPrice, minY, maxY)
+  }
 
-    let convert = (y: number) => reverse(normalize(y))
-
-    let p = Object.create(point) as typeof point
-
-    p.close = convert(p.close)
-    p.open = convert(p.open)
-    p.high = convert(p.high)
-    p.low = convert(p.low)
-
-    min = convert(min)
-    max = convert(max)
-
-    let hh = Math.abs((max - min) / 2)
-
-    let k = Math.abs(this.chart.yZoomFactor)
-    p.close = (p.close - hh) / k + hh
-    p.open = (p.open - hh) / k + hh
-    p.high = (p.high - hh) / k + hh
-    p.low = (p.low - hh) / k + hh
-
-    return p
+  normalizePoint(point: HistoryPoint): HistoryPoint {
+    return {
+      ...point,
+      close: this.normalizeToY(point.close),
+      open: this.normalizeToY(point.open),
+      high: this.normalizeToY(point.high),
+      low: this.normalizeToY(point.low),
+    }
   }
 
   normalizeData(): HistoryData {
     let hist = this.history
-
     if (!hist?.length) return []
-
-    let result = hist?.map((n) => ({ ...n }))
-    let h = this.chart.mainCanvasHeight
-
-    let min = this.getBottomHistoryPrice()[1]
-    let max = this.getTopHistoryPrice()[1]
-
-    let normalize = (y: number) => ((y - min) / (max - min)) * h
-    let reverse = (y: number) => h - y
-
-    let convert = (y: number) => reverse(normalize(y))
-
-    for (let i = 0; i < hist.length; i++) {
-      result[i].close = convert(result[i].close)
-      result[i].open = convert(result[i].open)
-      result[i].high = convert(result[i].high)
-      result[i].low = convert(result[i].low)
-    }
-
-    min = convert(min)
-    max = convert(max)
-
-    let hh = Math.abs((max - min) / 2)
-
-    result = result.map((point) => {
-      let p = Object.create(point)
-      let k = Math.abs(this.chart.yZoomFactor)
-      p.close = (p.close - hh) / k + hh
-      p.open = (p.open - hh) / k + hh
-      p.high = (p.high - hh) / k + hh
-      p.low = (p.low - hh) / k + hh
-      return p
-    })
-
-    return result
+    return hist.map((point) => this.normalizePoint(point))
   }
 
   getTopHistoryPrice(): [number, number] {
@@ -298,7 +237,8 @@ export default abstract class Chart extends ChartDataBase {
 
   resetChartPosition() {
     this.position = {
-      y: 0,
+      top: 35,
+      bottom: this.mainCanvasHeight - 35,
       left: this.mainCanvasWidth * -10,
       right: this.mainCanvasWidth,
     }
@@ -575,7 +515,8 @@ export default abstract class Chart extends ChartDataBase {
   toggleAutoScale() {
     this.options.autoScale = !this.options.autoScale
     if (this.options.autoScale) {
-      this.position.y = 0
+      this.position.top = 0
+      this.position.bottom = this.mainCanvasHeight
       this.yZoomFactor = 1.2
       this.filterVisiblePointsAndCache()
       this.draw()
