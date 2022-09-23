@@ -300,6 +300,7 @@ class Chart extends ChartDataBase {
             ],
             ctx: this.chartContext,
         });
+        this.ui.elements = [];
         this.ui.elements.push(topbarGroup);
     }
     // abstract timeAxisMouseLeaveHandler(e?: MouseEvent): void

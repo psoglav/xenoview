@@ -17,4 +17,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./crypto"), exports);
 __exportStar(require("./datetime"), exports);
 __exportStar(require("./math"), exports);
+__exportStar(require("./array"), exports);
 //# sourceMappingURL=index.js.map
