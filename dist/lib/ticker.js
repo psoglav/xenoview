@@ -40,7 +40,7 @@ class Ticker {
     }
     init() {
         var _a;
-        (_a = this.ws) === null || _a === void 0 ? void 0 : _a.close(0, 'reconnect');
+        (_a = this.ws) === null || _a === void 0 ? void 0 : _a.close();
         this.initBinance(this.sym);
     }
     initBinance(symbol) {

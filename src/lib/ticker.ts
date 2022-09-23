@@ -68,7 +68,7 @@ export class Ticker {
   }
 
   init() {
-    this.ws?.close(0, 'reconnect')
+    this.ws?.close()
     this.initBinance(this.sym)
   }
 
