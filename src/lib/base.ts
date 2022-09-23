@@ -282,6 +282,7 @@ export default abstract class Chart extends ChartDataBase {
   loadHistory(value: HistoryData) {
     this.resetChartPosition()
     this.history = value
+    this.visiblePoints = null
     this.chartData = this.normalizeData()
     this.initUIElements()
     this.draw()
