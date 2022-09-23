@@ -1,4 +1,4 @@
-import { toMinutes } from '../utils/datetime'
+import { toMinutes } from '../utils'
 import { Ticker } from '..'
 import { UI, Label, UIElementGroup } from './ui'
 

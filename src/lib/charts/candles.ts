@@ -1,7 +1,4 @@
-import {
-  getFullTimeFromTimestamp,
-  getTimeFromTimestamp,
-} from '../../utils/datetime'
+import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../../utils'
 import Chart from '../base'
 
 export class CandlesChart extends Chart {
