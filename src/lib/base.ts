@@ -658,7 +658,7 @@ export default abstract class Chart extends ChartDataBase {
 
   debug(text: any, x: number, y: number) {
     this.chartContext.fillStyle = 'white'
-    this.chartContext.font = '20px Arial'
+    this.chartContext.font = '12px Arial'
     this.chartContext.fillText(text, x, y)
   }
 }
