@@ -44,12 +44,13 @@ export class Ticker {
     interval: HistoryInterval,
     limit?: number,
   ): Promise<HistoryData> {
-    let params = {
-      limit,
+    let params: any = {
       fsym: symbol,
       tsym: 'USD',
       tryConversion: false,
     }
+
+    if(limit) params.limit = limit
 
     let q = Object.entries(params)
       .map(([k, v]) => k + '=' + v)
