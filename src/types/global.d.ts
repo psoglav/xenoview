@@ -29,7 +29,8 @@ declare global {
   export interface ChartOptions {
     bgColor?: string
     textColor?: string
-    autoScale: boolean
+    autoScale?: boolean
+    spinnerColor?: string
     pointer?: {
       fgColor: string
       bgColor: string

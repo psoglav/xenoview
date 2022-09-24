@@ -45,6 +45,7 @@ export default abstract class Chart extends ChartDataBase {
     chartContext: CanvasRenderingContext2D;
     priceAxisContext: CanvasRenderingContext2D;
     timeAxisContext: CanvasRenderingContext2D;
+    spinnerEl: HTMLElement;
     zoomSpeed: number;
     yZoomFactor: number;
     focusedPoint: HistoryPoint | null;
@@ -56,6 +57,8 @@ export default abstract class Chart extends ChartDataBase {
     createTimeAxis(): HTMLCanvasElement;
     createPriceAxis(): HTMLCanvasElement;
     createChartToolbar(): void;
+    createSpinnerSvg(): any;
+    loading(value: boolean): void;
     createChartLayout(container: HTMLElement | string): void;
     initUIElements(): void;
     abstract clampXPanning(): void;

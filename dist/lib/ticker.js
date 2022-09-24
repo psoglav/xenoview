@@ -22,11 +22,12 @@ class Ticker {
     }
     async fetchHistory(symbol, interval, limit) {
         let params = {
-            limit,
             fsym: symbol,
             tsym: 'USD',
             tryConversion: false,
         };
+        if (limit)
+            params.limit = limit;
         let q = Object.entries(params)
             .map(([k, v]) => k + '=' + v)
             .join('&');
@@ -49,7 +50,6 @@ class Ticker {
         this.ws.onmessage = (event) => {
             var _a;
             let data = JSON.parse(event.data);
-            console.log(data.s, this.sym);
             if ((_a = data.s) === null || _a === void 0 ? void 0 : _a.startsWith(this.sym)) {
                 this.state = {
                     PRICE: +data.k.c,

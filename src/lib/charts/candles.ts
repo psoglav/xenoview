@@ -22,7 +22,7 @@ export class CandlesChart extends Chart {
     this.clear(this.priceAxisContext)
 
     if (!this.history) {
-      this.loading()
+      this.loading(true)
     } else {
       this.drawGridColumns()
       this.drawGridRows()
@@ -87,8 +87,6 @@ export class CandlesChart extends Chart {
       i > data.length - 1 ? data.length - 1 : i < 0 ? 0 : i
     this.focusedPoint = this.history[this.pointingPointIndex]
   }
-
-  loading() {}
 
   drawPointer() {
     if (!this.chartData?.length || !this.pointerIsVisible) return

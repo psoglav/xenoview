@@ -7,6 +7,7 @@ const defaultChartOptions = {
     bgColor: '#151924',
     textColor: '#b2b5be',
     autoScale: false,
+    spinnerColor: '#b2b5be',
     pointer: {
         bgColor: '#363a45',
         fgColor: '#9598a1',
@@ -163,6 +164,7 @@ class Chart extends ChartDataBase {
         this.visiblePoints = null;
         this.chartData = this.normalizeData();
         this.initUIElements();
+        this.loading(false);
         this.draw();
     }
     setTicker(ticker) {
@@ -223,10 +225,41 @@ class Chart extends ChartDataBase {
         return canvas;
     }
     createChartToolbar() { }
+    createSpinnerSvg() {
+        let xmlns = 'http://www.w3.org/2000/svg';
+        let boxWidth = '24';
+        let boxHeight = '24';
+        let svgElem = document.createElementNS(xmlns, 'svg');
+        svgElem.id = '#cryptoview-spinner';
+        svgElem.style.color = this.options.spinnerColor;
+        svgElem.setAttributeNS(null, 'viewBox', '0 0 24 24');
+        svgElem.setAttributeNS(null, 'width', boxWidth);
+        svgElem.setAttributeNS(null, 'height', boxHeight);
+        svgElem.style.display = 'block';
+        svgElem.style.position = 'absolute';
+        svgElem.style.left = '50%';
+        svgElem.style.top = '50%';
+        svgElem.style.transform = 'translate(-50%, -50%) scale(3)';
+        let path1 = document.createElementNS(xmlns, 'path');
+        path1.setAttributeNS(null, 'fill', 'none');
+        path1.setAttributeNS(null, 'd', 'M0 0h24v24H0z');
+        svgElem.appendChild(path1);
+        let path2 = document.createElementNS(xmlns, 'path');
+        path2.setAttributeNS(null, 'd', 'M18.364 5.636L16.95 7.05A7 7 0 1 0 19 12h2a9 9 0 1 1-2.636-6.364z');
+        path2.style.transformOrigin = '50% 50%';
+        path2.setAttributeNS(null, 'fill', 'currentColor');
+        svgElem.appendChild(path2);
+        path2.style.animation = '1s linear infinite forwards rotate';
+        return svgElem;
+    }
+    loading(value) {
+        this.spinnerEl.style.display = value ? 'block' : 'none';
+    }
     createChartLayout(container) {
         this.chartContext = document.createElement('canvas').getContext('2d');
         this.priceAxisContext = document.createElement('canvas').getContext('2d');
         this.timeAxisContext = document.createElement('canvas').getContext('2d');
+        this.spinnerEl = this.createSpinnerSvg();
         this.chartContext.lineWidth = 1 * this.getPixelRatio(this.chartContext);
         if (typeof container === 'string') {
             this.container = document.querySelector(container);
@@ -238,6 +271,7 @@ class Chart extends ChartDataBase {
         this.container.classList.add('chart-container');
         this.container.innerHTML = '';
         this.container.style.display = 'grid';
+        this.container.style.position = 'relative';
         this.container.style.grid = '1fr 28px / 1fr 70px';
         let chartCanvas = this.createChart();
         let priceAxisCanvas = this.createPriceAxis();
@@ -257,6 +291,7 @@ class Chart extends ChartDataBase {
         this.container.appendChild(chartCanvas);
         this.container.appendChild(timeAxisCanvas);
         this.container.appendChild(priceAxisCanvas);
+        this.container.appendChild(this.spinnerEl);
         this.rescale(this.chartContext);
         this.rescale(this.priceAxisContext);
         this.rescale(this.timeAxisContext);

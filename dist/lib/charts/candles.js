@@ -21,7 +21,7 @@ class CandlesChart extends base_1.default {
         this.clear(this.timeAxisContext);
         this.clear(this.priceAxisContext);
         if (!this.history) {
-            this.loading();
+            this.loading(true);
         }
         else {
             this.drawGridColumns();
@@ -80,7 +80,6 @@ class CandlesChart extends base_1.default {
             i > data.length - 1 ? data.length - 1 : i < 0 ? 0 : i;
         this.focusedPoint = this.history[this.pointingPointIndex];
     }
-    loading() { }
     drawPointer() {
         var _a;
         if (!((_a = this.chartData) === null || _a === void 0 ? void 0 : _a.length) || !this.pointerIsVisible)
