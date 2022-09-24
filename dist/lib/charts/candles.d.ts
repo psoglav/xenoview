@@ -17,7 +17,6 @@ export declare class CandlesChart extends Chart {
     drawCurrentMarketPriceMarker(): void;
     drawPriceMarker(): void;
     drawTimeMarker(): void;
-    getGridRows2(): number[];
     getGridRows(): any[];
     getGridColumns(): number[];
     drawGridRows(): void;

@@ -163,24 +163,6 @@ class CandlesChart extends base_1.default {
         ctx.font = '11px Verdana';
         ctx.fillText(time, x - 50, 20);
     }
-    getGridRows2() {
-        let t = this.topHistoryPrice[1];
-        let b = this.bottomHistoryPrice[1];
-        let dist = t - b;
-        let yScale = Math.round((this.position.bottom - this.position.top) / 100) * 100;
-        let step = dist / (this.mainCanvasHeight / 100);
-        // step = yScale
-        let result = (0, utils_1.rangeByStep)(t, b, yScale);
-        let cur = result[0];
-        while (cur > 0) {
-            result.unshift(cur -= yScale);
-        }
-        cur = result[result.length - 1];
-        while (cur < this.mainCanvasHeight) {
-            result.push(cur += yScale);
-        }
-        return result;
-    }
     getGridRows() {
         let t = this.topHistoryPrice[1];
         let b = this.bottomHistoryPrice[1];

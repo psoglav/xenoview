@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fractureTimes = exports.fracture = exports.rangeByStep = void 0;
+exports.rangeByStep = void 0;
 function rangeByStep(start, end, step) {
     var _a, _b;
     if (end === start || step === 0) {
@@ -32,42 +32,4 @@ function rangeByStep(start, end, step) {
     return result;
 }
 exports.rangeByStep = rangeByStep;
-const fracture = (arr) => {
-    let result = [...arr];
-    if (arr.length == 0) {
-        result = [];
-    }
-    else if (arr.length == 1) {
-        let n = arr[0] / 2;
-        result = [-n, n];
-    }
-    else if (arr.length == 2) {
-        let [start, end] = arr;
-        let max = Math.max(start, end);
-        let min = Math.min(start, end);
-        let step = (max - min) / 2;
-        console.log(step);
-        if (step == 0)
-            result = [start, start / 2, end];
-        else
-            result = [start, start + step, end];
-    }
-    else if (arr.length > 2) {
-        let [start, b] = arr;
-        let end = arr[arr.length - 1];
-        let step = Math.abs(start - b) / 2;
-        result = rangeByStep(start, end, step);
-    }
-    console.log(result);
-    return result;
-};
-exports.fracture = fracture;
-const fractureTimes = (arr, n) => {
-    let result = [...arr];
-    for (let i = 0; i < n; i++) {
-        result = (0, exports.fracture)(result);
-    }
-    return result;
-};
-exports.fractureTimes = fractureTimes;
 //# sourceMappingURL=array.js.map

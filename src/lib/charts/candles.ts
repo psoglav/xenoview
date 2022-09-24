@@ -1,7 +1,6 @@
 import {
   getFullTimeFromTimestamp,
   getTimeFromTimestamp,
-  normalize,
 } from '../../utils'
 import Chart from '../base'
 
