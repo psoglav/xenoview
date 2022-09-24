@@ -42,9 +42,10 @@ export class Ticker {
   async fetchHistory(
     symbol: string,
     interval: HistoryInterval,
+    limit?: number,
   ): Promise<HistoryData> {
     let params = {
-      // limit: 1000,
+      limit,
       fsym: symbol,
       tsym: 'USD',
       tryConversion: false,

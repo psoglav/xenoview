@@ -15,7 +15,7 @@ export declare class Ticker {
     get currency(): any;
     get symbol(): string;
     set symbol(value: string);
-    fetchHistory(symbol: string, interval: HistoryInterval): Promise<HistoryData>;
+    fetchHistory(symbol: string, interval: HistoryInterval, limit?: number): Promise<HistoryData>;
     init(): void;
     initBinance(symbol: string): void;
     initCryptoCompare(symbol: string): void;

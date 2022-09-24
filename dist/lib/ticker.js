@@ -20,9 +20,9 @@ class Ticker {
         this.sym = value;
         this.init();
     }
-    async fetchHistory(symbol, interval) {
+    async fetchHistory(symbol, interval, limit) {
         let params = {
-            // limit: 1000,
+            limit,
             fsym: symbol,
             tsym: 'USD',
             tryConversion: false,
