@@ -235,12 +235,17 @@ export default abstract class Chart extends ChartDataBase {
     }, 500)
   }
 
-  resetChartPosition() {
+  resetChartPosition(full?: boolean) {
     this.position = {
       top: 35,
       bottom: this.mainCanvasHeight - 35,
       left: this.mainCanvasWidth * -10,
       right: this.mainCanvasWidth,
+    }
+
+    if (full) {
+      this.position.left = 0
+      this.filterVisiblePointsAndCache()
     }
   }
 
