@@ -43,10 +43,10 @@ class Ticker {
         var _a;
         (_a = this.ws) === null || _a === void 0 ? void 0 : _a.close();
         this.state = null;
-        this.initBinance(this.sym);
+        this.initBinance();
     }
-    initBinance(symbol) {
-        this.ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}usdt@kline_1m`);
+    initBinance() {
+        this.ws = new WebSocket(`wss://stream.binance.com:9443/ws/${this.sym.toLowerCase()}usdt@kline_1m`);
         this.ws.onmessage = (event) => {
             var _a;
             let data = JSON.parse(event.data);
@@ -60,6 +60,9 @@ class Ticker {
                     close: +data.k.c,
                 };
             }
+        };
+        this.ws.onclose = () => {
+            setTimeout(this.initBinance, 1000);
         };
     }
     initCryptoCompare(symbol) {

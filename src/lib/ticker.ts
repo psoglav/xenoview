@@ -50,7 +50,7 @@ export class Ticker {
       tryConversion: false,
     }
 
-    if(limit) params.limit = limit
+    if (limit) params.limit = limit
 
     let q = Object.entries(params)
       .map(([k, v]) => k + '=' + v)
@@ -72,12 +72,12 @@ export class Ticker {
   init() {
     this.ws?.close()
     this.state = null
-    this.initBinance(this.sym)
+    this.initBinance()
   }
 
-  initBinance(symbol: string) {
+  initBinance() {
     this.ws = new WebSocket(
-      `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}usdt@kline_1m`,
+      `wss://stream.binance.com:9443/ws/${this.sym.toLowerCase()}usdt@kline_1m`,
     )
     this.ws.onmessage = (event: any) => {
       let data = JSON.parse(event.data)
@@ -91,6 +91,9 @@ export class Ticker {
           close: +data.k.c,
         }
       }
+    }
+    this.ws.onclose = () => {
+      setTimeout(this.initBinance, 1000)
     }
   }
 
