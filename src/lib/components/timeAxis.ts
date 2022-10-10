@@ -1,5 +1,4 @@
-import { Chart } from '../core/chart'
-import { Component } from '../core/component'
+import { Chart, Component } from '../core'
 
 import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../../utils'
 
