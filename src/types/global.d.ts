@@ -1,4 +1,3 @@
-import { Chart } from '@/lib/core/chart'
 import { UIElement } from '../lib/ui'
 
 declare global {
@@ -54,7 +53,7 @@ declare global {
         }
       }
     }
-    interface Position {
+    interface BoundingRect {
       left: number
       right: number
       top: number

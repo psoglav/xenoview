@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Chart = void 0;
 const ui_1 = require("../ui");
 const components_1 = require("../components");
-const chartData_1 = require("./chartData");
+const _1 = require(".");
 require("../../public/styles/main.css");
 const defaultChartOptions = {
     bgColor: '#151924',
@@ -21,14 +21,13 @@ const defaultChartOptions = {
         },
     },
 };
-class Chart extends chartData_1.ChartData {
+class Chart extends _1.ChartData {
     constructor(container, options) {
         super();
         this.options = defaultChartOptions;
         this.mousePosition = { x: 0, y: 0 };
-        this.zoomSpeed = 1.8;
-        this.yZoomFactor = 1.2;
         this.initData(this);
+        this.transform = new _1.Transform(this);
         this.pointer = new components_1.Pointer(this);
         this.priceAxis = new components_1.PriceAxis(this);
         this.timeAxis = new components_1.TimeAxis(this);
@@ -36,8 +35,14 @@ class Chart extends chartData_1.ChartData {
             this.options = Object.assign(Object.assign({}, this.options), options);
         this.createChartLayout(container);
     }
+    get boundingRect() {
+        return this.transform.boundingRect;
+    }
+    set boundingRect(value) {
+        this.transform.boundingRect = value;
+    }
     loadHistory(value) {
-        this.resetChartPosition();
+        this.transform.reset();
         this.history = value;
         this.visiblePoints = null;
         this.chartData = this.normalizeData();
@@ -52,52 +57,8 @@ class Chart extends chartData_1.ChartData {
             this.updateCurrentPoint(ticker.state);
         }, 500);
     }
-    resetChartPosition(full) {
-        this.position = {
-            top: 35,
-            bottom: this.mainCanvasHeight - 35,
-            left: this.mainCanvasWidth * -10,
-            right: this.mainCanvasWidth,
-        };
-        if (full) {
-            this.position.left = 0;
-            this.filterVisiblePointsAndCache();
-        }
-    }
-    zoom(dx, dy) {
-        var _a;
-        if (dx) {
-            let zoomPoint = this.mainCanvasWidth;
-            let d = 20 / this.zoomSpeed;
-            this.position.right += ((this.position.right - zoomPoint) / d) * dx;
-            this.position.left += ((this.position.left - zoomPoint) / d) * dx;
-            this.clampXPanning();
-        }
-        else if (dy) {
-            let origin = this.mainCanvasHeight / 2;
-            let d = 20 / (this.zoomSpeed * 2);
-            this.position.top -= (((this.position.top - origin) / d) * dy) / 100;
-            this.position.bottom -= (((this.position.bottom - origin) / d) * dy) / 100;
-        }
-        if ((_a = this.options) === null || _a === void 0 ? void 0 : _a.autoScale)
-            this.filterVisiblePointsAndCache();
-    }
-    move(mx, my) {
-        var _a;
-        this.position.top += my;
-        this.position.bottom += my;
-        if (this.position.right == this.mainCanvasWidth - 200 && mx < 0)
-            return;
-        if (this.position.left == 0 && mx > 0)
-            return;
-        this.position.left += mx;
-        this.position.right += mx;
-        this.clampXPanning();
-        if ((_a = this.options) === null || _a === void 0 ? void 0 : _a.autoScale)
-            this.filterVisiblePointsAndCache();
-    }
     createChart() {
-        let canvas = this.chartContext.canvas;
+        let canvas = this.ctx.canvas;
         const preventDefault = function (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -108,7 +69,7 @@ class Chart extends chartData_1.ChartData {
         canvas.style.width = '100%';
         canvas.style.height = '100%';
         canvas.style.cursor = 'crosshair';
-        this.rescale(this.chartContext);
+        this.rescale(this.ctx);
         this.bindMouseListeners();
         return canvas;
     }
@@ -144,9 +105,9 @@ class Chart extends chartData_1.ChartData {
         this.spinnerEl.style.display = value ? 'block' : 'none';
     }
     createChartLayout(container) {
-        this.chartContext = document.createElement('canvas').getContext('2d');
+        this.ctx = document.createElement('canvas').getContext('2d');
         this.spinnerEl = this.createSpinnerSvg();
-        this.chartContext.lineWidth = 1 * this.getPixelRatio(this.chartContext);
+        this.ctx.lineWidth = 1 * this.getPixelRatio(this.ctx);
         if (typeof container === 'string') {
             this.container = document.querySelector(container);
         }
@@ -165,7 +126,7 @@ class Chart extends chartData_1.ChartData {
         window.addEventListener('resize', () => {
             rect = this.container.getBoundingClientRect();
             this.setSize(rect.width - 70, rect.height - 28, chartCanvas);
-            this.clampXPanning();
+            this.transform.clamp();
             this.draw();
         });
         window.addEventListener('mousemove', (e) => this.windowMouseMoveHandler(e));
@@ -173,7 +134,7 @@ class Chart extends chartData_1.ChartData {
         this.container.appendChild(this.timeAxis.canvas);
         this.container.appendChild(this.priceAxis.canvas);
         this.container.appendChild(this.spinnerEl);
-        this.rescale(this.chartContext);
+        this.rescale(this.ctx);
         this.rescale(this.priceAxis.ctx);
         this.rescale(this.timeAxis.ctx);
         this.ui = new ui_1.UI();
@@ -196,7 +157,7 @@ class Chart extends chartData_1.ChartData {
                 font: 'Arial',
                 size: 13,
                 color: (_a = this.options) === null || _a === void 0 ? void 0 : _a.textColor,
-                ctx: this.chartContext,
+                ctx: this.ctx,
             });
         };
         let topbarGroup = new ui_1.UIElementGroup({
@@ -218,13 +179,13 @@ class Chart extends chartData_1.ChartData {
                 new ui_1.Label(Object.assign({ value: 'C' }, commonOpts())),
                 new ui_1.Label(Object.assign(Object.assign({ value: () => getPoint().close }, commonOpts()), { color: getCandleColor })),
             ],
-            ctx: this.chartContext,
+            ctx: this.ctx,
         });
         this.ui.elements = [];
         this.ui.elements.push(topbarGroup);
     }
     bindMouseListeners() {
-        let canvas = this.chartContext.canvas;
+        let canvas = this.ctx.canvas;
         canvas.addEventListener('mousemove', (e) => {
             this.mousePosition.x = e.clientX;
             this.mousePosition.y = e.clientY;
@@ -243,22 +204,19 @@ class Chart extends chartData_1.ChartData {
         return ctx.canvas.height * this.getPixelRatio(ctx);
     }
     get mainCanvasWidth() {
-        return (this.chartContext.canvas.clientWidth *
-            this.getPixelRatio(this.chartContext));
+        return this.ctx.canvas.clientWidth * this.getPixelRatio(this.ctx);
     }
     get mainCanvasHeight() {
-        return (this.chartContext.canvas.clientHeight *
-            this.getPixelRatio(this.chartContext));
+        return this.ctx.canvas.clientHeight * this.getPixelRatio(this.ctx);
     }
     get canvasRect() {
-        return this.chartContext.canvas.getBoundingClientRect();
+        return this.ctx.canvas.getBoundingClientRect();
     }
     toggleAutoScale() {
         this.options.autoScale = !this.options.autoScale;
         if (this.options.autoScale) {
-            this.position.top = 0;
-            this.position.bottom = this.mainCanvasHeight;
-            this.yZoomFactor = 1.2;
+            this.boundingRect.top = 0;
+            this.boundingRect.bottom = this.mainCanvasHeight;
             this.filterVisiblePointsAndCache();
             this.draw();
         }
@@ -312,9 +270,9 @@ class Chart extends chartData_1.ChartData {
         console.log('CryptoView Log: ', ...msg);
     }
     debug(text, x, y) {
-        this.chartContext.fillStyle = 'white';
-        this.chartContext.font = '12px Arial';
-        this.chartContext.fillText(text, x, y);
+        this.ctx.fillStyle = 'white';
+        this.ctx.font = '12px Arial';
+        this.ctx.fillText(text, x, y);
     }
 }
 exports.Chart = Chart;

@@ -8,7 +8,7 @@ export class CandlesChart extends Chart {
   }
 
   draw() {
-    this.clear(this.chartContext)
+    this.clear(this.ctx)
     this.clear(this.timeAxis.ctx)
     this.clear(this.priceAxis.ctx)
 
@@ -26,14 +26,8 @@ export class CandlesChart extends Chart {
     }
   }
 
-  clampXPanning() {
-    if (this.position.left > 0) this.position.left = 0
-    if (this.position.right < this.mainCanvasWidth - 200)
-      this.position.right = this.mainCanvasWidth - 200
-  }
-
   drawGridRows() {
-    let ctx = this.chartContext
+    let ctx = this.ctx
     let rows = this.getGridRows()
 
     ctx.beginPath()
@@ -50,7 +44,7 @@ export class CandlesChart extends Chart {
   }
 
   drawGridColumns() {
-    let ctx = this.chartContext
+    let ctx = this.ctx
     let cols = this.getGridColumns()
 
     ctx.beginPath()
@@ -77,12 +71,12 @@ export class CandlesChart extends Chart {
       return
     }
 
-    let ctx = this.chartContext
+    let ctx = this.ctx
 
-    this.moveTo(this.position.left - 10, this.mainCanvasHeight, ctx)
+    this.moveTo(this.boundingRect.left - 10, this.mainCanvasHeight, ctx)
 
     for (let i = 0; i < data.length; i++) {
-      let x = this.position.left + i * this.pointsGap
+      let x = this.boundingRect.left + i * this.pointsGap
       let halfCandle = this.pointsGap / 4
 
       if (x > this.mainCanvasWidth + halfCandle) break
@@ -134,7 +128,7 @@ export class CandlesChart extends Chart {
     if (this.panningIsActive) {
       let mx = e.movementX
       let my = this.options.autoScale ? 0 : e.movementY
-      this.move(mx, my)
+      this.transform.move(mx, my)
     }
 
     this.pointer.move()
@@ -172,7 +166,7 @@ export class CandlesChart extends Chart {
     if (wd < 0 && cs < 1.7) return
     if (wd > 0 && cs > 350) return
 
-    this.zoom(wd > 1 ? 1 : -1, 0)
+    this.transform.zoom(wd > 1 ? 1 : -1, 0)
     this.pointer.move()
     this.draw()
   }

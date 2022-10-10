@@ -3,7 +3,6 @@ export declare class CandlesChart extends Chart {
     private panningIsActive;
     constructor(container: HTMLElement | string, options?: Chart.Options);
     draw(): void;
-    clampXPanning(): void;
     drawGridRows(): void;
     drawGridColumns(): void;
     drawChart(): void;

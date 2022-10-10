@@ -1,7 +1,7 @@
 import { Ticker } from '../ticker'
 import { UI, Label, UIElementGroup } from '../ui'
 import { Pointer, PriceAxis, TimeAxis } from '../components'
-import { ChartData } from './chartData'
+import { ChartData, Transform } from '.'
 
 import '../../public/styles/main.css'
 
@@ -28,25 +28,32 @@ export abstract class Chart extends ChartData {
   ticker: Ticker
   ui: UI
 
-  position: Chart.Position
+  transform: Transform
   mousePosition = { x: 0, y: 0 }
 
-  chartContext: CanvasRenderingContext2D
+  ctx: CanvasRenderingContext2D
 
   spinnerEl: HTMLElement
   pointer: Pointer
   priceAxis: PriceAxis
   timeAxis: TimeAxis
 
-  zoomSpeed: number = 1.8
-  yZoomFactor = 1.2
-
   focusedPointIndex: number
   focusedPoint: History.Point | null
+
+  get boundingRect(): Chart.BoundingRect {
+    return this.transform.boundingRect
+  }
+
+  set boundingRect(value: Chart.BoundingRect) {
+    this.transform.boundingRect = value
+  }
 
   constructor(container: HTMLElement | string, options?: Chart.Options) {
     super()
     this.initData(this)
+
+    this.transform = new Transform(this)
 
     this.pointer = new Pointer(this)
     this.priceAxis = new PriceAxis(this)
@@ -58,7 +65,7 @@ export abstract class Chart extends ChartData {
   }
 
   loadHistory(value: History.Data) {
-    this.resetChartPosition()
+    this.transform.reset()
     this.history = value
     this.visiblePoints = null
     this.chartData = this.normalizeData()
@@ -75,56 +82,8 @@ export abstract class Chart extends ChartData {
     }, 500)
   }
 
-  resetChartPosition(full?: boolean) {
-    this.position = {
-      top: 35,
-      bottom: this.mainCanvasHeight - 35,
-      left: this.mainCanvasWidth * -10,
-      right: this.mainCanvasWidth,
-    }
-
-    if (full) {
-      this.position.left = 0
-      this.filterVisiblePointsAndCache()
-    }
-  }
-
-  zoom(dx: number, dy: number) {
-    if (dx) {
-      let zoomPoint = this.mainCanvasWidth
-      let d = 20 / this.zoomSpeed
-
-      this.position.right += ((this.position.right - zoomPoint) / d) * dx
-      this.position.left += ((this.position.left - zoomPoint) / d) * dx
-
-      this.clampXPanning()
-    } else if (dy) {
-      let origin = this.mainCanvasHeight / 2
-      let d = 20 / (this.zoomSpeed * 2)
-
-      this.position.top -= (((this.position.top - origin) / d) * dy) / 100
-      this.position.bottom -= (((this.position.bottom - origin) / d) * dy) / 100
-    }
-
-    if (this.options?.autoScale) this.filterVisiblePointsAndCache()
-  }
-
-  move(mx: number, my: number) {
-    this.position.top += my
-    this.position.bottom += my
-
-    if (this.position.right == this.mainCanvasWidth - 200 && mx < 0) return
-    if (this.position.left == 0 && mx > 0) return
-
-    this.position.left += mx
-    this.position.right += mx
-
-    this.clampXPanning()
-    if (this.options?.autoScale) this.filterVisiblePointsAndCache()
-  }
-
   createChart(): HTMLCanvasElement {
-    let canvas = this.chartContext.canvas
+    let canvas = this.ctx.canvas
 
     const preventDefault = function (e: Event) {
       e.preventDefault()
@@ -139,7 +98,7 @@ export abstract class Chart extends ChartData {
     canvas.style.height = '100%'
     canvas.style.cursor = 'crosshair'
 
-    this.rescale(this.chartContext)
+    this.rescale(this.ctx)
     this.bindMouseListeners()
 
     return canvas
@@ -190,10 +149,10 @@ export abstract class Chart extends ChartData {
   }
 
   createChartLayout(container: HTMLElement | string) {
-    this.chartContext = document.createElement('canvas').getContext('2d')!
+    this.ctx = document.createElement('canvas').getContext('2d')!
     this.spinnerEl = this.createSpinnerSvg()
 
-    this.chartContext.lineWidth = 1 * this.getPixelRatio(this.chartContext)
+    this.ctx.lineWidth = 1 * this.getPixelRatio(this.ctx)
 
     if (typeof container === 'string') {
       this.container = document.querySelector<HTMLElement>(container)!
@@ -219,7 +178,7 @@ export abstract class Chart extends ChartData {
     window.addEventListener('resize', () => {
       rect = this.container!.getBoundingClientRect()
       this.setSize(rect.width - 70, rect.height - 28, chartCanvas)
-      this.clampXPanning()
+      this.transform.clamp()
       this.draw()
     })
 
@@ -231,7 +190,7 @@ export abstract class Chart extends ChartData {
 
     this.container!.appendChild(this.spinnerEl)
 
-    this.rescale(this.chartContext)
+    this.rescale(this.ctx)
     this.rescale(this.priceAxis.ctx)
     this.rescale(this.timeAxis.ctx)
 
@@ -254,7 +213,7 @@ export abstract class Chart extends ChartData {
       font: 'Arial',
       size: 13,
       color: this.options?.textColor,
-      ctx: this.chartContext,
+      ctx: this.ctx,
     })
 
     let topbarGroup = new UIElementGroup({
@@ -309,14 +268,12 @@ export abstract class Chart extends ChartData {
           color: getCandleColor,
         }),
       ],
-      ctx: this.chartContext,
+      ctx: this.ctx,
     })
 
     this.ui.elements = []
     this.ui.elements.push(topbarGroup)
   }
-
-  abstract clampXPanning(): void
 
   abstract windowMouseMoveHandler(e?: MouseEvent): void
 
@@ -328,7 +285,7 @@ export abstract class Chart extends ChartData {
   abstract wheelHandler(e?: WheelEvent): void
 
   bindMouseListeners() {
-    let canvas = this.chartContext.canvas
+    let canvas = this.ctx.canvas
     canvas.addEventListener('mousemove', (e) => {
       this.mousePosition.x = e.clientX
       this.mousePosition.y = e.clientY
@@ -350,29 +307,22 @@ export abstract class Chart extends ChartData {
   }
 
   get mainCanvasWidth() {
-    return (
-      this.chartContext.canvas.clientWidth *
-      this.getPixelRatio(this.chartContext)
-    )
+    return this.ctx.canvas.clientWidth * this.getPixelRatio(this.ctx)
   }
 
   get mainCanvasHeight() {
-    return (
-      this.chartContext.canvas.clientHeight *
-      this.getPixelRatio(this.chartContext)
-    )
+    return this.ctx.canvas.clientHeight * this.getPixelRatio(this.ctx)
   }
 
   get canvasRect() {
-    return this.chartContext.canvas.getBoundingClientRect()
+    return this.ctx.canvas.getBoundingClientRect()
   }
 
   toggleAutoScale() {
     this.options.autoScale = !this.options.autoScale
     if (this.options.autoScale) {
-      this.position.top = 0
-      this.position.bottom = this.mainCanvasHeight
-      this.yZoomFactor = 1.2
+      this.boundingRect.top = 0
+      this.boundingRect.bottom = this.mainCanvasHeight
       this.filterVisiblePointsAndCache()
       this.draw()
     }
@@ -453,8 +403,8 @@ export abstract class Chart extends ChartData {
   }
 
   debug(text: any, x: number, y: number) {
-    this.chartContext.fillStyle = 'white'
-    this.chartContext.font = '12px Arial'
-    this.chartContext.fillText(text, x, y)
+    this.ctx.fillStyle = 'white'
+    this.ctx.font = '12px Arial'
+    this.ctx.fillText(text, x, y)
   }
 }

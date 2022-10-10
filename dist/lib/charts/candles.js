@@ -8,7 +8,7 @@ class CandlesChart extends chart_1.Chart {
         this.panningIsActive = false;
     }
     draw() {
-        this.clear(this.chartContext);
+        this.clear(this.ctx);
         this.clear(this.timeAxis.ctx);
         this.clear(this.priceAxis.ctx);
         if (!this.history) {
@@ -24,14 +24,8 @@ class CandlesChart extends chart_1.Chart {
             this.ui.draw();
         }
     }
-    clampXPanning() {
-        if (this.position.left > 0)
-            this.position.left = 0;
-        if (this.position.right < this.mainCanvasWidth - 200)
-            this.position.right = this.mainCanvasWidth - 200;
-    }
     drawGridRows() {
-        let ctx = this.chartContext;
+        let ctx = this.ctx;
         let rows = this.getGridRows();
         ctx.beginPath();
         ctx.strokeStyle = '#7777aa33';
@@ -44,7 +38,7 @@ class CandlesChart extends chart_1.Chart {
         ctx.closePath();
     }
     drawGridColumns() {
-        let ctx = this.chartContext;
+        let ctx = this.ctx;
         let cols = this.getGridColumns();
         ctx.beginPath();
         ctx.strokeStyle = '#7777aa33';
@@ -65,10 +59,10 @@ class CandlesChart extends chart_1.Chart {
             this.log('no history');
             return;
         }
-        let ctx = this.chartContext;
-        this.moveTo(this.position.left - 10, this.mainCanvasHeight, ctx);
+        let ctx = this.ctx;
+        this.moveTo(this.boundingRect.left - 10, this.mainCanvasHeight, ctx);
         for (let i = 0; i < data.length; i++) {
-            let x = this.position.left + i * this.pointsGap;
+            let x = this.boundingRect.left + i * this.pointsGap;
             let halfCandle = this.pointsGap / 4;
             if (x > this.mainCanvasWidth + halfCandle)
                 break;
@@ -103,7 +97,7 @@ class CandlesChart extends chart_1.Chart {
         if (this.panningIsActive) {
             let mx = e.movementX;
             let my = this.options.autoScale ? 0 : e.movementY;
-            this.move(mx, my);
+            this.transform.move(mx, my);
         }
         this.pointer.move();
         this.draw();
@@ -135,7 +129,7 @@ class CandlesChart extends chart_1.Chart {
             return;
         if (wd > 0 && cs > 350)
             return;
-        this.zoom(wd > 1 ? 1 : -1, 0);
+        this.transform.zoom(wd > 1 ? 1 : -1, 0);
         this.pointer.move();
         this.draw();
     }

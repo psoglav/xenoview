@@ -61,7 +61,7 @@ export default class TimeAxis extends Component {
     let h = this.chart.getHeight(this.ctx)
     let x = this.chart.mousePosition.x - this.chart.canvasRect.x
     let i = Math.round(
-      ((x - this.chart.position.left) / this.chart.chartFullWidth) *
+      ((x - this.chart.boundingRect.left) / this.chart.chartFullWidth) *
         data.length,
     )
     let point = data[i]
@@ -83,7 +83,7 @@ export default class TimeAxis extends Component {
 
   zoom(dx: number) {
     if (this.isZooming) {
-      this.chart.zoom(dx / -100, 0)
+      this.chart.transform.zoom(dx / -100, 0)
       this.chart.draw()
     }
   }

@@ -27,7 +27,7 @@ export default class Pointer extends Component {
     let x =
       ((this.chart.mousePosition.x -
         this.chart.canvasRect.x -
-        this.chart.position.left) /
+        this.chart.boundingRect.left) /
         this.chart.chartFullWidth) *
       data.length
 
@@ -43,22 +43,21 @@ export default class Pointer extends Component {
   update() {
     if (!this.chart.chartData?.length || !this.isVisible) return
 
-    let ctx = this.chart.chartContext
     let { x, y } = this.position
 
-    x = this.chart.position.left + this.chart.pointsGap * this.focusedPointIndex
+    x = this.chart.boundingRect.left + this.chart.pointsGap * this.focusedPointIndex
 
-    ctx.strokeStyle = this.chart.options.pointer.fgColor
-    ctx.setLineDash([5, 4])
+    this.chart.ctx.strokeStyle = this.chart.options.pointer.fgColor
+    this.chart.ctx.setLineDash([5, 4])
 
-    ctx.beginPath()
-    ctx.moveTo(x, 0)
-    ctx.lineTo(x, this.chart.mainCanvasHeight)
-    ctx.moveTo(1, y - this.chart.canvasRect.top)
-    ctx.lineTo(this.chart.mainCanvasWidth, y - this.chart.canvasRect.top)
-    ctx.closePath()
-    ctx.stroke()
+    this.chart.ctx.beginPath()
+    this.chart.ctx.moveTo(x, 0)
+    this.chart.ctx.lineTo(x, this.chart.mainCanvasHeight)
+    this.chart.ctx.moveTo(1, y - this.chart.canvasRect.top)
+    this.chart.ctx.lineTo(this.chart.mainCanvasWidth, y - this.chart.canvasRect.top)
+    this.chart.ctx.closePath()
+    this.chart.ctx.stroke()
 
-    ctx.setLineDash([])
+    this.chart.ctx.setLineDash([])
   }
 }

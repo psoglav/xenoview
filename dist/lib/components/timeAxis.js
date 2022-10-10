@@ -51,7 +51,7 @@ class TimeAxis extends core_1.Component {
             return;
         let h = this.chart.getHeight(this.ctx);
         let x = this.chart.mousePosition.x - this.chart.canvasRect.x;
-        let i = Math.round(((x - this.chart.position.left) / this.chart.chartFullWidth) *
+        let i = Math.round(((x - this.chart.boundingRect.left) / this.chart.chartFullWidth) *
             data.length);
         let point = data[i];
         if (!point)
@@ -71,7 +71,7 @@ class TimeAxis extends core_1.Component {
     }
     zoom(dx) {
         if (this.isZooming) {
-            this.chart.zoom(dx / -100, 0);
+            this.chart.transform.zoom(dx / -100, 0);
             this.chart.draw();
         }
     }

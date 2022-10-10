@@ -8,7 +8,7 @@ class ChartData {
         this.bottomHistoryPrice = [0, 0];
     }
     get chartFullWidth() {
-        return this.chart.position.right - this.chart.position.left;
+        return this.chart.boundingRect.right - this.chart.boundingRect.left;
     }
     get pointsGap() {
         return this.chartFullWidth / this.history.length;
@@ -66,7 +66,7 @@ class ChartData {
         let data = this.history;
         if (typeof value == 'object')
             i = data.indexOf(value);
-        return this.chart.position.left + (this.chartFullWidth / data.length) * i;
+        return (this.chart.boundingRect.left + (this.chartFullWidth / data.length) * i);
     }
     filterVisiblePoints(data) {
         return data.filter((_, i) => {
@@ -81,15 +81,15 @@ class ChartData {
         return this.visiblePoints;
     }
     normalizeToPrice(y) {
-        let minY = this.chart.position.bottom;
-        let maxY = this.chart.position.top;
+        let minY = this.chart.boundingRect.bottom;
+        let maxY = this.chart.boundingRect.top;
         let minPrice = this.bottomHistoryPrice[1];
         let maxPrice = this.topHistoryPrice[1];
         return minPrice + (0, utils_1.normalizeTo)(y, minY, maxY, minPrice, maxPrice);
     }
     normalizeToY(price) {
-        let minY = this.chart.position.bottom;
-        let maxY = this.chart.position.top;
+        let minY = this.chart.boundingRect.bottom;
+        let maxY = this.chart.boundingRect.top;
         let minPrice = this.bottomHistoryPrice[1];
         let maxPrice = this.topHistoryPrice[1];
         return minY + (0, utils_1.normalizeTo)(price, minPrice, maxPrice, minY, maxY);
@@ -145,7 +145,7 @@ class ChartData {
         let end = length;
         let step = 1;
         while (this.normalizeToY((start / length) * delta + b) <
-            this.chart.getWidth(this.chart.chartContext)) {
+            this.chart.getWidth(this.chart.ctx)) {
             start -= step;
             step += 5;
             if (start < -5000)

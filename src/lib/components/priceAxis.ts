@@ -70,16 +70,15 @@ export default class PriceAxis extends Component {
 
     let type = close < open ? 'higher' : 'lower'
 
-    this.chart.chartContext.strokeStyle =
-      this.chart.options.candles.colors[type]
-    this.chart.chartContext.setLineDash([1, 2])
-    this.chart.chartContext.beginPath()
-    this.chart.chartContext.moveTo(0, y)
-    this.chart.chartContext.lineTo(this.chart.mainCanvasWidth, y)
-    this.chart.chartContext.closePath()
-    this.chart.chartContext.stroke()
+    this.chart.ctx.strokeStyle = this.chart.options.candles.colors[type]
+    this.chart.ctx.setLineDash([1, 2])
+    this.chart.ctx.beginPath()
+    this.chart.ctx.moveTo(0, y)
+    this.chart.ctx.lineTo(this.chart.mainCanvasWidth, y)
+    this.chart.ctx.closePath()
+    this.chart.ctx.stroke()
 
-    this.chart.chartContext.setLineDash([])
+    this.chart.ctx.setLineDash([])
 
     this.ctx.beginPath()
     this.ctx.fillStyle = this.chart.options.candles.colors[type]
@@ -93,7 +92,7 @@ export default class PriceAxis extends Component {
 
   zoom(dy: number) {
     if (this.isZooming) {
-      this.chart.zoom(0, dy)
+      this.chart.transform.zoom(0, dy)
       this.chart.draw()
     }
   }

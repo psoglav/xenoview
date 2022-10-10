@@ -17,4 +17,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./chart"), exports);
 __exportStar(require("./chartData"), exports);
 __exportStar(require("./component"), exports);
+__exportStar(require("./transform"), exports);
 //# sourceMappingURL=index.js.map

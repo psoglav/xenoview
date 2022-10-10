@@ -13,7 +13,7 @@ export abstract class ChartData {
   private chart: Chart
 
   get chartFullWidth(): number {
-    return this.chart.position.right - this.chart.position.left
+    return this.chart.boundingRect.right - this.chart.boundingRect.left
   }
 
   get pointsGap(): number {
@@ -84,7 +84,9 @@ export abstract class ChartData {
     let i = value
     let data = this.history
     if (typeof value == 'object') i = data.indexOf(value)
-    return this.chart.position.left + (this.chartFullWidth / data.length) * i
+    return (
+      this.chart.boundingRect.left + (this.chartFullWidth / data.length) * i
+    )
   }
 
   filterVisiblePoints(data: any[]) {
@@ -101,8 +103,8 @@ export abstract class ChartData {
   }
 
   normalizeToPrice(y: number) {
-    let minY = this.chart.position.bottom
-    let maxY = this.chart.position.top
+    let minY = this.chart.boundingRect.bottom
+    let maxY = this.chart.boundingRect.top
 
     let minPrice = this.bottomHistoryPrice[1]
     let maxPrice = this.topHistoryPrice[1]
@@ -111,8 +113,8 @@ export abstract class ChartData {
   }
 
   normalizeToY(price: number) {
-    let minY = this.chart.position.bottom
-    let maxY = this.chart.position.top
+    let minY = this.chart.boundingRect.bottom
+    let maxY = this.chart.boundingRect.top
 
     let minPrice = this.bottomHistoryPrice[1]
     let maxPrice = this.topHistoryPrice[1]
@@ -193,7 +195,7 @@ export abstract class ChartData {
 
     while (
       this.normalizeToY((start / length) * delta + b) <
-      this.chart.getWidth(this.chart.chartContext)
+      this.chart.getWidth(this.chart.ctx)
     ) {
       start -= step
       step += 5
