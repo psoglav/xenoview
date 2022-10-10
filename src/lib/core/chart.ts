@@ -1,10 +1,12 @@
-import { toMinutes, normalizeTo } from '../utils'
-import { Ticker } from '..'
-import { UI, Label, UIElementGroup } from './ui'
+import { Ticker } from '../ticker'
+import Pointer from '../components/pointer'
+import { UI, Label, UIElementGroup } from '..//ui'
 
-import '../public/styles/main.css'
+import { ChartData } from './chartData'
 
-const defaultChartOptions: ChartOptions = {
+import '../../public/styles/main.css'
+
+const defaultChartOptions: Chart.Options = {
   bgColor: '#151924',
   textColor: '#b2b5be',
   autoScale: false,
@@ -21,184 +23,13 @@ const defaultChartOptions: ChartOptions = {
   },
 }
 
-abstract class ChartDataBase {
-  history: HistoryData
-  chartData: HistoryData
-  visiblePoints: HistoryData
-
-  topHistoryPrice: [number, number] = [0, 0]
-  bottomHistoryPrice: [number, number] = [0, 0]
-
-  private chart: Chart
-
-  get chartFullWidth() {
-    return this.chart.position.right - this.chart.position.left
-  }
-
-  constructor() {}
-
-  init(chart: Chart) {
-    this.chart = chart
-  }
-
-  updatePoint(
-    point: HistoryPoint,
-    value: { PRICE: number; LASTUPDATE: number },
-  ) {
-    point.close = value.PRICE
-    point.time = value.LASTUPDATE
-
-    if (point.close < point.low) point.low = point.close
-    if (point.close > point.high) point.high = point.close
-  }
-
-  updateCurrentPoint(value: any) {
-    let hist = this.history
-    if (!hist?.length) return
-    let currentPoint = hist[hist.length - 1]
-
-    if (
-      !value?.PRICE ||
-      !value?.LASTUPDATE ||
-      currentPoint.close === value.PRICE
-    )
-      return
-
-    let pointMinutesTs = toMinutes(value.LASTUPDATE * 1000)
-    let currentPointMinutesTs = toMinutes(currentPoint.time * 1000)
-
-    if (currentPointMinutesTs == pointMinutesTs) {
-      this.updatePoint(hist[hist.length - 1], value)
-    } else if (pointMinutesTs > currentPointMinutesTs) {
-      let pp = hist[hist.length - 1]
-
-      if (value.PRICE < pp.low) pp.low = value.PRICE
-      if (value.PRICE > pp.high) pp.high = value.PRICE
-
-      pp.close = value.PRICE
-
-      hist.shift()
-      hist.push({
-        time: value.LASTUPDATE,
-        high: value.PRICE,
-        open: value.PRICE,
-        close: value.PRICE,
-        low: value.PRICE,
-      })
-    }
-
-    this.draw()
-  }
-
-  /**
-   * Get point X position.
-   * @param {number | HistoryPoint} value a point or an index of it
-   * @returns {number} X position
-   */
-  getPointX(value): number {
-    let i = value
-    let data = this.history
-    if (typeof value == 'object') i = data.indexOf(value)
-    return this.chart.position.left + (this.chartFullWidth / data.length) * i
-  }
-
-  filterVisiblePoints(data: any[]) {
-    return data.filter((_, i) => {
-      let x: number = this.getPointX(i)
-      return x > 0 && x < this.chart.mainCanvasWidth
-    })
-  }
-
-  filterVisiblePointsAndCache() {
-    if (!this.history) return []
-    this.visiblePoints = this.filterVisiblePoints(this.history)
-    return this.visiblePoints
-  }
-
-  normalizeToPrice(y: number) {
-    let minY = this.chart.position.bottom
-    let maxY = this.chart.position.top
-
-    let minPrice = this.bottomHistoryPrice[1]
-    let maxPrice = this.topHistoryPrice[1]
-
-    return minPrice + normalizeTo(y, minY, maxY, minPrice, maxPrice)
-  }
-
-  normalizeToY(price: number) {
-    let minY = this.chart.position.bottom
-    let maxY = this.chart.position.top
-
-    let minPrice = this.bottomHistoryPrice[1]
-    let maxPrice = this.topHistoryPrice[1]
-
-    return minY + normalizeTo(price, minPrice, maxPrice, minY, maxY)
-  }
-
-  normalizePoint(point: HistoryPoint): HistoryPoint {
-    return {
-      ...point,
-      close: this.normalizeToY(point.close),
-      open: this.normalizeToY(point.open),
-      high: this.normalizeToY(point.high),
-      low: this.normalizeToY(point.low),
-    }
-  }
-
-  normalizeData(): HistoryData {
-    let hist = this.history
-    if (!hist?.length) return []
-    return hist.map((point) => this.normalizePoint(point))
-  }
-
-  getTopHistoryPrice(): [number, number] {
-    let history: any = this.visiblePoints || this.filterVisiblePointsAndCache()
-    history = history.map(({ high }) => high)
-
-    let max = history[0]
-    let i = 0
-
-    history.forEach((p, ii) => {
-      if (p > max) {
-        max = p
-        i = ii
-      }
-    })
-
-    this.topHistoryPrice = [i, max]
-
-    return this.topHistoryPrice
-  }
-
-  getBottomHistoryPrice(): [number, number] {
-    let history: any = this.visiblePoints || this.filterVisiblePointsAndCache()
-    history = history.map(({ low }) => low)
-
-    let min = history[0]
-    let i = 0
-
-    history.forEach((p, ii) => {
-      if (p < min) {
-        min = p
-        i = ii
-      }
-    })
-
-    this.bottomHistoryPrice = [i, min]
-
-    return this.bottomHistoryPrice
-  }
-
-  abstract draw(): void
-}
-
-export default abstract class Chart extends ChartDataBase {
+export abstract class Chart extends ChartData {
   container: HTMLElement | undefined
-  options: ChartOptions = defaultChartOptions
+  options: Chart.Options = defaultChartOptions
   ticker: Ticker
   ui: UI
 
-  position: ChartBoundingRect
+  position: Chart.Position
   mousePosition = { x: 0, y: 0 }
 
   chartContext: CanvasRenderingContext2D
@@ -206,22 +37,26 @@ export default abstract class Chart extends ChartDataBase {
   timeAxisContext: CanvasRenderingContext2D
 
   spinnerEl: HTMLElement
+  pointer: Pointer
 
   zoomSpeed: number = 1.8
   yZoomFactor = 1.2
 
-  focusedPoint: HistoryPoint | null
+  focusedPointIndex: number
+  focusedPoint: History.Point | null
 
-  constructor(container: HTMLElement | string, options?: ChartOptions) {
+  constructor(container: HTMLElement | string, options?: Chart.Options) {
     super()
-    this.init(this)
+    this.initData(this)
+
+    this.pointer = new Pointer(this)
 
     if (options) this.options = { ...this.options, ...options }
 
     this.createChartLayout(container)
   }
 
-  loadHistory(value: HistoryData) {
+  loadHistory(value: History.Data) {
     this.resetChartPosition()
     this.history = value
     this.visiblePoints = null

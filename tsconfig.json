@@ -12,8 +12,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/lib/core/chartData /.ts"],
   "exclude": ["node_modules", "src/lib/charts/linear.ts"]
 }

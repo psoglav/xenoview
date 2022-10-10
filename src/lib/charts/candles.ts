@@ -1,18 +1,13 @@
-import {
-  getFullTimeFromTimestamp,
-  getTimeFromTimestamp,
-} from '../../utils'
-import Chart from '../base'
+import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../../utils'
+
+import { Chart } from '../core/chart'
 
 export class CandlesChart extends Chart {
-  private pointingPointIndex = 4
-  private pointerIsVisible = false
   private panningIsActive = false
-  private candlesSpace = 0
   private isZoomingPriceAxis = false
   private isZoomingTimeAxis = false
 
-  constructor(container: HTMLElement | string, options?: ChartOptions) {
+  constructor(container: HTMLElement | string, options?: Chart.Options) {
     super(container, options)
   }
 
@@ -29,10 +24,10 @@ export class CandlesChart extends Chart {
       this.drawTimeAxisLabels()
       this.drawPriceAxisLabels()
       this.drawChart()
-      this.drawPointer()
+      this.pointer.update()
       this.drawCurrentMarketPriceMarker()
 
-      if (this.pointerIsVisible) {
+      if (this.pointer.isVisible) {
         this.drawTimeMarker()
         this.drawPriceMarker()
       }
@@ -83,30 +78,9 @@ export class CandlesChart extends Chart {
 
     let i = Math.round(x)
 
-    this.pointingPointIndex =
+    this.focusedPointIndex =
       i > data.length - 1 ? data.length - 1 : i < 0 ? 0 : i
-    this.focusedPoint = this.history[this.pointingPointIndex]
-  }
-
-  drawPointer() {
-    if (!this.chartData?.length || !this.pointerIsVisible) return
-
-    let ctx = this.chartContext
-    let x = this.position.left + this.candlesSpace * this.pointingPointIndex
-    let y = this.mousePosition.y
-
-    ctx.strokeStyle = this.options.pointer.fgColor
-    ctx.setLineDash([5, 4])
-
-    ctx.beginPath()
-    ctx.moveTo(x, 0)
-    ctx.lineTo(x, this.mainCanvasHeight)
-    ctx.moveTo(0, y - this.canvasRect.top)
-    ctx.lineTo(this.mainCanvasWidth, y - this.canvasRect.top)
-    ctx.closePath()
-    ctx.stroke()
-
-    ctx.setLineDash([])
+    this.focusedPoint = this.history[this.focusedPointIndex]
   }
 
   drawCurrentMarketPriceMarker() {
@@ -421,9 +395,8 @@ export class CandlesChart extends Chart {
     this.moveTo(this.position.left - 10, this.mainCanvasHeight, ctx)
 
     for (let i = 0; i < data.length; i++) {
-      this.candlesSpace = this.chartFullWidth! / data.length
-      let x = this.position.left + i * this.candlesSpace
-      let halfCandle = this.candlesSpace / 4
+      let x = this.position.left + i * this.pointsGap
+      let halfCandle = this.pointsGap / 4
 
       if (x > this.mainCanvasWidth + halfCandle) break
       else if (x < -halfCandle) continue
@@ -450,9 +423,9 @@ export class CandlesChart extends Chart {
 
       if (halfCandle > 1) {
         this.rect(
-          x - this.candlesSpace / 4,
+          x - this.pointsGap / 4,
           open,
-          this.candlesSpace / 2,
+          this.pointsGap / 2,
           close - open,
           ctx,
         )
@@ -514,11 +487,11 @@ export class CandlesChart extends Chart {
   }
 
   mouseEnterHandler() {
-    this.pointerIsVisible = true
+    this.pointer.isVisible = true
   }
 
   mouseLeaveHandler() {
-    this.pointerIsVisible = false
+    this.pointer.isVisible = false
     this.panningIsActive = false
     this.focusedPoint = null
 
@@ -539,7 +512,7 @@ export class CandlesChart extends Chart {
   }
 
   wheelHandler(e: any) {
-    let cs = this.candlesSpace
+    let cs = this.pointsGap
     let wd = e.wheelDeltaY
     if (wd < 0 && cs < 1.7) return
     if (wd > 0 && cs > 350) return

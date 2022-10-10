@@ -1,43 +1,14 @@
-import { Ticker } from '..';
-import { UI } from './ui';
-import '../public/styles/main.css';
-declare abstract class ChartDataBase {
-    history: HistoryData;
-    chartData: HistoryData;
-    visiblePoints: HistoryData;
-    topHistoryPrice: [number, number];
-    bottomHistoryPrice: [number, number];
-    private chart;
-    get chartFullWidth(): number;
-    constructor();
-    init(chart: Chart): void;
-    updatePoint(point: HistoryPoint, value: {
-        PRICE: number;
-        LASTUPDATE: number;
-    }): void;
-    updateCurrentPoint(value: any): void;
-    /**
-     * Get point X position.
-     * @param {number | HistoryPoint} value a point or an index of it
-     * @returns {number} X position
-     */
-    getPointX(value: any): number;
-    filterVisiblePoints(data: any[]): any[];
-    filterVisiblePointsAndCache(): HistoryData;
-    normalizeToPrice(y: number): number;
-    normalizeToY(price: number): number;
-    normalizePoint(point: HistoryPoint): HistoryPoint;
-    normalizeData(): HistoryData;
-    getTopHistoryPrice(): [number, number];
-    getBottomHistoryPrice(): [number, number];
-    abstract draw(): void;
-}
-export default abstract class Chart extends ChartDataBase {
+import { Ticker } from '../ticker';
+import Pointer from '../components/pointer';
+import { UI } from '..//ui';
+import { ChartData } from './chartData';
+import '../../public/styles/main.css';
+export declare abstract class Chart extends ChartData {
     container: HTMLElement | undefined;
-    options: ChartOptions;
+    options: Chart.Options;
     ticker: Ticker;
     ui: UI;
-    position: ChartBoundingRect;
+    position: Chart.Position;
     mousePosition: {
         x: number;
         y: number;
@@ -46,11 +17,13 @@ export default abstract class Chart extends ChartDataBase {
     priceAxisContext: CanvasRenderingContext2D;
     timeAxisContext: CanvasRenderingContext2D;
     spinnerEl: HTMLElement;
+    pointer: Pointer;
     zoomSpeed: number;
     yZoomFactor: number;
-    focusedPoint: HistoryPoint | null;
-    constructor(container: HTMLElement | string, options?: ChartOptions);
-    loadHistory(value: HistoryData): void;
+    focusedPointIndex: number;
+    focusedPoint: History.Point | null;
+    constructor(container: HTMLElement | string, options?: Chart.Options);
+    loadHistory(value: History.Data): void;
     setTicker(ticker: Ticker): void;
     resetChartPosition(full?: boolean): void;
     createChart(): HTMLCanvasElement;
@@ -95,4 +68,3 @@ export default abstract class Chart extends ChartDataBase {
     log(...msg: any): void;
     debug(text: any, x: number, y: number): void;
 }
-export {};

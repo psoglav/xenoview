@@ -43,7 +43,7 @@ export class Ticker {
     symbol: string,
     interval: HistoryInterval,
     limit?: number,
-  ): Promise<HistoryData> {
+  ): Promise<History.Data> {
     let params: any = {
       fsym: symbol,
       tsym: 'USD',

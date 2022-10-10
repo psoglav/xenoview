@@ -1,18 +1,14 @@
-import Chart from '../base';
+import { Chart } from '../core/chart';
 export declare class CandlesChart extends Chart {
-    private pointingPointIndex;
-    private pointerIsVisible;
     private panningIsActive;
-    private candlesSpace;
     private isZoomingPriceAxis;
     private isZoomingTimeAxis;
-    constructor(container: HTMLElement | string, options?: ChartOptions);
+    constructor(container: HTMLElement | string, options?: Chart.Options);
     draw(): void;
     zoomChart(side: number): void;
     moveChart(mx: number, my: number): void;
     clampXPanning(): void;
     movePointer(): void;
-    drawPointer(): void;
     drawCurrentMarketPriceMarker(): void;
     drawPriceMarker(): void;
     drawTimeMarker(): void;

@@ -1,18 +1,12 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CandlesChart = void 0;
 const utils_1 = require("../../utils");
-const base_1 = __importDefault(require("../base"));
-class CandlesChart extends base_1.default {
+const chart_1 = require("../core/chart");
+class CandlesChart extends chart_1.Chart {
     constructor(container, options) {
         super(container, options);
-        this.pointingPointIndex = 4;
-        this.pointerIsVisible = false;
         this.panningIsActive = false;
-        this.candlesSpace = 0;
         this.isZoomingPriceAxis = false;
         this.isZoomingTimeAxis = false;
     }
@@ -29,9 +23,9 @@ class CandlesChart extends base_1.default {
             this.drawTimeAxisLabels();
             this.drawPriceAxisLabels();
             this.drawChart();
-            this.drawPointer();
+            this.pointer.update();
             this.drawCurrentMarketPriceMarker();
-            if (this.pointerIsVisible) {
+            if (this.pointer.isVisible) {
                 this.drawTimeMarker();
                 this.drawPriceMarker();
             }
@@ -76,27 +70,9 @@ class CandlesChart extends base_1.default {
         let x = this.mousePosition.x - this.canvasRect.x;
         x = ((x - this.position.left) / this.chartFullWidth) * data.length;
         let i = Math.round(x);
-        this.pointingPointIndex =
+        this.focusedPointIndex =
             i > data.length - 1 ? data.length - 1 : i < 0 ? 0 : i;
-        this.focusedPoint = this.history[this.pointingPointIndex];
-    }
-    drawPointer() {
-        var _a;
-        if (!((_a = this.chartData) === null || _a === void 0 ? void 0 : _a.length) || !this.pointerIsVisible)
-            return;
-        let ctx = this.chartContext;
-        let x = this.position.left + this.candlesSpace * this.pointingPointIndex;
-        let y = this.mousePosition.y;
-        ctx.strokeStyle = this.options.pointer.fgColor;
-        ctx.setLineDash([5, 4]);
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, this.mainCanvasHeight);
-        ctx.moveTo(0, y - this.canvasRect.top);
-        ctx.lineTo(this.mainCanvasWidth, y - this.canvasRect.top);
-        ctx.closePath();
-        ctx.stroke();
-        ctx.setLineDash([]);
+        this.focusedPoint = this.history[this.focusedPointIndex];
     }
     drawCurrentMarketPriceMarker() {
         let ctx = this.chartContext;
@@ -338,9 +314,8 @@ class CandlesChart extends base_1.default {
         let ctx = this.chartContext;
         this.moveTo(this.position.left - 10, this.mainCanvasHeight, ctx);
         for (let i = 0; i < data.length; i++) {
-            this.candlesSpace = this.chartFullWidth / data.length;
-            let x = this.position.left + i * this.candlesSpace;
-            let halfCandle = this.candlesSpace / 4;
+            let x = this.position.left + i * this.pointsGap;
+            let halfCandle = this.pointsGap / 4;
             if (x > this.mainCanvasWidth + halfCandle)
                 break;
             else if (x < -halfCandle)
@@ -359,7 +334,7 @@ class CandlesChart extends base_1.default {
             ctx.strokeStyle = candleColor;
             ctx.stroke();
             if (halfCandle > 1) {
-                this.rect(x - this.candlesSpace / 4, open, this.candlesSpace / 2, close - open, ctx);
+                this.rect(x - this.pointsGap / 4, open, this.pointsGap / 2, close - open, ctx);
                 ctx.fillStyle = candleColor;
                 ctx.fill();
             }
@@ -407,10 +382,10 @@ class CandlesChart extends base_1.default {
         this.draw();
     }
     mouseEnterHandler() {
-        this.pointerIsVisible = true;
+        this.pointer.isVisible = true;
     }
     mouseLeaveHandler() {
-        this.pointerIsVisible = false;
+        this.pointer.isVisible = false;
         this.panningIsActive = false;
         this.focusedPoint = null;
         this.draw();
@@ -427,7 +402,7 @@ class CandlesChart extends base_1.default {
         }
     }
     wheelHandler(e) {
-        let cs = this.candlesSpace;
+        let cs = this.pointsGap;
         let wd = e.wheelDeltaY;
         if (wd < 0 && cs < 1.7)
             return;
