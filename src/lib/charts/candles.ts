@@ -33,21 +33,6 @@ export class CandlesChart extends Chart {
       this.position.right = this.mainCanvasWidth - 200
   }
 
-  movePointer() {
-    let data = this.chartData
-
-    if (!data?.length) return
-
-    let x = this.mousePosition.x - this.canvasRect.x
-    x = ((x - this.position.left) / this.chartFullWidth) * data.length
-
-    let i = Math.round(x)
-
-    this.focusedPointIndex =
-      i > data.length - 1 ? data.length - 1 : i < 0 ? 0 : i
-    this.focusedPoint = this.history[this.focusedPointIndex]
-  }
-
   drawGridRows() {
     let ctx = this.chartContext
     let rows = this.getGridRows()
@@ -153,7 +138,7 @@ export class CandlesChart extends Chart {
       this.move(mx, my)
     }
 
-    this.movePointer()
+    this.pointer.move()
     this.draw()
   }
 
@@ -189,7 +174,7 @@ export class CandlesChart extends Chart {
     if (wd > 0 && cs > 350) return
 
     this.zoom(wd > 1 ? 1 : -1, 0)
-    this.movePointer()
+    this.pointer.move()
     this.draw()
   }
 

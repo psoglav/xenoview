@@ -31,17 +31,6 @@ class CandlesChart extends chart_1.Chart {
         if (this.position.right < this.mainCanvasWidth - 200)
             this.position.right = this.mainCanvasWidth - 200;
     }
-    movePointer() {
-        let data = this.chartData;
-        if (!(data === null || data === void 0 ? void 0 : data.length))
-            return;
-        let x = this.mousePosition.x - this.canvasRect.x;
-        x = ((x - this.position.left) / this.chartFullWidth) * data.length;
-        let i = Math.round(x);
-        this.focusedPointIndex =
-            i > data.length - 1 ? data.length - 1 : i < 0 ? 0 : i;
-        this.focusedPoint = this.history[this.focusedPointIndex];
-    }
     drawGridRows() {
         let ctx = this.chartContext;
         let rows = this.getGridRows();
@@ -117,7 +106,7 @@ class CandlesChart extends chart_1.Chart {
             let my = this.options.autoScale ? 0 : e.movementY;
             this.move(mx, my);
         }
-        this.movePointer();
+        this.pointer.move();
         this.draw();
     }
     mouseEnterHandler() {
@@ -148,7 +137,7 @@ class CandlesChart extends chart_1.Chart {
         if (wd > 0 && cs > 350)
             return;
         this.zoom(wd > 1 ? 1 : -1, 0);
-        this.movePointer();
+        this.pointer.move();
         this.draw();
     }
     mainDebug() {

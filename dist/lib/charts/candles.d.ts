@@ -4,7 +4,6 @@ export declare class CandlesChart extends Chart {
     constructor(container: HTMLElement | string, options?: Chart.Options);
     draw(): void;
     clampXPanning(): void;
-    movePointer(): void;
     drawGridRows(): void;
     drawGridColumns(): void;
     drawChart(): void;
