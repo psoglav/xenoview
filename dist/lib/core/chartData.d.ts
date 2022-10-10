@@ -30,5 +30,6 @@ export declare abstract class ChartData {
     getTopHistoryPrice(): [number, number];
     getBottomHistoryPrice(): [number, number];
     getGridRows(): any[];
+    getGridColumns(): number[];
     abstract draw(): void;
 }

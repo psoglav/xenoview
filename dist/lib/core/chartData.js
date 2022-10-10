@@ -33,8 +33,8 @@ class ChartData {
             !(value === null || value === void 0 ? void 0 : value.LASTUPDATE) ||
             currentPoint.close === value.PRICE)
             return;
-        let pointMinutesTs = (0, utils_1.toMinutes)(value.LASTUPDATE * 1000);
-        let currentPointMinutesTs = (0, utils_1.toMinutes)(currentPoint.time * 1000);
+        let pointMinutesTs = (0, utils_1.toMinutes)(value.LASTUPDATE);
+        let currentPointMinutesTs = (0, utils_1.toMinutes)(currentPoint.time);
         if (currentPointMinutesTs == pointMinutesTs) {
             this.updatePoint(hist[hist.length - 1], value);
         }
@@ -166,6 +166,20 @@ class ChartData {
             let y = this.normalizeToY(i);
             let py = this.normalizeToY(prev);
             if (py - y < 30 && y != py) {
+                return 0;
+            }
+            prev = i;
+            return 1;
+        });
+    }
+    getGridColumns() {
+        let prev = 0;
+        return this.history
+            .map((_, i) => i)
+            .filter((i) => {
+            let x = this.getPointX(i);
+            let px = this.getPointX(prev);
+            if (x - px < 100 && x != px) {
                 return 0;
             }
             prev = i;

@@ -227,5 +227,22 @@ export abstract class ChartData {
     })
   }
 
+  getGridColumns() {
+    let prev = 0
+    return this.history
+      .map((_, i) => i)
+      .filter((i) => {
+        let x = this.getPointX(i)
+        let px = this.getPointX(prev)
+
+        if (x - px < 100 && x != px) {
+          return 0
+        }
+
+        prev = i
+        return 1
+      })
+  }
+
   abstract draw(): void
 }

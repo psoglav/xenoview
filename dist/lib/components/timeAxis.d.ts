@@ -1,6 +1,6 @@
 import { Chart } from '../core/chart';
 import { Component } from '../core/component';
-export default class PriceAxis extends Component {
+export default class TimeAxis extends Component {
     canvas: HTMLCanvasElement;
     get ctx(): CanvasRenderingContext2D;
     isZooming: boolean;
@@ -8,8 +8,7 @@ export default class PriceAxis extends Component {
     bindEventListeners(): void;
     createCanvas(): void;
     drawLabels(): void;
-    drawPriceMarker(): void;
-    drawCurrentMarketPriceMarker(): void;
-    zoom(dy: number): void;
+    drawTimeMarker(): void;
+    zoom(dx: number): void;
     update(): void;
 }

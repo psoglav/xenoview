@@ -1,6 +1,6 @@
 import { Ticker } from '../ticker';
 import { UI } from '../ui';
-import { Pointer, PriceAxis } from '../components';
+import { Pointer, PriceAxis, TimeAxis } from '../components';
 import { ChartData } from './chartData';
 import '../../public/styles/main.css';
 export declare abstract class Chart extends ChartData {
@@ -14,10 +14,10 @@ export declare abstract class Chart extends ChartData {
         y: number;
     };
     chartContext: CanvasRenderingContext2D;
-    timeAxisContext: CanvasRenderingContext2D;
     spinnerEl: HTMLElement;
     pointer: Pointer;
     priceAxis: PriceAxis;
+    timeAxis: TimeAxis;
     zoomSpeed: number;
     yZoomFactor: number;
     focusedPointIndex: number;
@@ -26,8 +26,9 @@ export declare abstract class Chart extends ChartData {
     loadHistory(value: History.Data): void;
     setTicker(ticker: Ticker): void;
     resetChartPosition(full?: boolean): void;
+    zoom(dx: number, dy: number): void;
+    move(mx: number, my: number): void;
     createChart(): HTMLCanvasElement;
-    createTimeAxis(): HTMLCanvasElement;
     createChartToolbar(): void;
     createSpinnerSvg(): any;
     loading(value: boolean): void;
@@ -35,17 +36,13 @@ export declare abstract class Chart extends ChartData {
     initUIElements(): void;
     abstract clampXPanning(): void;
     abstract windowMouseMoveHandler(e?: MouseEvent): void;
-    abstract windowMouseUpHandler(e?: MouseEvent): void;
     abstract mouseMoveHandler(e?: MouseEvent): void;
     abstract mouseLeaveHandler(e?: MouseEvent): void;
     abstract mouseEnterHandler(e?: MouseEvent): void;
     abstract mouseDownHandler(e?: MouseEvent): void;
     abstract mouseUpHandler(e?: MouseEvent): void;
     abstract wheelHandler(e?: WheelEvent): void;
-    abstract timeAxisMouseDownHandler(e?: MouseEvent): void;
-    abstract timeAxisMouseUpHandler(e?: MouseEvent): void;
     bindMouseListeners(): void;
-    bindTimeAxisListeners(): void;
     getWidth(ctx: CanvasRenderingContext2D): number;
     getHeight(ctx: CanvasRenderingContext2D): number;
     get mainCanvasWidth(): number;

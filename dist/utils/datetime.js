@@ -20,6 +20,8 @@ const getFullTimeFromTimestamp = (ts) => {
 };
 exports.getFullTimeFromTimestamp = getFullTimeFromTimestamp;
 const toMinutes = (ts) => {
+    if (ts.toString().length != (+new Date()).toString().length)
+        ts *= 1000;
     let date = new Date(ts);
     return +new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes());
 };

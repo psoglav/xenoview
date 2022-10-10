@@ -31,6 +31,7 @@ class Chart extends chartData_1.ChartData {
         this.initData(this);
         this.pointer = new components_1.Pointer(this);
         this.priceAxis = new components_1.PriceAxis(this);
+        this.timeAxis = new components_1.TimeAxis(this);
         if (options)
             this.options = Object.assign(Object.assign({}, this.options), options);
         this.createChartLayout(container);
@@ -63,6 +64,38 @@ class Chart extends chartData_1.ChartData {
             this.filterVisiblePointsAndCache();
         }
     }
+    zoom(dx, dy) {
+        var _a;
+        if (dx) {
+            let zoomPoint = this.mainCanvasWidth;
+            let d = 20 / this.zoomSpeed;
+            this.position.right += ((this.position.right - zoomPoint) / d) * dx;
+            this.position.left += ((this.position.left - zoomPoint) / d) * dx;
+            this.clampXPanning();
+        }
+        else if (dy) {
+            let origin = this.mainCanvasHeight / 2;
+            let d = 20 / (this.zoomSpeed * 2);
+            this.position.top -= (((this.position.top - origin) / d) * dy) / 100;
+            this.position.bottom -= (((this.position.bottom - origin) / d) * dy) / 100;
+        }
+        if ((_a = this.options) === null || _a === void 0 ? void 0 : _a.autoScale)
+            this.filterVisiblePointsAndCache();
+    }
+    move(mx, my) {
+        var _a;
+        this.position.top += my;
+        this.position.bottom += my;
+        if (this.position.right == this.mainCanvasWidth - 200 && mx < 0)
+            return;
+        if (this.position.left == 0 && mx > 0)
+            return;
+        this.position.left += mx;
+        this.position.right += mx;
+        this.clampXPanning();
+        if ((_a = this.options) === null || _a === void 0 ? void 0 : _a.autoScale)
+            this.filterVisiblePointsAndCache();
+    }
     createChart() {
         let canvas = this.chartContext.canvas;
         const preventDefault = function (e) {
@@ -77,17 +110,6 @@ class Chart extends chartData_1.ChartData {
         canvas.style.cursor = 'crosshair';
         this.rescale(this.chartContext);
         this.bindMouseListeners();
-        return canvas;
-    }
-    createTimeAxis() {
-        let canvas = this.timeAxisContext.canvas;
-        let ctx = canvas.getContext('2d');
-        this.timeAxisContext = ctx;
-        canvas.style.gridArea = '2 / 1 / 3 / 3';
-        canvas.style.width = 'calc(100% - 70px)';
-        canvas.style.height = '28px';
-        canvas.style.cursor = 'e-resize';
-        this.bindTimeAxisListeners();
         return canvas;
     }
     createChartToolbar() { }
@@ -123,7 +145,6 @@ class Chart extends chartData_1.ChartData {
     }
     createChartLayout(container) {
         this.chartContext = document.createElement('canvas').getContext('2d');
-        this.timeAxisContext = document.createElement('canvas').getContext('2d');
         this.spinnerEl = this.createSpinnerSvg();
         this.chartContext.lineWidth = 1 * this.getPixelRatio(this.chartContext);
         if (typeof container === 'string') {
@@ -139,25 +160,22 @@ class Chart extends chartData_1.ChartData {
         this.container.style.position = 'relative';
         this.container.style.grid = '1fr 28px / 1fr 70px';
         let chartCanvas = this.createChart();
-        let timeAxisCanvas = this.createTimeAxis();
         let rect = this.container.getBoundingClientRect();
         this.setSize(rect.width - 70, rect.height - 28, chartCanvas);
         window.addEventListener('resize', () => {
             rect = this.container.getBoundingClientRect();
             this.setSize(rect.width - 70, rect.height - 28, chartCanvas);
-            this.setSize(rect.width - 70, 28, timeAxisCanvas);
             this.clampXPanning();
             this.draw();
         });
         window.addEventListener('mousemove', (e) => this.windowMouseMoveHandler(e));
-        window.addEventListener('mouseup', (e) => this.windowMouseUpHandler(e));
         this.container.appendChild(chartCanvas);
-        this.container.appendChild(timeAxisCanvas);
+        this.container.appendChild(this.timeAxis.canvas);
         this.container.appendChild(this.priceAxis.canvas);
         this.container.appendChild(this.spinnerEl);
         this.rescale(this.chartContext);
         this.rescale(this.priceAxis.ctx);
-        this.rescale(this.timeAxisContext);
+        this.rescale(this.timeAxis.ctx);
         this.ui = new ui_1.UI();
     }
     initUIElements() {
@@ -205,7 +223,6 @@ class Chart extends chartData_1.ChartData {
         this.ui.elements = [];
         this.ui.elements.push(topbarGroup);
     }
-    // abstract timeAxisMouseLeaveHandler(e?: MouseEvent): void
     bindMouseListeners() {
         let canvas = this.chartContext.canvas;
         canvas.addEventListener('mousemove', (e) => {
@@ -218,13 +235,6 @@ class Chart extends chartData_1.ChartData {
         canvas.addEventListener('mousedown', (e) => this.mouseDownHandler(e));
         canvas.addEventListener('mouseup', (e) => this.mouseUpHandler(e));
         canvas.addEventListener('wheel', (e) => this.wheelHandler(e));
-    }
-    bindTimeAxisListeners() {
-        let canvas = this.timeAxisContext.canvas;
-        // canvas.addEventListener('mousemove', (e) => this.timeAxisMouseMoveHandler(e))
-        canvas.addEventListener('mousedown', (e) => this.timeAxisMouseDownHandler(e));
-        canvas.addEventListener('mouseup', (e) => this.timeAxisMouseUpHandler(e));
-        // canvas.addEventListener('mouseleave', (e) => this.timeAxisMouseLeaveHandler(e))
     }
     getWidth(ctx) {
         return ctx.canvas.width * this.getPixelRatio(ctx);
