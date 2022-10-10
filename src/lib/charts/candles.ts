@@ -4,7 +4,6 @@ import { Chart } from '../core/chart'
 
 export class CandlesChart extends Chart {
   private panningIsActive = false
-  private isZoomingPriceAxis = false
   private isZoomingTimeAxis = false
 
   constructor(container: HTMLElement | string, options?: Chart.Options) {
@@ -14,7 +13,7 @@ export class CandlesChart extends Chart {
   draw() {
     this.clear(this.chartContext)
     this.clear(this.timeAxisContext)
-    this.clear(this.priceAxisContext)
+    this.clear(this.priceAxis.ctx)
 
     if (!this.history) {
       this.loading(true)
@@ -22,14 +21,13 @@ export class CandlesChart extends Chart {
       this.drawGridColumns()
       this.drawGridRows()
       this.drawTimeAxisLabels()
-      this.drawPriceAxisLabels()
+      this.priceAxis.update()
       this.drawChart()
       this.pointer.update()
       this.drawCurrentMarketPriceMarker()
 
       if (this.pointer.isVisible) {
         this.drawTimeMarker()
-        this.drawPriceMarker()
       }
 
       this.ui.draw()
@@ -103,7 +101,7 @@ export class CandlesChart extends Chart {
 
     ctx.setLineDash([])
 
-    ctx = this.priceAxisContext
+    ctx = this.priceAxis.ctx
 
     ctx.beginPath()
     ctx.fillStyle = this.options.candles.colors[type]
@@ -113,21 +111,6 @@ export class CandlesChart extends Chart {
     ctx.fillStyle = 'white'
     ctx.font = '11px Verdana'
     ctx.fillText(point.close.toFixed(2), 10, y + 5.5)
-  }
-
-  drawPriceMarker() {
-    let ctx = this.priceAxisContext
-    let y = this.mousePosition.y - this.canvasRect.top
-    let price = this.normalizeToPrice(y)
-
-    ctx.beginPath()
-    ctx.fillStyle = this.options.pointer.bgColor
-    this.rect(0, y - 10, this.getWidth(ctx), 20, ctx)
-    ctx.fill()
-    ctx.closePath()
-    ctx.fillStyle = 'white'
-    ctx.font = '11px Verdana'
-    ctx.fillText(price.toFixed(2), 10, y + 5.5)
   }
 
   drawTimeMarker() {
@@ -154,59 +137,6 @@ export class CandlesChart extends Chart {
     ctx.fillStyle = 'white'
     ctx.font = '11px Verdana'
     ctx.fillText(time, x - 50, 20)
-  }
-
-  getGridRows() {
-    let t = this.topHistoryPrice[1]
-    let b = this.bottomHistoryPrice[1]
-
-    if (t == 0 && b == 0) return []
-
-    t = Math.floor(t / 10) * 10
-    b = Math.floor(b / 10) * 10
-    let delta = t - b
-
-    let result = []
-    let length = delta / 10
-    let start = 0
-    let end = length
-
-    let step = 1
-
-    while (
-      this.normalizeToY((start / length) * delta + b) <
-      this.getWidth(this.chartContext)
-    ) {
-      start -= step
-      step += 5
-      if (start < -5000) break
-    }
-
-    step = 0
-
-    while (this.normalizeToY((end / length) * delta + b) > 0) {
-      end += step
-      step += 5
-      if (end > 5000) break
-    }
-
-    for (let i = start; i <= end; i++) {
-      result.push((i / length) * delta + b)
-    }
-
-    let prev = 0
-
-    return result.filter((i) => {
-      let y = this.normalizeToY(i)
-      let py = this.normalizeToY(prev)
-
-      if (py - y < 30 && y != py) {
-        return 0
-      }
-
-      prev = i
-      return 1
-    })
   }
 
   getGridColumns() {
@@ -260,22 +190,6 @@ export class CandlesChart extends Chart {
     ctx.closePath()
   }
 
-  drawPriceAxisLabels() {
-    let ctx = this.priceAxisContext
-    let rows = this.getGridRows()
-
-    for (let i of rows) {
-      let y = this.normalizeToY(i)
-      this.moveTo(0, y, ctx)
-      this.lineTo(this.getWidth(ctx), y, ctx)
-
-      let fz = 11
-      ctx.fillStyle = this.options.textColor
-      ctx.font = fz + 'px Verdana'
-      ctx.fillText(i.toFixed(2), 10, y - 2 + fz / 2)
-    }
-  }
-
   drawTimeAxisLabels() {
     let ctx = this.timeAxisContext
     let cols = this.getGridColumns()
@@ -300,7 +214,7 @@ export class CandlesChart extends Chart {
 
   drawPriceAxis() {
     let ctx = this.chartContext
-    let priceAxisCtx = this.priceAxisContext
+    let priceAxisCtx = this.priceAxis.ctx
 
     let segments = 20,
       h = this.mainCanvasHeight,
@@ -439,7 +353,7 @@ export class CandlesChart extends Chart {
   }
 
   zoomPriceAxis(dy: number) {
-    if (this.isZoomingPriceAxis && dy) {
+    if (this.priceAxis.isZooming && dy) {
       let origin = this.mainCanvasHeight / 2
       let d = 20 / (this.zoomSpeed * 2)
 
@@ -472,7 +386,6 @@ export class CandlesChart extends Chart {
 
   windowMouseUpHandler(e: MouseEvent) {
     this.isZoomingTimeAxis = false
-    this.isZoomingPriceAxis = false
   }
 
   mouseMoveHandler(e: MouseEvent) {
@@ -520,14 +433,6 @@ export class CandlesChart extends Chart {
     this.zoomChart(wd > 1 ? 1 : -1)
     this.movePointer()
     this.draw()
-  }
-
-  priceAxisMouseDownHandler(e?: MouseEvent): void {
-    this.isZoomingPriceAxis = true
-  }
-
-  priceAxisMouseUpHandler(e?: MouseEvent): void {
-    this.isZoomingPriceAxis = false
   }
 
   timeAxisMouseDownHandler(e?: MouseEvent): void {

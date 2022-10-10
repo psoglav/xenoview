@@ -1,0 +1,74 @@
+import { Chart } from '../core/chart'
+import { Component } from '../core/component'
+
+export default class PriceAxis extends Component {
+  public canvas: HTMLCanvasElement
+  public get ctx() {
+    return this.canvas.getContext('2d')
+  }
+
+  public isZooming: boolean = false
+
+  constructor(chart: Chart) {
+    super(chart)
+    this.createCanvas()
+    this.bindEventListeners()
+  }
+
+  bindEventListeners() {
+    let canvas = this.ctx.canvas
+
+    canvas.addEventListener('mousedown', () => (this.isZooming = true))
+    canvas.addEventListener('mouseup', () => (this.isZooming = false))
+    window.addEventListener('mouseup', () => (this.isZooming = false))
+    window.addEventListener('resize', () => {
+      let rect = this.chart.container!.getBoundingClientRect()
+      this.chart.setSize(70, rect.height - 28, this.canvas)
+    })
+  }
+
+  createCanvas() {
+    this.canvas = document.createElement('canvas')
+    this.canvas.style.gridArea = '1 / 2 / 2 / 3'
+    this.canvas.style.width = '70px'
+    this.canvas.style.height = '100%'
+    this.canvas.style.cursor = 'n-resize'
+  }
+
+  drawLabels() {
+    let rows = this.chart.getGridRows()
+
+    for (let i of rows) {
+      let y = this.chart.normalizeToY(i)
+      this.chart.moveTo(0, y, this.ctx)
+      this.chart.lineTo(this.chart.getWidth(this.ctx), y, this.ctx)
+
+      let fz = 11
+      this.ctx.fillStyle = this.chart.options.textColor
+      this.ctx.font = fz + 'px Verdana'
+      this.ctx.fillText(i.toFixed(2), 10, y - 2 + fz / 2)
+    }
+  }
+
+  drawPriceMarker() {
+    let y = this.chart.mousePosition.y - this.chart.canvasRect.top
+    let price = this.chart.normalizeToPrice(y)
+
+    this.ctx.beginPath()
+    this.ctx.fillStyle = this.chart.options.pointer.bgColor
+    this.chart.rect(0, y - 10, this.chart.getWidth(this.ctx), 20, this.ctx)
+    this.ctx.fill()
+    this.ctx.closePath()
+    this.ctx.fillStyle = 'white'
+    this.ctx.font = '11px Verdana'
+    this.ctx.fillText(price.toFixed(2), 10, y + 5.5)
+  }
+
+  update() {
+    this.drawLabels()
+
+    if (this.chart.pointer.isVisible) {
+      this.drawPriceMarker()
+    }
+  }
+}

@@ -29,5 +29,6 @@ export declare abstract class ChartData {
     normalizeData(): History.Data;
     getTopHistoryPrice(): [number, number];
     getBottomHistoryPrice(): [number, number];
+    getGridRows(): any[];
     abstract draw(): void;
 }

@@ -1,7 +1,6 @@
 import { Ticker } from '../ticker'
-import Pointer from '../components/pointer'
-import { UI, Label, UIElementGroup } from '..//ui'
-
+import { UI, Label, UIElementGroup } from '../ui'
+import { Pointer, PriceAxis } from '../components'
 import { ChartData } from './chartData'
 
 import '../../public/styles/main.css'
@@ -33,11 +32,11 @@ export abstract class Chart extends ChartData {
   mousePosition = { x: 0, y: 0 }
 
   chartContext: CanvasRenderingContext2D
-  priceAxisContext: CanvasRenderingContext2D
   timeAxisContext: CanvasRenderingContext2D
 
   spinnerEl: HTMLElement
   pointer: Pointer
+  priceAxis: PriceAxis
 
   zoomSpeed: number = 1.8
   yZoomFactor = 1.2
@@ -50,6 +49,7 @@ export abstract class Chart extends ChartData {
     this.initData(this)
 
     this.pointer = new Pointer(this)
+    this.priceAxis = new PriceAxis(this)
 
     if (options) this.options = { ...this.options, ...options }
 
@@ -126,22 +126,6 @@ export abstract class Chart extends ChartData {
     return canvas
   }
 
-  createPriceAxis(): HTMLCanvasElement {
-    let canvas = this.priceAxisContext.canvas
-    let ctx = canvas.getContext('2d')!
-
-    this.priceAxisContext = ctx
-
-    canvas.style.gridArea = '1 / 2 / 2 / 3'
-    canvas.style.width = '70px'
-    canvas.style.height = '100%'
-    canvas.style.cursor = 'n-resize'
-
-    this.bindPriceAxisListeners()
-
-    return canvas
-  }
-
   createChartToolbar() {}
 
   createSpinnerSvg() {
@@ -188,7 +172,6 @@ export abstract class Chart extends ChartData {
 
   createChartLayout(container: HTMLElement | string) {
     this.chartContext = document.createElement('canvas').getContext('2d')!
-    this.priceAxisContext = document.createElement('canvas').getContext('2d')!
     this.timeAxisContext = document.createElement('canvas').getContext('2d')!
     this.spinnerEl = this.createSpinnerSvg()
 
@@ -210,7 +193,6 @@ export abstract class Chart extends ChartData {
     this.container.style.grid = '1fr 28px / 1fr 70px'
 
     let chartCanvas = this.createChart()
-    let priceAxisCanvas = this.createPriceAxis()
     let timeAxisCanvas = this.createTimeAxis()
 
     let rect = this.container!.getBoundingClientRect()
@@ -221,7 +203,6 @@ export abstract class Chart extends ChartData {
       rect = this.container!.getBoundingClientRect()
       this.setSize(rect.width - 70, rect.height - 28, chartCanvas)
       this.setSize(rect.width - 70, 28, timeAxisCanvas)
-      this.setSize(70, rect.height - 28, priceAxisCanvas)
       this.clampXPanning()
       this.draw()
     })
@@ -232,12 +213,12 @@ export abstract class Chart extends ChartData {
 
     this.container!.appendChild(chartCanvas)
     this.container!.appendChild(timeAxisCanvas)
-    this.container!.appendChild(priceAxisCanvas)
+    this.container!.appendChild(this.priceAxis.canvas)
 
     this.container!.appendChild(this.spinnerEl)
 
     this.rescale(this.chartContext)
-    this.rescale(this.priceAxisContext)
+    this.rescale(this.priceAxis.ctx)
     this.rescale(this.timeAxisContext)
 
     this.ui = new UI()
@@ -333,11 +314,6 @@ export abstract class Chart extends ChartData {
   abstract mouseUpHandler(e?: MouseEvent): void
   abstract wheelHandler(e?: WheelEvent): void
 
-  // abstract priceAxisMouseMoveHandler(e?: MouseEvent): void
-  abstract priceAxisMouseDownHandler(e?: MouseEvent): void
-  abstract priceAxisMouseUpHandler(e?: MouseEvent): void
-  // abstract priceAxisMouseLeaveHandler(e?: MouseEvent): void
-
   // abstract timeAxisMouseMoveHandler(e?: MouseEvent): void
   abstract timeAxisMouseDownHandler(e?: MouseEvent): void
   abstract timeAxisMouseUpHandler(e?: MouseEvent): void
@@ -355,16 +331,6 @@ export abstract class Chart extends ChartData {
     canvas.addEventListener('mousedown', (e) => this.mouseDownHandler(e))
     canvas.addEventListener('mouseup', (e) => this.mouseUpHandler(e))
     canvas.addEventListener('wheel', (e) => this.wheelHandler(e))
-  }
-
-  bindPriceAxisListeners() {
-    let canvas = this.priceAxisContext.canvas
-    // canvas.addEventListener('mousemove', (e) => this.priceAxisMouseMoveHandler(e))
-    canvas.addEventListener('mousedown', (e) =>
-      this.priceAxisMouseDownHandler(e),
-    )
-    canvas.addEventListener('mouseup', (e) => this.priceAxisMouseUpHandler(e))
-    // canvas.addEventListener('mouseleave', (e) => this.priceAxisMouseLeaveHandler(e))
   }
 
   bindTimeAxisListeners() {

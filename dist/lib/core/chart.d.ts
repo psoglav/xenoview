@@ -1,6 +1,6 @@
 import { Ticker } from '../ticker';
-import Pointer from '../components/pointer';
-import { UI } from '..//ui';
+import { UI } from '../ui';
+import { Pointer, PriceAxis } from '../components';
 import { ChartData } from './chartData';
 import '../../public/styles/main.css';
 export declare abstract class Chart extends ChartData {
@@ -14,10 +14,10 @@ export declare abstract class Chart extends ChartData {
         y: number;
     };
     chartContext: CanvasRenderingContext2D;
-    priceAxisContext: CanvasRenderingContext2D;
     timeAxisContext: CanvasRenderingContext2D;
     spinnerEl: HTMLElement;
     pointer: Pointer;
+    priceAxis: PriceAxis;
     zoomSpeed: number;
     yZoomFactor: number;
     focusedPointIndex: number;
@@ -28,7 +28,6 @@ export declare abstract class Chart extends ChartData {
     resetChartPosition(full?: boolean): void;
     createChart(): HTMLCanvasElement;
     createTimeAxis(): HTMLCanvasElement;
-    createPriceAxis(): HTMLCanvasElement;
     createChartToolbar(): void;
     createSpinnerSvg(): any;
     loading(value: boolean): void;
@@ -43,12 +42,9 @@ export declare abstract class Chart extends ChartData {
     abstract mouseDownHandler(e?: MouseEvent): void;
     abstract mouseUpHandler(e?: MouseEvent): void;
     abstract wheelHandler(e?: WheelEvent): void;
-    abstract priceAxisMouseDownHandler(e?: MouseEvent): void;
-    abstract priceAxisMouseUpHandler(e?: MouseEvent): void;
     abstract timeAxisMouseDownHandler(e?: MouseEvent): void;
     abstract timeAxisMouseUpHandler(e?: MouseEvent): void;
     bindMouseListeners(): void;
-    bindPriceAxisListeners(): void;
     bindTimeAxisListeners(): void;
     getWidth(ctx: CanvasRenderingContext2D): number;
     getHeight(ctx: CanvasRenderingContext2D): number;

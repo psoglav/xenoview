@@ -1,7 +1,6 @@
 import { Chart } from '../core/chart';
 export declare class CandlesChart extends Chart {
     private panningIsActive;
-    private isZoomingPriceAxis;
     private isZoomingTimeAxis;
     constructor(container: HTMLElement | string, options?: Chart.Options);
     draw(): void;
@@ -10,13 +9,10 @@ export declare class CandlesChart extends Chart {
     clampXPanning(): void;
     movePointer(): void;
     drawCurrentMarketPriceMarker(): void;
-    drawPriceMarker(): void;
     drawTimeMarker(): void;
-    getGridRows(): any[];
     getGridColumns(): number[];
     drawGridRows(): void;
     drawGridColumns(): void;
-    drawPriceAxisLabels(): void;
     drawTimeAxisLabels(): void;
     drawPriceAxis(): void;
     drawChart(): void;
@@ -30,8 +26,6 @@ export declare class CandlesChart extends Chart {
     mouseDownHandler(e: MouseEvent): void;
     mouseUpHandler(e: MouseEvent): void;
     wheelHandler(e: any): void;
-    priceAxisMouseDownHandler(e?: MouseEvent): void;
-    priceAxisMouseUpHandler(e?: MouseEvent): void;
     timeAxisMouseDownHandler(e?: MouseEvent): void;
     timeAxisMouseUpHandler(e?: MouseEvent): void;
     mainDebug(): void;

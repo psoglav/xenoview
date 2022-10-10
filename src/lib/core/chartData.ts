@@ -174,5 +174,58 @@ export abstract class ChartData {
     return this.bottomHistoryPrice
   }
 
+  getGridRows() {
+    let t = this.topHistoryPrice[1]
+    let b = this.bottomHistoryPrice[1]
+
+    if (t == 0 && b == 0) return []
+
+    t = Math.floor(t / 10) * 10
+    b = Math.floor(b / 10) * 10
+    let delta = t - b
+
+    let result = []
+    let length = delta / 10
+    let start = 0
+    let end = length
+
+    let step = 1
+
+    while (
+      this.normalizeToY((start / length) * delta + b) <
+      this.chart.getWidth(this.chart.chartContext)
+    ) {
+      start -= step
+      step += 5
+      if (start < -5000) break
+    }
+
+    step = 0
+
+    while (this.normalizeToY((end / length) * delta + b) > 0) {
+      end += step
+      step += 5
+      if (end > 5000) break
+    }
+
+    for (let i = start; i <= end; i++) {
+      result.push((i / length) * delta + b)
+    }
+
+    let prev = 0
+
+    return result.filter((i) => {
+      let y = this.normalizeToY(i)
+      let py = this.normalizeToY(prev)
+
+      if (py - y < 30 && y != py) {
+        return 0
+      }
+
+      prev = i
+      return 1
+    })
+  }
+
   abstract draw(): void
 }
