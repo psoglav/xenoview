@@ -14,5 +14,4 @@ export declare class CandlesChart extends Chart {
     mouseDownHandler(e: MouseEvent): void;
     mouseUpHandler(e: MouseEvent): void;
     wheelHandler(e: any): void;
-    mainDebug(): void;
 }

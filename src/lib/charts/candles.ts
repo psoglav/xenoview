@@ -23,7 +23,6 @@ export class CandlesChart extends Chart {
       this.pointer.update()
 
       this.ui.draw()
-      this.mainDebug()
     }
   }
 
@@ -176,26 +175,5 @@ export class CandlesChart extends Chart {
     this.zoom(wd > 1 ? 1 : -1, 0)
     this.pointer.move()
     this.draw()
-  }
-
-  mainDebug() {
-    // let { top, bottom } = this.position
-    // let y = 50
-    // let minY = this.position.top
-    // let maxY = this.position.bottom
-    // let minPrice = this.bottomHistoryPrice[1]
-    // let maxPrice = this.topHistoryPrice[1]
-    // this.debug('top: ' + top, 100, (y += 20))
-    // this.debug('bottom: ' + bottom, 100, (y += 20))
-    // this.debug('my: ' + this.mousePosition.y, 100, (y += 20))
-    // this.debug('minY: ' + minY, 100, (y += 20))
-    // this.debug('maxY: ' + maxY, 100, (y += 20))
-    // this.debug('minPrice: ' + minPrice, 100, (y += 20))
-    // this.debug('maxPrice: ' + maxPrice, 100, (y += 20))
-    // this.debug(
-    //   'myPrice: ' + this.normalizeToPrice(this.mousePosition.y),
-    //   100,
-    //   (y += 20),
-    // )
   }
 }

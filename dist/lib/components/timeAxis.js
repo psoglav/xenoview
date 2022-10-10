@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const component_1 = require("../core/component");
+const core_1 = require("../core");
 const utils_1 = require("../../utils");
-class TimeAxis extends component_1.Component {
+class TimeAxis extends core_1.Component {
     constructor(chart) {
         super(chart);
         this.isZooming = false;

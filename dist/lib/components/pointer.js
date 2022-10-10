@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const component_1 = require("../core/component");
-class Pointer extends component_1.Component {
+const core_1 = require("../core");
+class Pointer extends core_1.Component {
     constructor(chart) {
         super(chart);
         this.isVisible = false;

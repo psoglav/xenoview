@@ -1,5 +1,4 @@
-import { Chart } from '../core/chart';
-import { Component } from '../core/component';
+import { Chart, Component } from '../core';
 export default class Pointer extends Component {
     isVisible: Boolean;
     focusedPointIndex: number;
