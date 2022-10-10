@@ -49,8 +49,8 @@ export abstract class ChartData {
     )
       return
 
-    let pointMinutesTs = toMinutes(value.LASTUPDATE * 1000)
-    let currentPointMinutesTs = toMinutes(currentPoint.time * 1000)
+    let pointMinutesTs = toMinutes(value.LASTUPDATE)
+    let currentPointMinutesTs = toMinutes(currentPoint.time)
 
     if (currentPointMinutesTs == pointMinutesTs) {
       this.updatePoint(hist[hist.length - 1], value)

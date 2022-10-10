@@ -19,6 +19,7 @@ export const getFullTimeFromTimestamp = (ts: number): string => {
 }
 
 export const toMinutes = (ts: number): number => {
+  if (ts.toString().length != (+new Date()).toString().length) ts *= 1000
   let date = new Date(ts)
   return +new Date(
     date.getFullYear(),
