@@ -11,7 +11,9 @@
     "test": "jest",
     "prepare": "husky install",
     "remove-build": "rm -rf ./dist",
-    "copy-public": "cp -r ./src/public/ ./dist/"
+    "copy-public": "cp -r ./src/public/ ./dist/",
+    "commit": "git add src && git commit",
+    "commit:sub": "git add sandbox && git commit -m 'chore: update submodule' --no-verify"
   },
   "license": "ISC",
   "devDependencies": {
