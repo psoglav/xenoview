@@ -1,4 +1,4 @@
-import { UIElement } from '../lib/ui'
+import { UIElement } from '../lib/core'
 
 declare global {
   export namespace UI {

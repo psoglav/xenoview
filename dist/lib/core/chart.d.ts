@@ -1,7 +1,6 @@
 import { Ticker } from '../ticker';
-import { UI } from '../ui';
 import { Pointer, PriceAxis, TimeAxis, Loader } from '../components';
-import { ChartData, Transform, ChartStyle } from '.';
+import { ChartData, Transform, ChartStyle, UI } from '.';
 import '../../public/styles/main.css';
 export declare class Chart extends ChartData {
     container: HTMLElement | undefined;

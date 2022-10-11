@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Chart = void 0;
-const ui_1 = require("../ui");
 const components_1 = require("../components");
 const _1 = require(".");
 const chartStyles_1 = require("../chartStyles");
@@ -108,7 +107,7 @@ class Chart extends _1.ChartData {
         });
         this.container.appendChild(this.canvas);
         this.rescale(this.ctx);
-        this.ui = new ui_1.UI();
+        this.ui = new _1.UI();
     }
     initUIElements() {
         let h = this.history;
@@ -131,24 +130,24 @@ class Chart extends _1.ChartData {
                 ctx: this.ctx
             });
         };
-        let topbarGroup = new ui_1.UIElementGroup({
+        let topbarGroup = new _1.UIElementGroup({
             x: 10,
             y: 23,
             gap: 2,
             elements: [
-                new ui_1.Label(Object.assign(Object.assign({ value: () => { var _a; return ((_a = this.ticker) === null || _a === void 0 ? void 0 : _a.currency) + ' / TetherUS - BINANCE - CryptoView'; } }, commonOpts()), { size: 17 })),
+                new _1.Label(Object.assign(Object.assign({ value: () => { var _a; return ((_a = this.ticker) === null || _a === void 0 ? void 0 : _a.currency) + ' / TetherUS - BINANCE - CryptoView'; } }, commonOpts()), { size: 17 })),
                 30,
-                new ui_1.Label(Object.assign({ value: 'O' }, commonOpts())),
-                new ui_1.Label(Object.assign(Object.assign({ value: () => getPoint().open }, commonOpts()), { color: getCandleColor })),
+                new _1.Label(Object.assign({ value: 'O' }, commonOpts())),
+                new _1.Label(Object.assign(Object.assign({ value: () => getPoint().open }, commonOpts()), { color: getCandleColor })),
                 10,
-                new ui_1.Label(Object.assign({ value: 'H' }, commonOpts())),
-                new ui_1.Label(Object.assign(Object.assign({ value: () => getPoint().high }, commonOpts()), { color: getCandleColor })),
+                new _1.Label(Object.assign({ value: 'H' }, commonOpts())),
+                new _1.Label(Object.assign(Object.assign({ value: () => getPoint().high }, commonOpts()), { color: getCandleColor })),
                 10,
-                new ui_1.Label(Object.assign({ value: 'L' }, commonOpts())),
-                new ui_1.Label(Object.assign(Object.assign({ value: () => getPoint().low }, commonOpts()), { color: getCandleColor })),
+                new _1.Label(Object.assign({ value: 'L' }, commonOpts())),
+                new _1.Label(Object.assign(Object.assign({ value: () => getPoint().low }, commonOpts()), { color: getCandleColor })),
                 10,
-                new ui_1.Label(Object.assign({ value: 'C' }, commonOpts())),
-                new ui_1.Label(Object.assign(Object.assign({ value: () => getPoint().close }, commonOpts()), { color: getCandleColor }))
+                new _1.Label(Object.assign({ value: 'C' }, commonOpts())),
+                new _1.Label(Object.assign(Object.assign({ value: () => getPoint().close }, commonOpts()), { color: getCandleColor }))
             ],
             ctx: this.ctx
         });

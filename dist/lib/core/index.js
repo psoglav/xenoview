@@ -19,4 +19,5 @@ __exportStar(require("./chartData"), exports);
 __exportStar(require("./chartStyle"), exports);
 __exportStar(require("./component"), exports);
 __exportStar(require("./transform"), exports);
+__exportStar(require("./ui"), exports);
 //# sourceMappingURL=index.js.map
