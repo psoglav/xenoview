@@ -7,7 +7,6 @@ export declare class Chart extends ChartData {
     container: HTMLElement | undefined;
     canvas: HTMLCanvasElement;
     options: Chart.Options;
-    type: Chart.Type;
     style: ChartStyle;
     ticker: Ticker;
     ui: UI;
@@ -41,10 +40,10 @@ export declare class Chart extends ChartData {
     rescale(ctx: CanvasRenderingContext2D): void;
     getSharpPixel(pos: number, ctx: CanvasRenderingContext2D, thickness?: number): number;
     getPixelRatio(context: any): number;
-    moveTo(x: number, y: number, ctx: CanvasRenderingContext2D): void;
-    lineTo(x: number, y: number, ctx: CanvasRenderingContext2D): void;
-    rect(x: number, y: number, w: number, h: number, ctx: CanvasRenderingContext2D): void;
-    clear(ctx: CanvasRenderingContext2D): void;
+    moveTo(x: number, y: number, ctx?: CanvasRenderingContext2D): void;
+    lineTo(x: number, y: number, ctx?: CanvasRenderingContext2D): void;
+    rect(x: number, y: number, w: number, h: number, ctx?: CanvasRenderingContext2D): void;
+    clear(ctx?: CanvasRenderingContext2D): void;
     error(msg: string): void;
     log(...msg: any): void;
     debug(text: any, x: number, y: number): void;

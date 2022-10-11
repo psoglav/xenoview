@@ -4,10 +4,10 @@ exports.Chart = void 0;
 const ui_1 = require("../ui");
 const components_1 = require("../components");
 const _1 = require(".");
-const charts_1 = require("../charts");
+const chartStyles_1 = require("../chartStyles");
 require("../../public/styles/main.css");
 const defaultChartOptions = {
-    type: 'candles',
+    style: 'candles',
     bgColor: '#151924',
     textColor: '#b2b5be',
     autoScale: false,
@@ -32,7 +32,7 @@ class Chart extends _1.ChartData {
         if (options)
             this.options = Object.assign(Object.assign({}, this.options), options);
         this.createChartLayout(container);
-        this.style = (0, charts_1.createChartStyle)(this);
+        this.style = (0, chartStyles_1.createChartStyle)(this);
         this.pointer = new components_1.Pointer(this);
         this.priceAxis = new components_1.PriceAxis(this);
         this.timeAxis = new components_1.TimeAxis(this);
@@ -247,15 +247,23 @@ class Chart extends _1.ChartData {
         return dpr / bsr;
     }
     moveTo(x, y, ctx) {
+        if (!ctx)
+            ctx = this.ctx;
         ctx.moveTo(this.getSharpPixel(x, ctx), this.getSharpPixel(y, ctx));
     }
     lineTo(x, y, ctx) {
+        if (!ctx)
+            ctx = this.ctx;
         ctx.lineTo(this.getSharpPixel(x, ctx), this.getSharpPixel(y, ctx));
     }
     rect(x, y, w, h, ctx) {
+        if (!ctx)
+            ctx = this.ctx;
         ctx.rect(this.getSharpPixel(x, ctx), this.getSharpPixel(y, ctx), this.getSharpPixel(w, ctx), this.getSharpPixel(h, ctx));
     }
     clear(ctx) {
+        if (!ctx)
+            ctx = this.ctx;
         ctx.clearRect(0, 0, this.getWidth(ctx), this.getHeight(ctx));
     }
     error(msg) {

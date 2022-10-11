@@ -16,13 +16,14 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createChartStyle = void 0;
 __exportStar(require("./candles"), exports);
+__exportStar(require("./line"), exports);
 const _1 = require(".");
 function createChartStyle(chart) {
-    switch (chart.options.type) {
+    switch (chart.options.style) {
         case 'candles':
             return new _1.Candles(chart);
-        case 'linear':
-            return null;
+        case 'line':
+            return new _1.Line(chart);
     }
 }
 exports.createChartStyle = createChartStyle;

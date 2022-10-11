@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChartStyle = void 0;
 class ChartStyle {
     constructor(chart) {
-        this.type = chart.options.type;
+        this.style = chart.options.style;
         this.chart = chart;
     }
 }

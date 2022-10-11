@@ -11,17 +11,9 @@ export class Candles extends ChartStyle {
 
     let data = this.chart.history
 
-    if (!data?.length) {
-      this.chart.log('no history')
-      return
-    }
-
-    let ctx = this.chart.ctx
-
     this.chart.moveTo(
       this.chart.boundingRect.left - 10,
-      this.chart.mainCanvasHeight,
-      ctx
+      this.chart.mainCanvasHeight
     )
 
     for (let i = 0; i < data.length; i++) {
@@ -43,28 +35,27 @@ export class Candles extends ChartStyle {
           ? this.chart.options.candles?.colors?.lower
           : this.chart.options.candles?.colors?.higher
 
-      ctx.beginPath()
+      this.chart.ctx.beginPath()
 
-      this.chart.lineTo(x, high, ctx)
-      this.chart.lineTo(x, low, ctx)
+      this.chart.lineTo(x, high)
+      this.chart.lineTo(x, low)
 
-      ctx.strokeStyle = candleColor
-      ctx.stroke()
+      this.chart.ctx.strokeStyle = candleColor
+      this.chart.ctx.stroke()
 
       if (halfCandle > 1) {
         this.chart.rect(
           x - this.chart.pointsGap / 4,
           open,
           this.chart.pointsGap / 2,
-          close - open,
-          ctx
+          close - open
         )
 
-        ctx.fillStyle = candleColor
-        ctx.fill()
+        this.chart.ctx.fillStyle = candleColor
+        this.chart.ctx.fill()
       }
 
-      ctx.closePath()
+      this.chart.ctx.closePath()
     }
   }
 }

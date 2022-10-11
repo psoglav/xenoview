@@ -1,11 +1,11 @@
 import { Chart } from '.'
 
 export abstract class ChartStyle {
-  type: Chart.Type
+  style: Chart.StyleName
   chart: Chart
 
   constructor(chart: Chart) {
-    this.type = chart.options.type
+    this.style = chart.options.style
     this.chart = chart
   }
 

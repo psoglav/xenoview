@@ -2,12 +2,12 @@ import { Ticker } from '../ticker'
 import { UI, Label, UIElementGroup } from '../ui'
 import { Pointer, PriceAxis, TimeAxis, Loader } from '../components'
 import { ChartData, Transform, ChartStyle } from '.'
-import { createChartStyle } from '../charts'
+import { createChartStyle } from '../chartStyles'
 
 import '../../public/styles/main.css'
 
 const defaultChartOptions: Chart.Options = {
-  type: 'candles',
+  style: 'candles',
   bgColor: '#151924',
   textColor: '#b2b5be',
   autoScale: false,
@@ -29,7 +29,6 @@ export class Chart extends ChartData {
   canvas: HTMLCanvasElement
 
   options: Chart.Options = defaultChartOptions
-  type: Chart.Type
 
   style: ChartStyle
   ticker: Ticker
@@ -346,11 +345,13 @@ export class Chart extends ChartData {
     return dpr / bsr
   }
 
-  moveTo(x: number, y: number, ctx: CanvasRenderingContext2D) {
+  moveTo(x: number, y: number, ctx?: CanvasRenderingContext2D) {
+    if(!ctx) ctx = this.ctx
     ctx.moveTo(this.getSharpPixel(x, ctx), this.getSharpPixel(y, ctx))
   }
 
-  lineTo(x: number, y: number, ctx: CanvasRenderingContext2D) {
+  lineTo(x: number, y: number, ctx?: CanvasRenderingContext2D) {
+    if(!ctx) ctx = this.ctx
     ctx.lineTo(this.getSharpPixel(x, ctx), this.getSharpPixel(y, ctx))
   }
 
@@ -359,8 +360,9 @@ export class Chart extends ChartData {
     y: number,
     w: number,
     h: number,
-    ctx: CanvasRenderingContext2D
+    ctx?: CanvasRenderingContext2D
   ) {
+    if(!ctx) ctx = this.ctx
     ctx.rect(
       this.getSharpPixel(x, ctx),
       this.getSharpPixel(y, ctx),
@@ -369,7 +371,8 @@ export class Chart extends ChartData {
     )
   }
 
-  clear(ctx: CanvasRenderingContext2D) {
+  clear(ctx?: CanvasRenderingContext2D) {
+    if(!ctx) ctx = this.ctx
     ctx.clearRect(0, 0, this.getWidth(ctx), this.getHeight(ctx))
   }
 
