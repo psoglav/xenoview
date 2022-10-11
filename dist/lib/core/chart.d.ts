@@ -42,6 +42,7 @@ export declare class Chart extends ChartData {
     moveTo(x: number, y: number, ctx?: CanvasRenderingContext2D): void;
     lineTo(x: number, y: number, ctx?: CanvasRenderingContext2D): void;
     rect(x: number, y: number, w: number, h: number, ctx?: CanvasRenderingContext2D): void;
+    circle(x: number, y: number, radius: number, ctx?: CanvasRenderingContext2D): void;
     clear(ctx?: CanvasRenderingContext2D): void;
     error(msg: string): void;
     log(...msg: any): void;

@@ -20,6 +20,10 @@ const defaultChartOptions = {
             higher: '#089981',
             lower: '#f23645'
         }
+    },
+    line: {
+        color: '#089981',
+        width: 2
     }
 };
 class Chart extends _1.ChartData {
@@ -259,6 +263,15 @@ class Chart extends _1.ChartData {
         if (!ctx)
             ctx = this.ctx;
         ctx.rect(this.getSharpPixel(x, ctx), this.getSharpPixel(y, ctx), this.getSharpPixel(w, ctx), this.getSharpPixel(h, ctx));
+    }
+    circle(x, y, radius, ctx) {
+        if (!ctx)
+            ctx = this.ctx;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
     }
     clear(ctx) {
         if (!ctx)

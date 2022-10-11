@@ -44,6 +44,10 @@ declare global {
           lower: string
         }
       }
+      line?: {
+        color: string
+        width: number
+      }
       timeAxis?: {
         labels: {
           fontSize: number

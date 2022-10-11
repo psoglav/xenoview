@@ -61,8 +61,12 @@ class PriceAxis extends core_1.Component {
         let point = data[data.length - 1];
         let { close, open } = this.chart.normalizePoint(point);
         let y = close;
-        let type = close < open ? 'higher' : 'lower';
-        this.chart.ctx.strokeStyle = this.chart.options.candles.colors[type];
+        let color = this.chart.options.line.color;
+        if (this.chart.options.style != 'line') {
+            let type = close < open ? 'higher' : 'lower';
+            color = this.chart.options.candles.colors[type];
+        }
+        this.chart.ctx.strokeStyle = color;
         this.chart.ctx.setLineDash([1, 2]);
         this.chart.ctx.beginPath();
         this.chart.ctx.moveTo(0, y);
@@ -71,7 +75,7 @@ class PriceAxis extends core_1.Component {
         this.chart.ctx.stroke();
         this.chart.ctx.setLineDash([]);
         this.ctx.beginPath();
-        this.ctx.fillStyle = this.chart.options.candles.colors[type];
+        this.ctx.fillStyle = color;
         this.chart.rect(0, y - 10, this.chart.getWidth(this.ctx), 20, this.ctx);
         this.ctx.fill();
         this.ctx.closePath();

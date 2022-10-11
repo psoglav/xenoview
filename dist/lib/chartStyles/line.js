@@ -10,7 +10,8 @@ class Line extends core_1.ChartStyle {
         this.chart.getTopHistoryPrice();
         this.chart.getBottomHistoryPrice();
         let data = this.chart.history;
-        this.chart.ctx.strokeStyle = this.chart.options.candles.colors.higher;
+        this.chart.ctx.strokeStyle = this.chart.options.line.color;
+        this.chart.ctx.lineWidth = this.chart.options.line.width;
         this.chart.moveTo(this.chart.boundingRect.left - 10, this.chart.mainCanvasHeight);
         for (let i = 0; i < data.length - 1; i++) {
             let x1 = this.chart.boundingRect.left + i * this.chart.pointsGap;
@@ -28,7 +29,11 @@ class Line extends core_1.ChartStyle {
             this.chart.lineTo(x2, c2);
             this.chart.ctx.stroke();
             this.chart.ctx.closePath();
+            this.chart.ctx.fillStyle = this.chart.options.candles.colors.higher;
+            if (i == data.length - 2)
+                this.chart.circle(x2, c2, 3);
         }
+        this.chart.ctx.lineWidth = 1;
     }
 }
 exports.Line = Line;

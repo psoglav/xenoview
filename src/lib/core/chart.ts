@@ -20,6 +20,10 @@ const defaultChartOptions: Chart.Options = {
       higher: '#089981',
       lower: '#f23645'
     }
+  },
+  line: {
+    color: '#089981',
+    width: 2
   }
 }
 
@@ -345,12 +349,12 @@ export class Chart extends ChartData {
   }
 
   moveTo(x: number, y: number, ctx?: CanvasRenderingContext2D) {
-    if(!ctx) ctx = this.ctx
+    if (!ctx) ctx = this.ctx
     ctx.moveTo(this.getSharpPixel(x, ctx), this.getSharpPixel(y, ctx))
   }
 
   lineTo(x: number, y: number, ctx?: CanvasRenderingContext2D) {
-    if(!ctx) ctx = this.ctx
+    if (!ctx) ctx = this.ctx
     ctx.lineTo(this.getSharpPixel(x, ctx), this.getSharpPixel(y, ctx))
   }
 
@@ -361,7 +365,7 @@ export class Chart extends ChartData {
     h: number,
     ctx?: CanvasRenderingContext2D
   ) {
-    if(!ctx) ctx = this.ctx
+    if (!ctx) ctx = this.ctx
     ctx.rect(
       this.getSharpPixel(x, ctx),
       this.getSharpPixel(y, ctx),
@@ -370,8 +374,17 @@ export class Chart extends ChartData {
     )
   }
 
+  circle(x: number, y: number, radius: number, ctx?: CanvasRenderingContext2D) {
+    if (!ctx) ctx = this.ctx
+    ctx.beginPath()
+    ctx.arc(x, y, radius, 0, 2 * Math.PI, false)
+    ctx.fill()
+    ctx.stroke()
+    ctx.closePath()
+  }
+
   clear(ctx?: CanvasRenderingContext2D) {
-    if(!ctx) ctx = this.ctx
+    if (!ctx) ctx = this.ctx
     ctx.clearRect(0, 0, this.getWidth(ctx), this.getHeight(ctx))
   }
 

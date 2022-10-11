@@ -11,7 +11,8 @@ export class Line extends ChartStyle {
 
     let data = this.chart.history
 
-    this.chart.ctx.strokeStyle = this.chart.options.candles.colors.higher
+    this.chart.ctx.strokeStyle = this.chart.options.line.color
+    this.chart.ctx.lineWidth = this.chart.options.line.width
 
     this.chart.moveTo(
       this.chart.boundingRect.left - 10,
@@ -39,6 +40,12 @@ export class Line extends ChartStyle {
       this.chart.ctx.stroke()
 
       this.chart.ctx.closePath()
+
+      this.chart.ctx.fillStyle = this.chart.options.candles.colors.higher
+
+      if (i == data.length - 2) this.chart.circle(x2, c2, 3)
     }
+
+    this.chart.ctx.lineWidth = 1
   }
 }
