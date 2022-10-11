@@ -1,9 +1,10 @@
 import { Ticker } from '../ticker'
 import { UI, Label, UIElementGroup } from '../ui'
-import { Pointer, PriceAxis, TimeAxis } from '../components'
+import { Pointer, PriceAxis, TimeAxis, Loader } from '../components'
 import { ChartData, Transform } from '.'
 
 import '../../public/styles/main.css'
+import { request } from 'http'
 
 const defaultChartOptions: Chart.Options = {
   bgColor: '#151924',
@@ -33,10 +34,10 @@ export abstract class Chart extends ChartData {
 
   canvas: HTMLCanvasElement
 
-  spinnerEl: HTMLElement
   pointer: Pointer
   priceAxis: PriceAxis
   timeAxis: TimeAxis
+  loader: Loader
 
   get ctx(): CanvasRenderingContext2D {
     return this.canvas.getContext('2d')
@@ -61,6 +62,7 @@ export abstract class Chart extends ChartData {
     this.pointer = new Pointer(this)
     this.priceAxis = new PriceAxis(this)
     this.timeAxis = new TimeAxis(this)
+    this.loader = new Loader(this)
 
     this.transform = new Transform(this)
 
@@ -98,57 +100,17 @@ export abstract class Chart extends ChartData {
     this.canvas.style.width = '100%'
     this.canvas.style.height = '100%'
     this.canvas.style.cursor = 'crosshair'
+    this.canvas.style.transition = 'opacity .5s ease'
 
     this.rescale(this.ctx)
   }
 
-  createChartToolbar() {}
-
-  createSpinnerSvg() {
-    let xmlns = 'http://www.w3.org/2000/svg'
-    let boxWidth = '24'
-    let boxHeight = '24'
-
-    let svgElem: any = document.createElementNS(xmlns, 'svg')
-    svgElem.id = '#cryptoview-spinner'
-    svgElem.style.color = this.options.spinnerColor
-    svgElem.setAttributeNS(null, 'viewBox', '0 0 24 24')
-    svgElem.setAttributeNS(null, 'width', boxWidth)
-    svgElem.setAttributeNS(null, 'height', boxHeight)
-
-    svgElem.style.display = 'block'
-    svgElem.style.position = 'absolute'
-    svgElem.style.left = '50%'
-    svgElem.style.top = '50%'
-    svgElem.style.transform = 'translate(-50%, -50%) scale(3)'
-
-    let path1 = document.createElementNS(xmlns, 'path')
-    path1.setAttributeNS(null, 'fill', 'none')
-    path1.setAttributeNS(null, 'd', 'M0 0h24v24H0z')
-    svgElem.appendChild(path1)
-
-    let path2: any = document.createElementNS(xmlns, 'path')
-    path2.setAttributeNS(
-      null,
-      'd',
-      'M18.364 5.636L16.95 7.05A7 7 0 1 0 19 12h2a9 9 0 1 1-2.636-6.364z'
-    )
-    path2.style.transformOrigin = '50% 50%'
-    path2.setAttributeNS(null, 'fill', 'currentColor')
-    svgElem.appendChild(path2)
-
-    path2.style.animation = '1s linear infinite forwards rotate'
-
-    return svgElem
-  }
-
   loading(value: boolean) {
-    this.spinnerEl.style.display = value ? 'block' : 'none'
+    this.loader.isActive = value
   }
 
   createChartLayout(container: HTMLElement | string) {
     this.canvas = document.createElement('canvas')
-    this.spinnerEl = this.createSpinnerSvg()
 
     this.ctx.lineWidth = 1 * this.getPixelRatio(this.ctx)
 
@@ -181,7 +143,6 @@ export abstract class Chart extends ChartData {
     })
 
     this.container!.appendChild(this.canvas)
-    this.container!.appendChild(this.spinnerEl)
     this.rescale(this.ctx)
 
     this.ui = new UI()

@@ -1,6 +1,6 @@
 import { Ticker } from '../ticker';
 import { UI } from '../ui';
-import { Pointer, PriceAxis, TimeAxis } from '../components';
+import { Pointer, PriceAxis, TimeAxis, Loader } from '../components';
 import { ChartData, Transform } from '.';
 import '../../public/styles/main.css';
 export declare abstract class Chart extends ChartData {
@@ -14,10 +14,10 @@ export declare abstract class Chart extends ChartData {
         y: number;
     };
     canvas: HTMLCanvasElement;
-    spinnerEl: HTMLElement;
     pointer: Pointer;
     priceAxis: PriceAxis;
     timeAxis: TimeAxis;
+    loader: Loader;
     get ctx(): CanvasRenderingContext2D;
     get boundingRect(): Chart.BoundingRect;
     set boundingRect(value: Chart.BoundingRect);
@@ -25,8 +25,6 @@ export declare abstract class Chart extends ChartData {
     loadHistory(value: History.Data): void;
     setTicker(ticker: Ticker): void;
     createChart(): void;
-    createChartToolbar(): void;
-    createSpinnerSvg(): any;
     loading(value: boolean): void;
     createChartLayout(container: HTMLElement | string): void;
     initUIElements(): void;

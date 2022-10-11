@@ -79,6 +79,7 @@ class TimeAxis extends core_1.Component {
         }
     }
     update() {
+        this.chart.clear(this.ctx);
         this.drawLabels();
         if (this.chart.pointer.isVisible) {
             this.drawTimeMarker();

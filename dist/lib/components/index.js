@@ -3,11 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TimeAxis = exports.PriceAxis = exports.Pointer = void 0;
+exports.Loader = exports.TimeAxis = exports.PriceAxis = exports.Pointer = void 0;
 const pointer_1 = __importDefault(require("./pointer"));
 exports.Pointer = pointer_1.default;
 const priceAxis_1 = __importDefault(require("./priceAxis"));
 exports.PriceAxis = priceAxis_1.default;
 const timeAxis_1 = __importDefault(require("./timeAxis"));
 exports.TimeAxis = timeAxis_1.default;
+const loader_1 = __importDefault(require("./loader"));
+exports.Loader = loader_1.default;
 //# sourceMappingURL=index.js.map

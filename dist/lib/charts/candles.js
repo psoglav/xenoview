@@ -8,8 +8,6 @@ class CandlesChart extends chart_1.Chart {
     }
     draw() {
         this.clear(this.ctx);
-        this.clear(this.timeAxis.ctx);
-        this.clear(this.priceAxis.ctx);
         if (!this.history) {
             this.loading(true);
         }

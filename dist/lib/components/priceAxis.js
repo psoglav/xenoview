@@ -86,6 +86,7 @@ class PriceAxis extends core_1.Component {
         }
     }
     update() {
+        this.chart.clear(this.ctx);
         this.drawLabels();
         this.drawCurrentMarketPriceMarker();
         if (this.chart.pointer.isVisible) {
