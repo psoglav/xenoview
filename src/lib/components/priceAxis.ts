@@ -102,6 +102,7 @@ export default class PriceAxis extends Component {
   }
 
   update() {
+    this.chart.clear(this.ctx)
     this.drawLabels()
     this.drawCurrentMarketPriceMarker()
 

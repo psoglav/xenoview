@@ -93,6 +93,7 @@ export default class TimeAxis extends Component {
   }
 
   update() {
+    this.chart.clear(this.ctx)
     this.drawLabels()
 
     if (this.chart.pointer.isVisible) {
