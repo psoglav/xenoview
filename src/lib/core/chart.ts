@@ -241,11 +241,17 @@ export class Chart extends ChartData {
 
     this.canvas.addEventListener('mouseleave', () => {
       this.pointer.isVisible = false
-      this.transform.isPanning = false
       this.draw()
     })
 
-    this.canvas.addEventListener('mousemove', e => {
+    this.canvas.addEventListener('mousedown', e => {
+      if (e.button == 0) {
+        e.preventDefault()
+        this.transform.isPanning = true
+      }
+    })
+
+    window.addEventListener('mousemove', e => {
       this.mousePosition.x = e.clientX
       this.mousePosition.y = e.clientY
 
@@ -259,14 +265,7 @@ export class Chart extends ChartData {
       this.draw()
     })
 
-    this.canvas.addEventListener('mousedown', e => {
-      if (e.button == 0) {
-        e.preventDefault()
-        this.transform.isPanning = true
-      }
-    })
-
-    this.canvas.addEventListener('mouseup', e => {
+    window.addEventListener('mouseup', e => {
       if (e.button == 0) {
         this.transform.isPanning = false
       }
