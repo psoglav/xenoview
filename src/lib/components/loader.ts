@@ -31,6 +31,7 @@ export default class Loader extends Component {
     this.el.style.top = 'calc(50% - 28px)'
     this.el.style.transform = 'translate(-50%, -50%)'
     this.el.style.transition = 'all .1s ease'
+    this.el.style.pointerEvents = 'none'
 
     let path: HTMLElement = <HTMLElement>document.createElementNS(xmlns, 'path')
     path.setAttributeNS(null, 'stroke', 'currentColor')
