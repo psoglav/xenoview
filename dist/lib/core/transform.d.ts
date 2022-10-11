@@ -1,6 +1,7 @@
 import { Chart } from '@/lib/core';
 export declare class Transform {
     boundingRect: Chart.BoundingRect;
+    isPanning: boolean;
     chart: Chart;
     ZOOM_RATE: number;
     constructor(chart: Chart);

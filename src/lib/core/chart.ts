@@ -12,14 +12,14 @@ const defaultChartOptions: Chart.Options = {
   spinnerColor: '#b2b5be',
   pointer: {
     bgColor: '#363a45',
-    fgColor: '#9598a1',
+    fgColor: '#9598a1'
   },
   candles: {
     colors: {
       higher: '#089981',
-      lower: '#f23645',
-    },
-  },
+      lower: '#f23645'
+    }
+  }
 }
 
 export abstract class Chart extends ChartData {
@@ -31,15 +31,16 @@ export abstract class Chart extends ChartData {
   transform: Transform
   mousePosition = { x: 0, y: 0 }
 
-  ctx: CanvasRenderingContext2D
+  canvas: HTMLCanvasElement
 
   spinnerEl: HTMLElement
   pointer: Pointer
   priceAxis: PriceAxis
   timeAxis: TimeAxis
 
-  focusedPointIndex: number
-  focusedPoint: History.Point | null
+  get ctx(): CanvasRenderingContext2D {
+    return this.canvas.getContext('2d')
+  }
 
   get boundingRect(): Chart.BoundingRect {
     return this.transform.boundingRect
@@ -53,15 +54,17 @@ export abstract class Chart extends ChartData {
     super()
     this.initData(this)
 
-    this.transform = new Transform(this)
+    if (options) this.options = { ...this.options, ...options }
+
+    this.createChartLayout(container)
 
     this.pointer = new Pointer(this)
     this.priceAxis = new PriceAxis(this)
     this.timeAxis = new TimeAxis(this)
 
-    if (options) this.options = { ...this.options, ...options }
+    this.transform = new Transform(this)
 
-    this.createChartLayout(container)
+    this.bindEventListeners()
   }
 
   loadHistory(value: History.Data) {
@@ -82,26 +85,21 @@ export abstract class Chart extends ChartData {
     }, 500)
   }
 
-  createChart(): HTMLCanvasElement {
-    let canvas = this.ctx.canvas
-
+  createChart() {
     const preventDefault = function (e: Event) {
       e.preventDefault()
       e.stopPropagation()
     }
 
-    canvas.oncontextmenu = preventDefault
-    canvas.onwheel = preventDefault
+    this.canvas.oncontextmenu = preventDefault
+    this.canvas.onwheel = preventDefault
 
-    canvas.style.gridArea = '1 / 1 / 2 / 2'
-    canvas.style.width = '100%'
-    canvas.style.height = '100%'
-    canvas.style.cursor = 'crosshair'
+    this.canvas.style.gridArea = '1 / 1 / 2 / 2'
+    this.canvas.style.width = '100%'
+    this.canvas.style.height = '100%'
+    this.canvas.style.cursor = 'crosshair'
 
     this.rescale(this.ctx)
-    this.bindMouseListeners()
-
-    return canvas
   }
 
   createChartToolbar() {}
@@ -133,7 +131,7 @@ export abstract class Chart extends ChartData {
     path2.setAttributeNS(
       null,
       'd',
-      'M18.364 5.636L16.95 7.05A7 7 0 1 0 19 12h2a9 9 0 1 1-2.636-6.364z',
+      'M18.364 5.636L16.95 7.05A7 7 0 1 0 19 12h2a9 9 0 1 1-2.636-6.364z'
     )
     path2.style.transformOrigin = '50% 50%'
     path2.setAttributeNS(null, 'fill', 'currentColor')
@@ -149,7 +147,7 @@ export abstract class Chart extends ChartData {
   }
 
   createChartLayout(container: HTMLElement | string) {
-    this.ctx = document.createElement('canvas').getContext('2d')!
+    this.canvas = document.createElement('canvas')
     this.spinnerEl = this.createSpinnerSvg()
 
     this.ctx.lineWidth = 1 * this.getPixelRatio(this.ctx)
@@ -169,37 +167,29 @@ export abstract class Chart extends ChartData {
     this.container.style.position = 'relative'
     this.container.style.grid = '1fr 28px / 1fr 70px'
 
-    let chartCanvas = this.createChart()
+    this.createChart()
 
     let rect = this.container!.getBoundingClientRect()
 
-    this.setSize(rect.width - 70, rect.height - 28, chartCanvas)
+    this.setSize(rect.width - 70, rect.height - 28, this.canvas)
 
     window.addEventListener('resize', () => {
       rect = this.container!.getBoundingClientRect()
-      this.setSize(rect.width - 70, rect.height - 28, chartCanvas)
+      this.setSize(rect.width - 70, rect.height - 28, this.canvas)
       this.transform.clamp()
       this.draw()
     })
 
-    window.addEventListener('mousemove', (e) => this.windowMouseMoveHandler(e))
-
-    this.container!.appendChild(chartCanvas)
-    this.container!.appendChild(this.timeAxis.canvas)
-    this.container!.appendChild(this.priceAxis.canvas)
-
+    this.container!.appendChild(this.canvas)
     this.container!.appendChild(this.spinnerEl)
-
     this.rescale(this.ctx)
-    this.rescale(this.priceAxis.ctx)
-    this.rescale(this.timeAxis.ctx)
 
     this.ui = new UI()
   }
 
   initUIElements() {
     let h = this.history
-    let getPoint = () => this.focusedPoint || h[h.length - 1]
+    let getPoint = () => this.pointer.focusedPoint || h[h.length - 1]
     let getCandleColor = () => {
       let p = getPoint()
       return p.close < p.open
@@ -213,7 +203,7 @@ export abstract class Chart extends ChartData {
       font: 'Arial',
       size: 13,
       color: this.options?.textColor,
-      ctx: this.ctx,
+      ctx: this.ctx
     })
 
     let topbarGroup = new UIElementGroup({
@@ -225,77 +215,99 @@ export abstract class Chart extends ChartData {
           value: () =>
             this.ticker?.currency + ' / TetherUS - BINANCE - CryptoView',
           ...commonOpts(),
-          size: 17,
+          size: 17
         }),
         30,
         new Label({
           value: 'O',
-          ...commonOpts(),
+          ...commonOpts()
         }),
         new Label({
           value: () => getPoint().open,
           ...commonOpts(),
-          color: getCandleColor,
+          color: getCandleColor
         }),
         10,
         new Label({
           value: 'H',
-          ...commonOpts(),
+          ...commonOpts()
         }),
         new Label({
           value: () => getPoint().high,
           ...commonOpts(),
-          color: getCandleColor,
+          color: getCandleColor
         }),
         10,
         new Label({
           value: 'L',
-          ...commonOpts(),
+          ...commonOpts()
         }),
         new Label({
           value: () => getPoint().low,
           ...commonOpts(),
-          color: getCandleColor,
+          color: getCandleColor
         }),
         10,
         new Label({
           value: 'C',
-          ...commonOpts(),
+          ...commonOpts()
         }),
         new Label({
           value: () => getPoint().close,
           ...commonOpts(),
-          color: getCandleColor,
-        }),
+          color: getCandleColor
+        })
       ],
-      ctx: this.ctx,
+      ctx: this.ctx
     })
 
     this.ui.elements = []
     this.ui.elements.push(topbarGroup)
   }
 
-  abstract windowMouseMoveHandler(e?: MouseEvent): void
+  bindEventListeners() {
+    this.canvas.addEventListener('mouseenter', () => {
+      this.pointer.isVisible = true
+    })
 
-  abstract mouseMoveHandler(e?: MouseEvent): void
-  abstract mouseLeaveHandler(e?: MouseEvent): void
-  abstract mouseEnterHandler(e?: MouseEvent): void
-  abstract mouseDownHandler(e?: MouseEvent): void
-  abstract mouseUpHandler(e?: MouseEvent): void
-  abstract wheelHandler(e?: WheelEvent): void
+    this.canvas.addEventListener('mouseleave', () => {
+      this.pointer.isVisible = false
+      this.transform.isPanning = false
+      this.draw()
+    })
 
-  bindMouseListeners() {
-    let canvas = this.ctx.canvas
-    canvas.addEventListener('mousemove', (e) => {
+    this.canvas.addEventListener('mousemove', e => {
       this.mousePosition.x = e.clientX
       this.mousePosition.y = e.clientY
-      this.mouseMoveHandler(e)
+
+      if (this.transform.isPanning) {
+        let mx = e.movementX
+        let my = this.options.autoScale ? 0 : e.movementY
+        this.transform.move(mx, my)
+      }
+
+      this.pointer.move()
+      this.draw()
     })
-    canvas.addEventListener('mouseleave', (e) => this.mouseLeaveHandler(e))
-    canvas.addEventListener('mouseenter', (e) => this.mouseEnterHandler(e))
-    canvas.addEventListener('mousedown', (e) => this.mouseDownHandler(e))
-    canvas.addEventListener('mouseup', (e) => this.mouseUpHandler(e))
-    canvas.addEventListener('wheel', (e) => this.wheelHandler(e))
+
+    this.canvas.addEventListener('mousedown', e => {
+      if (e.button == 0) {
+        e.preventDefault()
+        this.transform.isPanning = true
+      }
+    })
+
+    this.canvas.addEventListener('mouseup', e => {
+      if (e.button == 0) {
+        this.transform.isPanning = false
+      }
+    })
+
+    this.canvas.addEventListener('wheel', (e: any) => {
+      this.transform.zoom(e.wheelDeltaY, 0)
+      this.pointer.move()
+      this.draw()
+    })
   }
 
   getWidth(ctx: CanvasRenderingContext2D) {
@@ -346,7 +358,7 @@ export abstract class Chart extends ChartData {
   getSharpPixel(
     pos: number,
     ctx: CanvasRenderingContext2D,
-    thickness: number = 1,
+    thickness: number = 1
   ): number {
     if (thickness % 2 == 0) {
       return pos
@@ -380,13 +392,13 @@ export abstract class Chart extends ChartData {
     y: number,
     w: number,
     h: number,
-    ctx: CanvasRenderingContext2D,
+    ctx: CanvasRenderingContext2D
   ) {
     ctx.rect(
       this.getSharpPixel(x, ctx),
       this.getSharpPixel(y, ctx),
       this.getSharpPixel(w, ctx),
-      this.getSharpPixel(h, ctx),
+      this.getSharpPixel(h, ctx)
     )
   }
 

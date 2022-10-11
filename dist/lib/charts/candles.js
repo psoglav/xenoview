@@ -5,7 +5,6 @@ const chart_1 = require("../core/chart");
 class CandlesChart extends chart_1.Chart {
     constructor(container, options) {
         super(container, options);
-        this.panningIsActive = false;
     }
     draw() {
         this.clear(this.ctx);
@@ -88,50 +87,6 @@ class CandlesChart extends chart_1.Chart {
             }
             ctx.closePath();
         }
-    }
-    windowMouseMoveHandler(e) {
-        this.timeAxis.zoom(e === null || e === void 0 ? void 0 : e.movementX);
-        this.priceAxis.zoom(e === null || e === void 0 ? void 0 : e.movementY);
-    }
-    mouseMoveHandler(e) {
-        if (this.panningIsActive) {
-            let mx = e.movementX;
-            let my = this.options.autoScale ? 0 : e.movementY;
-            this.transform.move(mx, my);
-        }
-        this.pointer.move();
-        this.draw();
-    }
-    mouseEnterHandler() {
-        this.pointer.isVisible = true;
-    }
-    mouseLeaveHandler() {
-        this.pointer.isVisible = false;
-        this.panningIsActive = false;
-        this.focusedPoint = null;
-        this.draw();
-    }
-    mouseDownHandler(e) {
-        if (e.button == 0) {
-            e.preventDefault();
-            this.panningIsActive = true;
-        }
-    }
-    mouseUpHandler(e) {
-        if (e.button == 0) {
-            this.panningIsActive = false;
-        }
-    }
-    wheelHandler(e) {
-        let cs = this.pointsGap;
-        let wd = e.wheelDeltaY;
-        if (wd < 0 && cs < 1.7)
-            return;
-        if (wd > 0 && cs > 350)
-            return;
-        this.transform.zoom(wd > 1 ? 1 : -1, 0);
-        this.pointer.move();
-        this.draw();
     }
 }
 exports.CandlesChart = CandlesChart;

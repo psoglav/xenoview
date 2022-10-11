@@ -14,6 +14,7 @@ class PriceAxis extends core_1.Component {
     bindEventListeners() {
         this.canvas.addEventListener('mousedown', () => (this.isZooming = true));
         this.canvas.addEventListener('mouseup', () => (this.isZooming = false));
+        window.addEventListener('mousemove', e => this.zoom(e === null || e === void 0 ? void 0 : e.movementY));
         window.addEventListener('mouseup', () => (this.isZooming = false));
         window.addEventListener('resize', () => {
             let rect = this.chart.container.getBoundingClientRect();
@@ -26,6 +27,8 @@ class PriceAxis extends core_1.Component {
         this.canvas.style.width = '70px';
         this.canvas.style.height = '100%';
         this.canvas.style.cursor = 'n-resize';
+        this.chart.container.appendChild(this.canvas);
+        this.chart.rescale(this.ctx);
     }
     drawLabels() {
         let rows = this.chart.getGridRows();

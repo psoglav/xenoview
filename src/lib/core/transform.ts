@@ -2,6 +2,7 @@ import { Chart } from '@/lib/core'
 
 export class Transform {
   public boundingRect: Chart.BoundingRect
+  public isPanning: boolean = false
 
   chart: Chart
 
@@ -26,7 +27,14 @@ export class Transform {
     if (this.chart.options?.autoScale) this.chart.filterVisiblePointsAndCache()
   }
 
+  // TODO: Make the calculations simpler
   zoom(dx: number, dy: number) {
+    if (dx < 0 && this.chart.pointsGap < 1.7) return
+    if (dx > 0 && this.chart.pointsGap > 350) return
+
+    dx = dx < 0 ? Math.max(dx, -1) : Math.min(dx, 1)
+    dy = dy < 0 ? Math.max(dy, -150) : Math.min(dy, 150)
+
     if (dx) {
       let zoomPoint = this.chart.mainCanvasWidth
       let d = 11 / this.ZOOM_RATE
@@ -54,7 +62,7 @@ export class Transform {
       top: 35,
       bottom: this.chart.mainCanvasHeight - 35,
       left: this.chart.mainCanvasWidth * -10,
-      right: this.chart.mainCanvasWidth,
+      right: this.chart.mainCanvasWidth
     }
 
     if (full) {

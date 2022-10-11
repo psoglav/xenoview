@@ -17,6 +17,7 @@ export default class PriceAxis extends Component {
   bindEventListeners() {
     this.canvas.addEventListener('mousedown', () => (this.isZooming = true))
     this.canvas.addEventListener('mouseup', () => (this.isZooming = false))
+    window.addEventListener('mousemove', e => this.zoom(e?.movementY))
     window.addEventListener('mouseup', () => (this.isZooming = false))
     window.addEventListener('resize', () => {
       let rect = this.chart.container!.getBoundingClientRect()
@@ -30,6 +31,9 @@ export default class PriceAxis extends Component {
     this.canvas.style.width = '70px'
     this.canvas.style.height = '100%'
     this.canvas.style.cursor = 'n-resize'
+
+    this.chart.container.appendChild(this.canvas)
+    this.chart.rescale(this.ctx)
   }
 
   drawLabels() {

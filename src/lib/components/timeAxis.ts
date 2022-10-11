@@ -17,9 +17,10 @@ export default class TimeAxis extends Component {
   }
 
   bindEventListeners() {
-    this.canvas.addEventListener('mousedown', (e) => (this.isZooming = true))
-    this.canvas.addEventListener('mouseup', (e) => (this.isZooming = false))
-    window.addEventListener('mouseup', (e) => (this.isZooming = false))
+    this.canvas.addEventListener('mousedown', () => (this.isZooming = true))
+    this.canvas.addEventListener('mouseup', () => (this.isZooming = false))
+    window.addEventListener('mousemove', (e) => this.zoom(e.movementX))
+    window.addEventListener('mouseup', () => (this.isZooming = false))
     window.addEventListener('resize', () => {
       let rect = this.chart.container!.getBoundingClientRect()
       this.chart.setSize(rect.width - 70, 28, this.canvas)
@@ -32,6 +33,9 @@ export default class TimeAxis extends Component {
     this.canvas.style.width = 'calc(100% - 70px)'
     this.canvas.style.height = '28px'
     this.canvas.style.cursor = 'e-resize'
+
+    this.chart.container.appendChild(this.canvas)
+    this.chart.rescale(this.ctx)
   }
 
   drawLabels() {

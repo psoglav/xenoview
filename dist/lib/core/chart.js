@@ -12,14 +12,14 @@ const defaultChartOptions = {
     spinnerColor: '#b2b5be',
     pointer: {
         bgColor: '#363a45',
-        fgColor: '#9598a1',
+        fgColor: '#9598a1'
     },
     candles: {
         colors: {
             higher: '#089981',
-            lower: '#f23645',
-        },
-    },
+            lower: '#f23645'
+        }
+    }
 };
 class Chart extends _1.ChartData {
     constructor(container, options) {
@@ -27,13 +27,17 @@ class Chart extends _1.ChartData {
         this.options = defaultChartOptions;
         this.mousePosition = { x: 0, y: 0 };
         this.initData(this);
-        this.transform = new _1.Transform(this);
-        this.pointer = new components_1.Pointer(this);
-        this.priceAxis = new components_1.PriceAxis(this);
-        this.timeAxis = new components_1.TimeAxis(this);
         if (options)
             this.options = Object.assign(Object.assign({}, this.options), options);
         this.createChartLayout(container);
+        this.pointer = new components_1.Pointer(this);
+        this.priceAxis = new components_1.PriceAxis(this);
+        this.timeAxis = new components_1.TimeAxis(this);
+        this.transform = new _1.Transform(this);
+        this.bindEventListeners();
+    }
+    get ctx() {
+        return this.canvas.getContext('2d');
     }
     get boundingRect() {
         return this.transform.boundingRect;
@@ -58,20 +62,17 @@ class Chart extends _1.ChartData {
         }, 500);
     }
     createChart() {
-        let canvas = this.ctx.canvas;
         const preventDefault = function (e) {
             e.preventDefault();
             e.stopPropagation();
         };
-        canvas.oncontextmenu = preventDefault;
-        canvas.onwheel = preventDefault;
-        canvas.style.gridArea = '1 / 1 / 2 / 2';
-        canvas.style.width = '100%';
-        canvas.style.height = '100%';
-        canvas.style.cursor = 'crosshair';
+        this.canvas.oncontextmenu = preventDefault;
+        this.canvas.onwheel = preventDefault;
+        this.canvas.style.gridArea = '1 / 1 / 2 / 2';
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '100%';
+        this.canvas.style.cursor = 'crosshair';
         this.rescale(this.ctx);
-        this.bindMouseListeners();
-        return canvas;
     }
     createChartToolbar() { }
     createSpinnerSvg() {
@@ -105,7 +106,7 @@ class Chart extends _1.ChartData {
         this.spinnerEl.style.display = value ? 'block' : 'none';
     }
     createChartLayout(container) {
-        this.ctx = document.createElement('canvas').getContext('2d');
+        this.canvas = document.createElement('canvas');
         this.spinnerEl = this.createSpinnerSvg();
         this.ctx.lineWidth = 1 * this.getPixelRatio(this.ctx);
         if (typeof container === 'string') {
@@ -120,28 +121,23 @@ class Chart extends _1.ChartData {
         this.container.style.display = 'grid';
         this.container.style.position = 'relative';
         this.container.style.grid = '1fr 28px / 1fr 70px';
-        let chartCanvas = this.createChart();
+        this.createChart();
         let rect = this.container.getBoundingClientRect();
-        this.setSize(rect.width - 70, rect.height - 28, chartCanvas);
+        this.setSize(rect.width - 70, rect.height - 28, this.canvas);
         window.addEventListener('resize', () => {
             rect = this.container.getBoundingClientRect();
-            this.setSize(rect.width - 70, rect.height - 28, chartCanvas);
+            this.setSize(rect.width - 70, rect.height - 28, this.canvas);
             this.transform.clamp();
             this.draw();
         });
-        window.addEventListener('mousemove', (e) => this.windowMouseMoveHandler(e));
-        this.container.appendChild(chartCanvas);
-        this.container.appendChild(this.timeAxis.canvas);
-        this.container.appendChild(this.priceAxis.canvas);
+        this.container.appendChild(this.canvas);
         this.container.appendChild(this.spinnerEl);
         this.rescale(this.ctx);
-        this.rescale(this.priceAxis.ctx);
-        this.rescale(this.timeAxis.ctx);
         this.ui = new ui_1.UI();
     }
     initUIElements() {
         let h = this.history;
-        let getPoint = () => this.focusedPoint || h[h.length - 1];
+        let getPoint = () => this.pointer.focusedPoint || h[h.length - 1];
         let getCandleColor = () => {
             var _a, _b, _c, _d, _e, _f;
             let p = getPoint();
@@ -157,7 +153,7 @@ class Chart extends _1.ChartData {
                 font: 'Arial',
                 size: 13,
                 color: (_a = this.options) === null || _a === void 0 ? void 0 : _a.textColor,
-                ctx: this.ctx,
+                ctx: this.ctx
             });
         };
         let topbarGroup = new ui_1.UIElementGroup({
@@ -177,25 +173,49 @@ class Chart extends _1.ChartData {
                 new ui_1.Label(Object.assign(Object.assign({ value: () => getPoint().low }, commonOpts()), { color: getCandleColor })),
                 10,
                 new ui_1.Label(Object.assign({ value: 'C' }, commonOpts())),
-                new ui_1.Label(Object.assign(Object.assign({ value: () => getPoint().close }, commonOpts()), { color: getCandleColor })),
+                new ui_1.Label(Object.assign(Object.assign({ value: () => getPoint().close }, commonOpts()), { color: getCandleColor }))
             ],
-            ctx: this.ctx,
+            ctx: this.ctx
         });
         this.ui.elements = [];
         this.ui.elements.push(topbarGroup);
     }
-    bindMouseListeners() {
-        let canvas = this.ctx.canvas;
-        canvas.addEventListener('mousemove', (e) => {
+    bindEventListeners() {
+        this.canvas.addEventListener('mouseenter', () => {
+            this.pointer.isVisible = true;
+        });
+        this.canvas.addEventListener('mouseleave', () => {
+            this.pointer.isVisible = false;
+            this.transform.isPanning = false;
+            this.draw();
+        });
+        this.canvas.addEventListener('mousemove', e => {
             this.mousePosition.x = e.clientX;
             this.mousePosition.y = e.clientY;
-            this.mouseMoveHandler(e);
+            if (this.transform.isPanning) {
+                let mx = e.movementX;
+                let my = this.options.autoScale ? 0 : e.movementY;
+                this.transform.move(mx, my);
+            }
+            this.pointer.move();
+            this.draw();
         });
-        canvas.addEventListener('mouseleave', (e) => this.mouseLeaveHandler(e));
-        canvas.addEventListener('mouseenter', (e) => this.mouseEnterHandler(e));
-        canvas.addEventListener('mousedown', (e) => this.mouseDownHandler(e));
-        canvas.addEventListener('mouseup', (e) => this.mouseUpHandler(e));
-        canvas.addEventListener('wheel', (e) => this.wheelHandler(e));
+        this.canvas.addEventListener('mousedown', e => {
+            if (e.button == 0) {
+                e.preventDefault();
+                this.transform.isPanning = true;
+            }
+        });
+        this.canvas.addEventListener('mouseup', e => {
+            if (e.button == 0) {
+                this.transform.isPanning = false;
+            }
+        });
+        this.canvas.addEventListener('wheel', (e) => {
+            this.transform.zoom(e.wheelDeltaY, 0);
+            this.pointer.move();
+            this.draw();
+        });
     }
     getWidth(ctx) {
         return ctx.canvas.width * this.getPixelRatio(ctx);

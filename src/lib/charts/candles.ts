@@ -1,8 +1,6 @@
 import { Chart } from '../core/chart'
 
 export class CandlesChart extends Chart {
-  private panningIsActive = false
-
   constructor(container: HTMLElement | string, options?: Chart.Options) {
     super(container, options)
   }
@@ -117,57 +115,5 @@ export class CandlesChart extends Chart {
 
       ctx.closePath()
     }
-  }
-
-  windowMouseMoveHandler(e: MouseEvent) {
-    this.timeAxis.zoom(e?.movementX)
-    this.priceAxis.zoom(e?.movementY)
-  }
-
-  mouseMoveHandler(e: MouseEvent) {
-    if (this.panningIsActive) {
-      let mx = e.movementX
-      let my = this.options.autoScale ? 0 : e.movementY
-      this.transform.move(mx, my)
-    }
-
-    this.pointer.move()
-    this.draw()
-  }
-
-  mouseEnterHandler() {
-    this.pointer.isVisible = true
-  }
-
-  mouseLeaveHandler() {
-    this.pointer.isVisible = false
-    this.panningIsActive = false
-    this.focusedPoint = null
-
-    this.draw()
-  }
-
-  mouseDownHandler(e: MouseEvent) {
-    if (e.button == 0) {
-      e.preventDefault()
-      this.panningIsActive = true
-    }
-  }
-
-  mouseUpHandler(e: MouseEvent) {
-    if (e.button == 0) {
-      this.panningIsActive = false
-    }
-  }
-
-  wheelHandler(e: any) {
-    let cs = this.pointsGap
-    let wd = e.wheelDeltaY
-    if (wd < 0 && cs < 1.7) return
-    if (wd > 0 && cs > 350) return
-
-    this.transform.zoom(wd > 1 ? 1 : -1, 0)
-    this.pointer.move()
-    this.draw()
   }
 }
