@@ -14,6 +14,16 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("./lib/core/chart"), exports);
-__exportStar(require("./lib/ticker"), exports);
+exports.createChartStyle = void 0;
+__exportStar(require("./candles"), exports);
+const _1 = require(".");
+function createChartStyle(chart) {
+    switch (chart.options.type) {
+        case 'candles':
+            return new _1.Candles(chart);
+        case 'linear':
+            return null;
+    }
+}
+exports.createChartStyle = createChartStyle;
 //# sourceMappingURL=index.js.map

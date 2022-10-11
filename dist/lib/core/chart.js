@@ -4,8 +4,10 @@ exports.Chart = void 0;
 const ui_1 = require("../ui");
 const components_1 = require("../components");
 const _1 = require(".");
+const charts_1 = require("../charts");
 require("../../public/styles/main.css");
 const defaultChartOptions = {
+    type: 'candles',
     bgColor: '#151924',
     textColor: '#b2b5be',
     autoScale: false,
@@ -30,6 +32,7 @@ class Chart extends _1.ChartData {
         if (options)
             this.options = Object.assign(Object.assign({}, this.options), options);
         this.createChartLayout(container);
+        this.style = (0, charts_1.createChartStyle)(this);
         this.pointer = new components_1.Pointer(this);
         this.priceAxis = new components_1.PriceAxis(this);
         this.timeAxis = new components_1.TimeAxis(this);
@@ -265,6 +268,47 @@ class Chart extends _1.ChartData {
         this.ctx.fillStyle = 'white';
         this.ctx.font = '12px Arial';
         this.ctx.fillText(text, x, y);
+    }
+    draw() {
+        this.clear(this.ctx);
+        if (!this.history) {
+            this.loading(true);
+        }
+        else {
+            this.drawGridColumns();
+            this.drawGridRows();
+            this.timeAxis.update();
+            this.priceAxis.update();
+            this.style.draw();
+            this.pointer.update();
+            this.ui.draw();
+        }
+    }
+    drawGridRows() {
+        let ctx = this.ctx;
+        let rows = this.getGridRows();
+        ctx.beginPath();
+        ctx.strokeStyle = '#7777aa33';
+        for (let i of rows) {
+            let y = this.normalizeToY(i);
+            this.moveTo(0, y, ctx);
+            this.lineTo(this.getWidth(ctx), y, ctx);
+        }
+        ctx.stroke();
+        ctx.closePath();
+    }
+    drawGridColumns() {
+        let ctx = this.ctx;
+        let cols = this.getGridColumns();
+        ctx.beginPath();
+        ctx.strokeStyle = '#7777aa33';
+        for (let i of cols) {
+            let x = this.getPointX(i);
+            this.moveTo(x, 0, ctx);
+            this.lineTo(x, this.mainCanvasHeight, ctx);
+        }
+        ctx.stroke();
+        ctx.closePath();
     }
 }
 exports.Chart = Chart;

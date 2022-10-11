@@ -27,7 +27,9 @@ declare global {
   }
 
   export namespace Chart {
+    type Type = 'candles' | 'linear'
     interface Options {
+      type?: Chart.Type,
       bgColor?: string
       textColor?: string
       autoScale?: boolean

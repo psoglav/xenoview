@@ -1,12 +1,13 @@
 import { Ticker } from '../ticker'
 import { UI, Label, UIElementGroup } from '../ui'
 import { Pointer, PriceAxis, TimeAxis, Loader } from '../components'
-import { ChartData, Transform } from '.'
+import { ChartData, Transform, ChartStyle } from '.'
+import { createChartStyle } from '../charts'
 
 import '../../public/styles/main.css'
-import { request } from 'http'
 
 const defaultChartOptions: Chart.Options = {
+  type: 'candles',
   bgColor: '#151924',
   textColor: '#b2b5be',
   autoScale: false,
@@ -23,16 +24,19 @@ const defaultChartOptions: Chart.Options = {
   }
 }
 
-export abstract class Chart extends ChartData {
+export class Chart extends ChartData {
   container: HTMLElement | undefined
+  canvas: HTMLCanvasElement
+
   options: Chart.Options = defaultChartOptions
+  type: Chart.Type
+
+  style: ChartStyle
   ticker: Ticker
   ui: UI
 
   transform: Transform
   mousePosition = { x: 0, y: 0 }
-
-  canvas: HTMLCanvasElement
 
   pointer: Pointer
   priceAxis: PriceAxis
@@ -58,6 +62,8 @@ export abstract class Chart extends ChartData {
     if (options) this.options = { ...this.options, ...options }
 
     this.createChartLayout(container)
+
+    this.style = createChartStyle(this)
 
     this.pointer = new Pointer(this)
     this.priceAxis = new PriceAxis(this)
@@ -379,5 +385,56 @@ export abstract class Chart extends ChartData {
     this.ctx.fillStyle = 'white'
     this.ctx.font = '12px Arial'
     this.ctx.fillText(text, x, y)
+  }
+
+  draw(): void {
+    this.clear(this.ctx)
+
+    if (!this.history) {
+      this.loading(true)
+    } else {
+      this.drawGridColumns()
+      this.drawGridRows()
+      this.timeAxis.update()
+      this.priceAxis.update()
+      this.style.draw()
+      this.pointer.update()
+
+      this.ui.draw()
+    }
+  }
+
+  drawGridRows() {
+    let ctx = this.ctx
+    let rows = this.getGridRows()
+
+    ctx.beginPath()
+    ctx.strokeStyle = '#7777aa33'
+
+    for (let i of rows) {
+      let y = this.normalizeToY(i)
+      this.moveTo(0, y, ctx)
+      this.lineTo(this.getWidth(ctx), y, ctx)
+    }
+
+    ctx.stroke()
+    ctx.closePath()
+  }
+
+  drawGridColumns() {
+    let ctx = this.ctx
+    let cols = this.getGridColumns()
+
+    ctx.beginPath()
+    ctx.strokeStyle = '#7777aa33'
+
+    for (let i of cols) {
+      let x = this.getPointX(i)
+      this.moveTo(x, 0, ctx)
+      this.lineTo(x, this.mainCanvasHeight, ctx)
+    }
+
+    ctx.stroke()
+    ctx.closePath()
   }
 }

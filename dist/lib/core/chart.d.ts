@@ -1,11 +1,14 @@
 import { Ticker } from '../ticker';
 import { UI } from '../ui';
 import { Pointer, PriceAxis, TimeAxis, Loader } from '../components';
-import { ChartData, Transform } from '.';
+import { ChartData, Transform, ChartStyle } from '.';
 import '../../public/styles/main.css';
-export declare abstract class Chart extends ChartData {
+export declare class Chart extends ChartData {
     container: HTMLElement | undefined;
+    canvas: HTMLCanvasElement;
     options: Chart.Options;
+    type: Chart.Type;
+    style: ChartStyle;
     ticker: Ticker;
     ui: UI;
     transform: Transform;
@@ -13,7 +16,6 @@ export declare abstract class Chart extends ChartData {
         x: number;
         y: number;
     };
-    canvas: HTMLCanvasElement;
     pointer: Pointer;
     priceAxis: PriceAxis;
     timeAxis: TimeAxis;
@@ -46,4 +48,7 @@ export declare abstract class Chart extends ChartData {
     error(msg: string): void;
     log(...msg: any): void;
     debug(text: any, x: number, y: number): void;
+    draw(): void;
+    drawGridRows(): void;
+    drawGridColumns(): void;
 }
