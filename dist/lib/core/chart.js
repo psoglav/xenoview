@@ -189,7 +189,7 @@ class Chart extends _1.ChartData {
             }
         });
         this.canvas.addEventListener('wheel', (e) => {
-            this.transform.zoom(e.wheelDeltaY, 0);
+            this.transform.zoom(e.wheelDeltaY, e.altKey ? -e.wheelDeltaY / 2 : 0);
             this.pointer.move();
             this.draw();
         });

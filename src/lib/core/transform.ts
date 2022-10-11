@@ -44,7 +44,9 @@ export class Transform {
       this.boundingRect.left += ((this.boundingRect.left - zoomPoint) / d) * dx
 
       this.clamp()
-    } else if (dy) {
+    }
+
+    if (dy) {
       let origin = this.chart.mainCanvasHeight / 2
       let d = 6 / this.ZOOM_RATE
 
