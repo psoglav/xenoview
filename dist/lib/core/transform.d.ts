@@ -6,7 +6,7 @@ export declare class Transform {
     ZOOM_RATE: number;
     constructor(chart: Chart);
     move(mx: number, my: number): void;
-    zoom(dx: number, dy: number): void;
+    zoom(dx: number, dy: number, xOrigin?: number): void;
     reset(full?: boolean): void;
     clamp(): void;
 }

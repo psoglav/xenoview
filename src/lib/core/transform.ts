@@ -28,7 +28,7 @@ export class Transform {
   }
 
   // TODO: Make the calculations simpler
-  zoom(dx: number, dy: number) {
+  zoom(dx: number, dy: number, xOrigin?: number) {
     if (dx < 0 && this.chart.pointsGap < 1.7) return
     if (dx > 0 && this.chart.pointsGap > 350) return
 
@@ -36,7 +36,7 @@ export class Transform {
     dy = dy < 0 ? Math.max(dy, -150) : Math.min(dy, 150)
 
     if (dx) {
-      let zoomPoint = this.chart.mainCanvasWidth
+      let zoomPoint = xOrigin || this.chart.mainCanvasWidth
       let d = 11 / this.ZOOM_RATE
 
       this.boundingRect.right +=

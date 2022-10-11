@@ -272,7 +272,12 @@ export class Chart extends ChartData {
     })
 
     this.canvas.addEventListener('wheel', (e: any) => {
-      this.transform.zoom(e.wheelDeltaY, e.altKey ? -e.wheelDeltaY / 2 : 0)
+      this.transform.zoom(
+        e.wheelDeltaY,
+        e.altKey ? -e.wheelDeltaY / 2 : 0,
+        e.ctrlKey ? this.mousePosition.x : null
+      )
+
       this.pointer.move()
       this.draw()
     })
