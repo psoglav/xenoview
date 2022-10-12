@@ -19,6 +19,7 @@ class PriceAxis extends core_1.Component {
         window.addEventListener('resize', () => {
             let rect = this.chart.container.getBoundingClientRect();
             this.chart.setSize(70, rect.height - 28, this.canvas);
+            this.update();
         });
     }
     createCanvas() {
@@ -69,8 +70,8 @@ class PriceAxis extends core_1.Component {
         this.chart.ctx.strokeStyle = color;
         this.chart.ctx.setLineDash([1, 2]);
         this.chart.ctx.beginPath();
-        this.chart.ctx.moveTo(0, y);
-        this.chart.ctx.lineTo(this.chart.mainCanvasWidth, y);
+        this.chart.ctx.moveTo(0, y + 2);
+        this.chart.ctx.lineTo(this.chart.mainCanvasWidth, y + 2);
         this.chart.ctx.closePath();
         this.chart.ctx.stroke();
         this.chart.ctx.setLineDash([]);

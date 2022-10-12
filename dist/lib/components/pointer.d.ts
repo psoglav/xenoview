@@ -7,4 +7,6 @@ export default class Pointer extends Component {
     constructor(chart: Chart);
     move(): void;
     update(): void;
+    drawVerticalLine(): void;
+    drawHorizontalLine(): void;
 }

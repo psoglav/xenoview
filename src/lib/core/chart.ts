@@ -292,11 +292,11 @@ export class Chart extends ChartData {
   }
 
   get mainCanvasWidth() {
-    return this.ctx.canvas.clientWidth * this.getPixelRatio(this.ctx)
+    return this.ctx.canvas.clientWidth
   }
 
   get mainCanvasHeight() {
-    return this.ctx.canvas.clientHeight * this.getPixelRatio(this.ctx)
+    return this.ctx.canvas.clientHeight
   }
 
   get canvasRect() {
@@ -354,12 +354,18 @@ export class Chart extends ChartData {
 
   moveTo(x: number, y: number, ctx?: CanvasRenderingContext2D) {
     if (!ctx) ctx = this.ctx
-    ctx.moveTo(this.getSharpPixel(x, ctx), this.getSharpPixel(y, ctx))
+    ctx.moveTo(
+      this.getSharpPixel(Math.round(x), ctx),
+      this.getSharpPixel(Math.round(y), ctx)
+    )
   }
 
   lineTo(x: number, y: number, ctx?: CanvasRenderingContext2D) {
     if (!ctx) ctx = this.ctx
-    ctx.lineTo(this.getSharpPixel(x, ctx), this.getSharpPixel(y, ctx))
+    ctx.lineTo(
+      this.getSharpPixel(Math.round(x), ctx),
+      this.getSharpPixel(Math.round(y), ctx)
+    )
   }
 
   rect(
@@ -371,10 +377,10 @@ export class Chart extends ChartData {
   ) {
     if (!ctx) ctx = this.ctx
     ctx.rect(
-      this.getSharpPixel(x, ctx),
-      this.getSharpPixel(y, ctx),
-      this.getSharpPixel(w, ctx),
-      this.getSharpPixel(h, ctx)
+      this.getSharpPixel(Math.round(x) + 0.5, ctx),
+      this.getSharpPixel(Math.round(y) + 0.5, ctx),
+      this.getSharpPixel(Math.round(w) + 0.5, ctx),
+      this.getSharpPixel(Math.round(h) + 0.5, ctx)
     )
   }
 

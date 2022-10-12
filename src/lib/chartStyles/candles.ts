@@ -18,9 +18,14 @@ export class Candles extends ChartStyle {
       this.chart.mainCanvasHeight
     )
 
+    console.log(this.chart.pointsGap)
+
     for (let i = 0; i < data.length; i++) {
-      let x = this.chart.boundingRect.left + i * this.chart.pointsGap
+      let x = Math.round(
+        this.chart.boundingRect.left + i * this.chart.pointsGap
+      )
       let halfCandle = this.chart.pointsGap / 4
+      let gap = Math.round(this.chart.pointsGap) + (this.chart.pointsGap % 2)
 
       if (x > this.chart.mainCanvasWidth + halfCandle) break
       else if (x < -halfCandle) continue
@@ -45,14 +50,8 @@ export class Candles extends ChartStyle {
       this.chart.ctx.strokeStyle = candleColor
       this.chart.ctx.stroke()
 
-      if (halfCandle > 1) {
-        this.chart.rect(
-          x - this.chart.pointsGap / 4,
-          open,
-          this.chart.pointsGap / 2,
-          close - open
-        )
-
+      if (halfCandle > 1.1) {
+        this.chart.rect(x - gap / 4 - 1, open, gap / 2, close - open)
         this.chart.ctx.fillStyle = candleColor
         this.chart.ctx.fill()
       }

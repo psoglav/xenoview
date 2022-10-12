@@ -201,10 +201,10 @@ class Chart extends _1.ChartData {
         return ctx.canvas.height * this.getPixelRatio(ctx);
     }
     get mainCanvasWidth() {
-        return this.ctx.canvas.clientWidth * this.getPixelRatio(this.ctx);
+        return this.ctx.canvas.clientWidth;
     }
     get mainCanvasHeight() {
-        return this.ctx.canvas.clientHeight * this.getPixelRatio(this.ctx);
+        return this.ctx.canvas.clientHeight;
     }
     get canvasRect() {
         return this.ctx.canvas.getBoundingClientRect();
@@ -251,17 +251,17 @@ class Chart extends _1.ChartData {
     moveTo(x, y, ctx) {
         if (!ctx)
             ctx = this.ctx;
-        ctx.moveTo(this.getSharpPixel(x, ctx), this.getSharpPixel(y, ctx));
+        ctx.moveTo(this.getSharpPixel(Math.round(x), ctx), this.getSharpPixel(Math.round(y), ctx));
     }
     lineTo(x, y, ctx) {
         if (!ctx)
             ctx = this.ctx;
-        ctx.lineTo(this.getSharpPixel(x, ctx), this.getSharpPixel(y, ctx));
+        ctx.lineTo(this.getSharpPixel(Math.round(x), ctx), this.getSharpPixel(Math.round(y), ctx));
     }
     rect(x, y, w, h, ctx) {
         if (!ctx)
             ctx = this.ctx;
-        ctx.rect(this.getSharpPixel(x, ctx), this.getSharpPixel(y, ctx), this.getSharpPixel(w, ctx), this.getSharpPixel(h, ctx));
+        ctx.rect(this.getSharpPixel(Math.round(x) + 0.5, ctx), this.getSharpPixel(Math.round(y) + 0.5, ctx), this.getSharpPixel(Math.round(w) + 0.5, ctx), this.getSharpPixel(Math.round(h) + 0.5, ctx));
     }
     circle(x, y, radius, ctx) {
         if (!ctx)

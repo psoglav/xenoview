@@ -24,6 +24,7 @@ export default class TimeAxis extends Component {
     window.addEventListener('resize', () => {
       let rect = this.chart.container!.getBoundingClientRect()
       this.chart.setSize(rect.width - 70, 28, this.canvas)
+      this.update()
     })
   }
 
