@@ -7,12 +7,12 @@ class Bars extends candles_1.Candles {
         super(chart);
         this.bars = true;
     }
-    drawCandleBody(left, top, right, bottom) {
-        let h = right / 2 - 2;
-        this.chart.moveTo(left - h + 1, top);
-        this.chart.lineTo(left + right / 2 + 1, top);
-        this.chart.moveTo(left + right / 2 + 1, top + bottom);
-        this.chart.lineTo(left + right + h, top + bottom);
+    drawCandleBody(x, y, width, height) {
+        let h = width / 2 - 2;
+        this.chart.moveTo(x - h + 1, y);
+        this.chart.lineTo(x + width / 2 + 1, y);
+        this.chart.moveTo(x + width / 2 + 1, y + height);
+        this.chart.lineTo(x + width + h, y + height);
         this.chart.ctx.stroke();
     }
 }

@@ -6,5 +6,5 @@ export declare class Candles extends ChartStyle {
     draw(): void;
     drawCandles(): void;
     drawCandleStick(x: number, top: number, bottom: number, type: string): void;
-    drawCandleBody(left: number, top: number, right: number, bottom: number, type: string): void;
+    drawCandleBody(x: number, y: number, width: number, height: number, type: string): void;
 }

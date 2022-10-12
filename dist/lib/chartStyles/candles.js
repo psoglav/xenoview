@@ -44,10 +44,10 @@ class Candles extends core_1.ChartStyle {
         this.chart.ctx.stroke();
         this.chart.ctx.closePath();
     }
-    drawCandleBody(left, top, right, bottom, type) {
+    drawCandleBody(x, y, width, height, type) {
         var _a;
         this.chart.ctx.beginPath();
-        this.chart.ctx.rect(Math.round(left) + 0.5, Math.round(top) + 0.5, Math.round(right) + 1, Math.round(bottom));
+        this.chart.ctx.rect(Math.round(x) + 0.5, Math.round(y) + 0.5, Math.round(width) + 1, Math.round(height));
         this.chart.ctx.fillStyle = (_a = this.chart.options.candles) === null || _a === void 0 ? void 0 : _a.colors[type];
         this.chart.ctx.fill();
         this.chart.ctx.stroke();

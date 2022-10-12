@@ -8,12 +8,12 @@ export class Bars extends Candles {
     super(chart)
   }
 
-  drawCandleBody(left: number, top: number, right: number, bottom: number) {
-    let h = right / 2 - 2
-    this.chart.moveTo(left - h + 1, top)
-    this.chart.lineTo(left + right / 2 + 1, top)
-    this.chart.moveTo(left + right / 2 + 1, top + bottom)
-    this.chart.lineTo(left + right + h, top + bottom)
+  drawCandleBody(x: number, y: number, width: number, height: number) {
+    let h = width / 2 - 2
+    this.chart.moveTo(x - h + 1, y)
+    this.chart.lineTo(x + width / 2 + 1, y)
+    this.chart.moveTo(x + width / 2 + 1, y + height)
+    this.chart.lineTo(x + width + h, y + height)
     this.chart.ctx.stroke()
   }
 }

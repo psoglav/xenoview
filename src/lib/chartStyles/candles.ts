@@ -51,18 +51,18 @@ export class Candles extends ChartStyle {
   }
 
   drawCandleBody(
-    left: number,
-    top: number,
-    right: number,
-    bottom: number,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
     type: string
   ) {
     this.chart.ctx.beginPath()
     this.chart.ctx.rect(
-      Math.round(left) + 0.5,
-      Math.round(top) + 0.5,
-      Math.round(right) + 1,
-      Math.round(bottom)
+      Math.round(x) + 0.5,
+      Math.round(y) + 0.5,
+      Math.round(width) + 1,
+      Math.round(height)
     )
     this.chart.ctx.fillStyle = this.chart.options.candles?.colors[type]
     this.chart.ctx.fill()
