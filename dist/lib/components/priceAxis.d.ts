@@ -7,9 +7,9 @@ export default class PriceAxis extends Component {
     bindEventListeners(): void;
     createCanvas(): void;
     drawLabels(): void;
-    drawPriceMarker(): void;
-    drawCurrentMarketPriceMarker(): void;
-    drawMarker(y: number, color: string, text: any): void;
+    drawPriceLabel(): void;
+    drawCurrentMarketPriceLabel(): void;
+    drawLabel(text: any, y: number, fgColor: string, bgColor?: string, fill?: boolean): void;
     zoom(dy: number): void;
     update(): void;
 }

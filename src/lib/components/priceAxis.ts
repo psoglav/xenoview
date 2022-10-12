@@ -45,21 +45,17 @@ export default class PriceAxis extends Component {
       this.chart.moveTo(0, y, this.ctx)
       this.chart.lineTo(this.chart.getWidth(this.ctx), y, this.ctx)
 
-      let fz = 11
-      this.ctx.fillStyle = this.chart.options.textColor
-      this.ctx.font = fz + 'px Verdana'
-      this.ctx.fillText(i.toFixed(2), 10, y - 2 + fz / 2)
+      this.drawLabel(i.toFixed(2), y, this.chart.options.textColor)
     }
   }
 
-  drawPriceMarker() {
+  drawPriceLabel() {
     let y = this.chart.mousePosition.y - this.chart.canvasRect.top
     let price = this.chart.normalizeToPrice(y).toFixed(2)
-
-    this.drawMarker(y, this.chart.options.pointer.bgColor, price)
+    this.drawLabel(price, y, 'white', this.chart.options.pointer.bgColor, true)
   }
 
-  drawCurrentMarketPriceMarker() {
+  drawLastPriceLabel() {
     let data = this.chart.history
     if (!data || !data.length) return
     let point = data[data.length - 1]
@@ -83,22 +79,44 @@ export default class PriceAxis extends Component {
 
     this.chart.ctx.setLineDash([])
 
-    this.drawMarker(y, color, point.close.toFixed(2))
+    this.drawLabel(point.close.toFixed(2), y, 'white', color, true)
   }
 
-  drawMarker(y: number, color: string, text: any) {
-    this.ctx.beginPath()
-    this.ctx.fillStyle = color
-    this.ctx.strokeStyle = color
-    this.ctx.lineWidth = 8
-    this.ctx.lineJoin = 'round'
-    this.ctx.rect(4, y - 6, this.chart.getWidth(this.ctx), 16)
-    this.ctx.stroke()
-    this.ctx.fill()
-    this.ctx.closePath()
-    this.ctx.fillStyle = 'white'
+  drawLabel(
+    text: any,
+    y: number,
+    fgColor: string,
+    bgColor?: string,
+    fill?: boolean
+  ) {
+    if (bgColor) {
+      this.ctx.beginPath()
+      this.ctx.strokeStyle = bgColor
+      this.ctx.lineJoin = 'round'
+
+      if (fill) {
+        this.ctx.lineWidth = 8
+        this.ctx.fillStyle = bgColor
+        this.ctx.rect(4, y - 5, this.chart.getWidth(this.ctx), 12)
+      } else {
+        this.ctx.lineWidth = 1
+        this.ctx.fillStyle = this.chart.options.bgColor
+        this.ctx.rect(
+          4 + 0.5,
+          Math.round(y) - 8.5,
+          this.chart.getWidth(this.ctx),
+          20
+        )
+      }
+
+      this.ctx.fill()
+      this.ctx.stroke()
+      this.ctx.closePath()
+    }
+
+    this.ctx.fillStyle = fgColor
     this.ctx.font = '11px Verdana'
-    this.ctx.fillText(text, 10, y + 5.5)
+    this.ctx.fillText(text, 10, y + 5)
   }
 
   zoom(dy: number) {
@@ -111,10 +129,10 @@ export default class PriceAxis extends Component {
   update() {
     this.chart.clear(this.ctx)
     this.drawLabels()
-    this.drawCurrentMarketPriceMarker()
+    this.drawLastPriceLabel()
 
     if (this.chart.pointer.isVisible) {
-      this.drawPriceMarker()
+      this.drawPriceLabel()
     }
   }
 }
