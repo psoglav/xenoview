@@ -9,8 +9,6 @@ class Candles extends core_1.ChartStyle {
         this.empty = false;
     }
     draw() {
-        this.chart.getTopHistoryPrice();
-        this.chart.getBottomHistoryPrice();
         this.drawCandles();
     }
     drawCandles() {

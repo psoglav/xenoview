@@ -8,8 +8,6 @@ class Area extends line_1.Line {
         this.bars = false;
     }
     draw() {
-        this.chart.getTopHistoryPrice();
-        this.chart.getBottomHistoryPrice();
         this.drawArea();
         this.drawLine();
         this.drawLivePoint();

@@ -55,10 +55,11 @@ class Chart extends _1.ChartData {
     loadHistory(value) {
         this.transform.reset();
         this.history = value;
-        this.visiblePoints = null;
         this.chartData = this.normalizeData();
         this.initUIElements();
         this.loading(false);
+        this.getHighestPrice();
+        this.getLowestPrice();
         this.draw();
     }
     setTicker(ticker) {
@@ -214,7 +215,6 @@ class Chart extends _1.ChartData {
         if (this.options.autoScale) {
             this.boundingRect.top = 0;
             this.boundingRect.bottom = this.mainCanvasHeight;
-            this.filterVisiblePointsAndCache();
             this.draw();
         }
     }
@@ -292,6 +292,10 @@ class Chart extends _1.ChartData {
     }
     draw() {
         this.clear(this.ctx);
+        if (this.options.autoScale) {
+            this.getHighestPrice();
+            this.getLowestPrice();
+        }
         if (!this.history) {
             this.loading(true);
         }

@@ -8,7 +8,6 @@ class Transform {
         this.chart = chart;
     }
     move(mx, my) {
-        var _a;
         this.boundingRect.top += my;
         this.boundingRect.bottom += my;
         if (this.boundingRect.right == this.chart.mainCanvasWidth - 200 && mx < 0)
@@ -18,12 +17,9 @@ class Transform {
         this.boundingRect.left += mx;
         this.boundingRect.right += mx;
         this.clamp();
-        if ((_a = this.chart.options) === null || _a === void 0 ? void 0 : _a.autoScale)
-            this.chart.filterVisiblePointsAndCache();
     }
     // TODO: Make the calculations simpler
     zoom(dx, dy, xOrigin) {
-        var _a;
         if (dx < 0 && this.chart.pointsGap < 1.7)
             return;
         if (dx > 0 && this.chart.pointsGap > 350)
@@ -46,8 +42,6 @@ class Transform {
             this.boundingRect.bottom -=
                 (((this.boundingRect.bottom - origin) / d) * dy) / 100;
         }
-        if ((_a = this.chart.options) === null || _a === void 0 ? void 0 : _a.autoScale)
-            this.chart.filterVisiblePointsAndCache();
     }
     reset(full) {
         this.boundingRect = {
@@ -58,7 +52,6 @@ class Transform {
         };
         if (full) {
             this.boundingRect.left = 0;
-            this.chart.filterVisiblePointsAndCache();
         }
     }
     clamp() {

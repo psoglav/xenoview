@@ -4,8 +4,8 @@ exports.ChartData = void 0;
 const utils_1 = require("../../utils");
 class ChartData {
     constructor() {
-        this.topHistoryPrice = [0, 0];
-        this.bottomHistoryPrice = [0, 0];
+        this.highestPrice = [0, 0];
+        this.lowestPrice = [0, 0];
     }
     get chartFullWidth() {
         return this.chart.boundingRect.right - this.chart.boundingRect.left;
@@ -51,7 +51,7 @@ class ChartData {
                 high: value.PRICE,
                 open: value.PRICE,
                 close: value.PRICE,
-                low: value.PRICE,
+                low: value.PRICE
             });
         }
         this.draw();
@@ -68,30 +68,32 @@ class ChartData {
             i = data.indexOf(value);
         return (this.chart.boundingRect.left + (this.chartFullWidth / data.length) * i);
     }
-    filterVisiblePoints(data) {
-        return data.filter((_, i) => {
-            let x = this.getPointX(i);
-            return x > 0 && x < this.chart.mainCanvasWidth;
-        });
+    get visibleRange() {
+        let left = this.chart.boundingRect.left, width = this.chart.mainCanvasWidth, start = Math.round((left * -1) / this.pointsGap), end = Math.round((left * -1 + width) / this.pointsGap);
+        end = Math.min(end, this.history.length - 1);
+        return [start, end];
     }
-    filterVisiblePointsAndCache() {
-        if (!this.history)
-            return [];
-        this.visiblePoints = this.filterVisiblePoints(this.history);
-        return this.visiblePoints;
+    get visiblePoints() {
+        return this.history.slice(...this.visibleRange);
+    }
+    get lastPoint() {
+        return this.history[this.history.length - 1];
+    }
+    get lastVisiblePoint() {
+        return this.history[this.visibleRange[1]];
     }
     normalizeToPrice(y) {
         let minY = this.chart.boundingRect.bottom;
         let maxY = this.chart.boundingRect.top;
-        let minPrice = this.bottomHistoryPrice[1];
-        let maxPrice = this.topHistoryPrice[1];
+        let minPrice = this.lowestPrice[1];
+        let maxPrice = this.highestPrice[1];
         return minPrice + (0, utils_1.normalizeTo)(y, minY, maxY, minPrice, maxPrice);
     }
     normalizeToY(price) {
         let minY = this.chart.boundingRect.bottom;
         let maxY = this.chart.boundingRect.top;
-        let minPrice = this.bottomHistoryPrice[1];
-        let maxPrice = this.topHistoryPrice[1];
+        let minPrice = this.lowestPrice[1];
+        let maxPrice = this.highestPrice[1];
         return minY + (0, utils_1.normalizeTo)(price, minPrice, maxPrice, minY, maxY);
     }
     normalizePoint(point) {
@@ -101,39 +103,39 @@ class ChartData {
         let hist = this.history;
         if (!(hist === null || hist === void 0 ? void 0 : hist.length))
             return [];
-        return hist.map((point) => this.normalizePoint(point));
+        return hist.map(point => this.normalizePoint(point));
     }
-    getTopHistoryPrice() {
-        let history = this.visiblePoints || this.filterVisiblePointsAndCache();
-        history = history.map(({ high }) => high);
-        let max = history[0];
+    getHighestPrice() {
+        let history = this.visiblePoints;
+        let { high } = history[0];
+        let max = high;
         let i = 0;
         history.forEach((p, ii) => {
-            if (p > max) {
-                max = p;
+            if (p.high > max) {
+                max = p.high;
                 i = ii;
             }
         });
-        this.topHistoryPrice = [i, max];
-        return this.topHistoryPrice;
+        this.highestPrice = [i, max];
+        return this.highestPrice;
     }
-    getBottomHistoryPrice() {
-        let history = this.visiblePoints || this.filterVisiblePointsAndCache();
-        history = history.map(({ low }) => low);
-        let min = history[0];
+    getLowestPrice() {
+        let history = this.visiblePoints;
+        let { low } = history[0];
+        let min = low;
         let i = 0;
         history.forEach((p, ii) => {
-            if (p < min) {
-                min = p;
+            if (p.low < min) {
+                min = p.low;
                 i = ii;
             }
         });
-        this.bottomHistoryPrice = [i, min];
-        return this.bottomHistoryPrice;
+        this.lowestPrice = [i, min];
+        return this.lowestPrice;
     }
     getGridRows() {
-        let t = this.topHistoryPrice[1];
-        let b = this.bottomHistoryPrice[1];
+        let t = this.highestPrice[1];
+        let b = this.lowestPrice[1];
         if (t == 0 && b == 0)
             return [];
         t = Math.floor(t / 10) * 10;
@@ -162,7 +164,7 @@ class ChartData {
             result.push((i / length) * delta + b);
         }
         let prev = 0;
-        return result.filter((i) => {
+        return result.filter(i => {
             let y = this.normalizeToY(i);
             let py = this.normalizeToY(prev);
             if (py - y < 30 && y != py) {
@@ -176,7 +178,7 @@ class ChartData {
         let prev = 0;
         return this.history
             .map((_, i) => i)
-            .filter((i) => {
+            .filter(i => {
             let x = this.getPointX(i);
             let px = this.getPointX(prev);
             if (x - px < 100 && x != px) {

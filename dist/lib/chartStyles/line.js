@@ -8,8 +8,6 @@ class Line extends core_1.ChartStyle {
         this.bars = false;
     }
     draw() {
-        this.chart.getTopHistoryPrice();
-        this.chart.getBottomHistoryPrice();
         this.drawLine();
         this.drawLivePoint();
     }

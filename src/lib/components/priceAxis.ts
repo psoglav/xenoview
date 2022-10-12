@@ -55,6 +55,26 @@ export default class PriceAxis extends Component {
     this.drawLabel(price, y, 'white', this.chart.options.pointer.bgColor, true)
   }
 
+  drawLastVisiblePrice() {
+    let last = this.chart.lastPoint
+
+    if (this.chart.getPointX(last) < this.chart.mainCanvasWidth) return
+
+    let lastVisible = this.chart.lastVisiblePoint
+    if (lastVisible == last)
+      lastVisible = this.chart.history[this.chart.history.length - 2]
+    let my = this.chart.normalizeToY(last.close)
+    let y = this.chart.normalizeToY(lastVisible.close)
+
+    if (y > my) y = Math.max(y, my + 21)
+    else if (y < my) y = Math.min(y, my - 21)
+
+    let type = lastVisible.close < lastVisible.open ? 'lower' : 'higher'
+    let color = this.chart.options.candles.colors[type]
+
+    this.drawLabel(lastVisible.close, y, color, color)
+  }
+
   drawLastPrice() {
     let data = this.chart.history
     if (!data || !data.length) return
@@ -130,6 +150,7 @@ export default class PriceAxis extends Component {
     this.chart.clear(this.ctx)
     this.drawGridLabels()
     this.drawLastPrice()
+    this.drawLastVisiblePrice()
 
     if (this.chart.pointer.isVisible) {
       this.drawPointerPrice()

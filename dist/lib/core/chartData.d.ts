@@ -2,9 +2,8 @@ import { Chart } from './chart';
 export declare abstract class ChartData {
     history: History.Data;
     chartData: History.Data;
-    visiblePoints: History.Data;
-    topHistoryPrice: [number, number];
-    bottomHistoryPrice: [number, number];
+    highestPrice: [number, number];
+    lowestPrice: [number, number];
     private chart;
     get chartFullWidth(): number;
     get pointsGap(): number;
@@ -21,14 +20,16 @@ export declare abstract class ChartData {
      * @returns {number} X position
      */
     getPointX(value: any): number;
-    filterVisiblePoints(data: any[]): any[];
-    filterVisiblePointsAndCache(): History.Data;
+    get visibleRange(): number[];
+    get visiblePoints(): History.Point[];
+    get lastPoint(): History.Point;
+    get lastVisiblePoint(): History.Point;
     normalizeToPrice(y: number): number;
     normalizeToY(price: number): number;
     normalizePoint(point: History.Point): History.Point;
     normalizeData(): History.Data;
-    getTopHistoryPrice(): [number, number];
-    getBottomHistoryPrice(): [number, number];
+    getHighestPrice(): [number, number];
+    getLowestPrice(): [number, number];
     getGridRows(): any[];
     getGridColumns(): number[];
     abstract draw(): void;

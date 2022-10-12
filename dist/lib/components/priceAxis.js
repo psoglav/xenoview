@@ -31,7 +31,7 @@ class PriceAxis extends core_1.Component {
         this.chart.container.appendChild(this.canvas);
         this.chart.rescale(this.ctx);
     }
-    drawLabels() {
+    drawGridLabels() {
         let rows = this.chart.getGridRows();
         for (let i of rows) {
             let y = this.chart.normalizeToY(i);
@@ -40,12 +40,29 @@ class PriceAxis extends core_1.Component {
             this.drawLabel(i.toFixed(2), y, this.chart.options.textColor);
         }
     }
-    drawPriceLabel() {
+    drawPointerPrice() {
         let y = this.chart.mousePosition.y - this.chart.canvasRect.top;
         let price = this.chart.normalizeToPrice(y).toFixed(2);
         this.drawLabel(price, y, 'white', this.chart.options.pointer.bgColor, true);
     }
-    drawCurrentMarketPriceLabel() {
+    drawLastVisiblePrice() {
+        let last = this.chart.lastPoint;
+        if (this.chart.getPointX(last) < this.chart.mainCanvasWidth)
+            return;
+        let lastVisible = this.chart.lastVisiblePoint;
+        if (lastVisible == last)
+            lastVisible = this.chart.history[this.chart.history.length - 2];
+        let my = this.chart.normalizeToY(last.close);
+        let y = this.chart.normalizeToY(lastVisible.close);
+        if (y > my)
+            y = Math.max(y, my + 21);
+        else if (y < my)
+            y = Math.min(y, my - 21);
+        let type = lastVisible.close < lastVisible.open ? 'lower' : 'higher';
+        let color = this.chart.options.candles.colors[type];
+        this.drawLabel(lastVisible.close, y, color, color);
+    }
+    drawLastPrice() {
         let data = this.chart.history;
         if (!data || !data.length)
             return;
@@ -80,7 +97,7 @@ class PriceAxis extends core_1.Component {
             else {
                 this.ctx.lineWidth = 1;
                 this.ctx.fillStyle = this.chart.options.bgColor;
-                this.ctx.rect(4 + 0.5, Math.round(y) - 8.5, this.chart.getWidth(this.ctx), 20);
+                this.ctx.rect(0.5, Math.round(y) - 8.5, this.chart.getWidth(this.ctx) - 1, 20);
             }
             this.ctx.fill();
             this.ctx.stroke();
@@ -98,10 +115,11 @@ class PriceAxis extends core_1.Component {
     }
     update() {
         this.chart.clear(this.ctx);
-        this.drawLabels();
-        this.drawCurrentMarketPriceLabel();
+        this.drawGridLabels();
+        this.drawLastPrice();
+        this.drawLastVisiblePrice();
         if (this.chart.pointer.isVisible) {
-            this.drawPriceLabel();
+            this.drawPointerPrice();
         }
     }
 }
