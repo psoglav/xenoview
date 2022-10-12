@@ -8,9 +8,12 @@ class Candles extends core_1.ChartStyle {
         this.bars = true;
     }
     draw() {
-        var _a, _b, _c, _d;
         this.chart.getTopHistoryPrice();
         this.chart.getBottomHistoryPrice();
+        this.drawCandles();
+    }
+    drawCandles() {
+        var _a;
         let data = this.chart.history;
         this.chart.moveTo(this.chart.boundingRect.left - 10, this.chart.mainCanvasHeight);
         for (let i = 0; i < data.length; i++) {
@@ -21,26 +24,26 @@ class Candles extends core_1.ChartStyle {
                 break;
             else if (x < -halfCandle)
                 continue;
-            let { close, open, low, high } = data[i];
-            close = this.chart.normalizeToY(close);
-            open = this.chart.normalizeToY(open);
-            low = this.chart.normalizeToY(low);
-            high = this.chart.normalizeToY(high);
-            let candleColor = close > open
-                ? (_b = (_a = this.chart.options.candles) === null || _a === void 0 ? void 0 : _a.colors) === null || _b === void 0 ? void 0 : _b.lower
-                : (_d = (_c = this.chart.options.candles) === null || _c === void 0 ? void 0 : _c.colors) === null || _d === void 0 ? void 0 : _d.higher;
+            let { close, open, low, high } = this.chart.normalizePoint(data[i]);
+            let color = (_a = this.chart.options.candles) === null || _a === void 0 ? void 0 : _a.colors[close > open ? 'lower' : 'higher'];
             this.chart.ctx.beginPath();
-            this.chart.lineTo(x, high);
-            this.chart.lineTo(x, low);
-            this.chart.ctx.strokeStyle = candleColor;
-            this.chart.ctx.stroke();
-            if (halfCandle > 1.1) {
-                this.chart.rect(x - gap / 4 - 1, open, gap / 2, close - open);
-                this.chart.ctx.fillStyle = candleColor;
-                this.chart.ctx.fill();
+            this.drawCandleStick(x, high, low, color);
+            if (halfCandle > 1) {
+                this.drawCandleBody(x - gap / 4 - 1, open, gap / 2, close - open, color);
             }
             this.chart.ctx.closePath();
         }
+    }
+    drawCandleStick(x, top, bottom, color) {
+        this.chart.moveTo(x, top);
+        this.chart.lineTo(x, bottom);
+        this.chart.ctx.strokeStyle = color;
+        this.chart.ctx.stroke();
+    }
+    drawCandleBody(left, top, right, bottom, color) {
+        this.chart.rect(left, top, right, bottom);
+        this.chart.ctx.fillStyle = color;
+        this.chart.ctx.fill();
     }
 }
 exports.Candles = Candles;

@@ -10,7 +10,10 @@ export class Candles extends ChartStyle {
   draw() {
     this.chart.getTopHistoryPrice()
     this.chart.getBottomHistoryPrice()
+    this.drawCandles()
+  }
 
+  drawCandles() {
     let data = this.chart.history
 
     this.chart.moveTo(
@@ -28,33 +31,39 @@ export class Candles extends ChartStyle {
       if (x > this.chart.mainCanvasWidth + halfCandle) break
       else if (x < -halfCandle) continue
 
-      let { close, open, low, high } = data[i]
+      let { close, open, low, high } = this.chart.normalizePoint(data[i])
 
-      close = this.chart.normalizeToY(close)
-      open = this.chart.normalizeToY(open)
-      low = this.chart.normalizeToY(low)
-      high = this.chart.normalizeToY(high)
-
-      let candleColor =
-        close > open
-          ? this.chart.options.candles?.colors?.lower
-          : this.chart.options.candles?.colors?.higher
+      let color =
+        this.chart.options.candles?.colors[close > open ? 'lower' : 'higher']
 
       this.chart.ctx.beginPath()
 
-      this.chart.lineTo(x, high)
-      this.chart.lineTo(x, low)
+      this.drawCandleStick(x, high, low, color)
 
-      this.chart.ctx.strokeStyle = candleColor
-      this.chart.ctx.stroke()
-
-      if (halfCandle > 1.1) {
-        this.chart.rect(x - gap / 4 - 1, open, gap / 2, close - open)
-        this.chart.ctx.fillStyle = candleColor
-        this.chart.ctx.fill()
+      if (halfCandle > 1) {
+        this.drawCandleBody(x - gap / 4 - 1, open, gap / 2, close - open, color)
       }
 
       this.chart.ctx.closePath()
     }
+  }
+
+  drawCandleStick(x: number, top: number, bottom: number, color: string) {
+    this.chart.moveTo(x, top)
+    this.chart.lineTo(x, bottom)
+    this.chart.ctx.strokeStyle = color
+    this.chart.ctx.stroke()
+  }
+
+  drawCandleBody(
+    left: number,
+    top: number,
+    right: number,
+    bottom: number,
+    color: string
+  ) {
+    this.chart.rect(left, top, right, bottom)
+    this.chart.ctx.fillStyle = color
+    this.chart.ctx.fill()
   }
 }
