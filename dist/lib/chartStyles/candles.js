@@ -13,7 +13,6 @@ class Candles extends core_1.ChartStyle {
         this.chart.getBottomHistoryPrice();
         let data = this.chart.history;
         this.chart.moveTo(this.chart.boundingRect.left - 10, this.chart.mainCanvasHeight);
-        console.log(this.chart.pointsGap);
         for (let i = 0; i < data.length; i++) {
             let x = Math.round(this.chart.boundingRect.left + i * this.chart.pointsGap);
             let halfCandle = this.chart.pointsGap / 4;

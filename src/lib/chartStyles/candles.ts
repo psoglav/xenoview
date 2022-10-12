@@ -18,8 +18,6 @@ export class Candles extends ChartStyle {
       this.chart.mainCanvasHeight
     )
 
-    console.log(this.chart.pointsGap)
-
     for (let i = 0; i < data.length; i++) {
       let x = Math.round(
         this.chart.boundingRect.left + i * this.chart.pointsGap

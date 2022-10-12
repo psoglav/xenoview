@@ -1,9 +1,8 @@
-import { Chart, ChartStyle } from '../core';
-export declare class Area extends ChartStyle {
+import { Chart } from '../core';
+import { Line } from './line';
+export declare class Area extends Line {
     bars: boolean;
     constructor(chart: Chart);
     draw(): void;
-    drawLivePoint(): void;
-    drawLine(): void;
     drawArea(): void;
 }
