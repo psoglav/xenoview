@@ -54,20 +54,9 @@ export default class PriceAxis extends Component {
 
   drawPriceMarker() {
     let y = this.chart.mousePosition.y - this.chart.canvasRect.top
-    let price = this.chart.normalizeToPrice(y)
+    let price = this.chart.normalizeToPrice(y).toFixed(2)
 
-    this.ctx.beginPath()
-    this.ctx.fillStyle = this.chart.options.pointer.bgColor
-    this.ctx.strokeStyle = this.chart.options.pointer.bgColor
-    this.ctx.lineWidth = 8
-    this.ctx.lineJoin = 'round'
-    this.ctx.rect(4, y - 6, this.chart.getWidth(this.ctx), 16)
-    this.ctx.stroke()
-    this.ctx.fill()
-    this.ctx.closePath()
-    this.ctx.fillStyle = 'white'
-    this.ctx.font = '11px Verdana'
-    this.ctx.fillText(price.toFixed(2), 10, y + 5.5)
+    this.drawMarker(y, this.chart.options.pointer.bgColor, price)
   }
 
   drawCurrentMarketPriceMarker() {
@@ -87,25 +76,29 @@ export default class PriceAxis extends Component {
     this.chart.ctx.strokeStyle = color
     this.chart.ctx.setLineDash([1, 2])
     this.chart.ctx.beginPath()
-    this.chart.ctx.moveTo(0, y + 2)
-    this.chart.ctx.lineTo(this.chart.mainCanvasWidth, y + 2)
+    this.chart.moveTo(0, y)
+    this.chart.lineTo(this.chart.mainCanvasWidth, y)
     this.chart.ctx.closePath()
     this.chart.ctx.stroke()
 
     this.chart.ctx.setLineDash([])
 
+    this.drawMarker(y, color, point.close.toFixed(2))
+  }
+
+  drawMarker(y: number, color: string, text: any) {
     this.ctx.beginPath()
     this.ctx.fillStyle = color
     this.ctx.strokeStyle = color
     this.ctx.lineWidth = 8
     this.ctx.lineJoin = 'round'
-    this.ctx.rect(4, y - 7, this.chart.getWidth(this.ctx), 16)
-    this.ctx.fill()
+    this.ctx.rect(4, y - 6, this.chart.getWidth(this.ctx), 16)
     this.ctx.stroke()
+    this.ctx.fill()
     this.ctx.closePath()
     this.ctx.fillStyle = 'white'
     this.ctx.font = '11px Verdana'
-    this.ctx.fillText(point.close.toFixed(2), 10, y + 5.5)
+    this.ctx.fillText(text, 10, y + 5.5)
   }
 
   zoom(dy: number) {
