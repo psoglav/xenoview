@@ -11,19 +11,32 @@ export class Line extends ChartStyle {
     this.chart.getTopHistoryPrice()
     this.chart.getBottomHistoryPrice()
 
+    this.drawLine()
+    this.drawLivePoint()
+  }
+
+  drawLivePoint() {
     let data = this.chart.history
+    let x =
+      this.chart.boundingRect.left + (data.length - 1) * this.chart.pointsGap
+    let y = this.chart.normalizeToY(data[data.length - 1].close)
+    this.chart.ctx.fillStyle = this.chart.options.line.color
+    this.chart.circle(x, y, 3)
+    this.chart.ctx.fill()
+  }
 
-    this.chart.ctx.strokeStyle = this.chart.options.line.color
-    this.chart.ctx.lineWidth = this.chart.options.line.width
+  drawLine() {
+    let data = this.chart.history
+    let ctx = this.chart.ctx
 
-    this.chart.moveTo(
-      this.chart.boundingRect.left - 10,
-      this.chart.mainCanvasHeight
-    )
+    ctx.strokeStyle = this.chart.options.line.color
+    ctx.lineWidth = this.chart.options.line.width
+
+    ctx.beginPath()
 
     for (let i = 0; i < data.length - 1; i++) {
-      let x1 = this.chart.boundingRect.left + i * this.chart.pointsGap
-      let x2 = this.chart.boundingRect.left + (i + 1) * this.chart.pointsGap
+      var x1 = this.chart.boundingRect.left + i * this.chart.pointsGap
+      var x2 = this.chart.boundingRect.left + (i + 1) * this.chart.pointsGap
 
       if (x1 > this.chart.mainCanvasWidth) break
       else if (x2 < 0) continue
@@ -34,20 +47,13 @@ export class Line extends ChartStyle {
       c1 = this.chart.normalizeToY(c1)
       c2 = this.chart.normalizeToY(c2)
 
-      this.chart.ctx.beginPath()
-
       this.chart.lineTo(x1, c1)
       this.chart.lineTo(x2, c2)
-
-      this.chart.ctx.stroke()
-
-      this.chart.ctx.closePath()
-
-      this.chart.ctx.fillStyle = this.chart.options.candles.colors.higher
-
-      if (i == data.length - 2) this.chart.circle(x2, c2, 3)
     }
 
-    this.chart.ctx.lineWidth = 1
+    ctx.stroke()
+    ctx.closePath()
+
+    ctx.lineWidth = 1
   }
 }
