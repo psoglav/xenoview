@@ -1,3 +1,4 @@
+import { createContext } from 'vm'
 import { Chart, ChartStyle } from '../core'
 
 export class Area extends ChartStyle {
@@ -32,6 +33,7 @@ export class Area extends ChartStyle {
 
     ctx.strokeStyle = this.chart.options.line.color
     ctx.lineWidth = this.chart.options.line.width
+    ctx.lineJoin = 'round'
 
     ctx.beginPath()
 

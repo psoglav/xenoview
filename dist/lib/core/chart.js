@@ -267,6 +267,8 @@ class Chart extends _1.ChartData {
         if (!ctx)
             ctx = this.ctx;
         ctx.beginPath();
+        x = this.getSharpPixel(Math.round(x) + 0.5, ctx);
+        y = this.getSharpPixel(Math.round(y) + 0.5, ctx);
         ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
         ctx.fill();
         ctx.stroke();

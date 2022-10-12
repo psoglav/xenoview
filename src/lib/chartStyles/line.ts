@@ -31,6 +31,7 @@ export class Line extends ChartStyle {
 
     ctx.strokeStyle = this.chart.options.line.color
     ctx.lineWidth = this.chart.options.line.width
+    ctx.lineJoin = 'round'
 
     ctx.beginPath()
 

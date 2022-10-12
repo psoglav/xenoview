@@ -26,6 +26,7 @@ class Line extends core_1.ChartStyle {
         let ctx = this.chart.ctx;
         ctx.strokeStyle = this.chart.options.line.color;
         ctx.lineWidth = this.chart.options.line.width;
+        ctx.lineJoin = 'round';
         ctx.beginPath();
         for (let i = 0; i < data.length - 1; i++) {
             var x1 = this.chart.boundingRect.left + i * this.chart.pointsGap;

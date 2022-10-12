@@ -58,7 +58,11 @@ export default class PriceAxis extends Component {
 
     this.ctx.beginPath()
     this.ctx.fillStyle = this.chart.options.pointer.bgColor
-    this.chart.rect(0, y - 10, this.chart.getWidth(this.ctx), 20, this.ctx)
+    this.ctx.strokeStyle = this.chart.options.pointer.bgColor
+    this.ctx.lineWidth = 8
+    this.ctx.lineJoin = 'round'
+    this.ctx.rect(4, y - 6, this.chart.getWidth(this.ctx), 16)
+    this.ctx.stroke()
     this.ctx.fill()
     this.ctx.closePath()
     this.ctx.fillStyle = 'white'
@@ -92,8 +96,12 @@ export default class PriceAxis extends Component {
 
     this.ctx.beginPath()
     this.ctx.fillStyle = color
-    this.chart.rect(0, y - 10, this.chart.getWidth(this.ctx), 20, this.ctx)
+    this.ctx.strokeStyle = color
+    this.ctx.lineWidth = 8
+    this.ctx.lineJoin = 'round'
+    this.ctx.rect(4, y - 7, this.chart.getWidth(this.ctx), 16)
     this.ctx.fill()
+    this.ctx.stroke()
     this.ctx.closePath()
     this.ctx.fillStyle = 'white'
     this.ctx.font = '11px Verdana'
