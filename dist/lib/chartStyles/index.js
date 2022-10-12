@@ -18,6 +18,7 @@ exports.createChartStyle = void 0;
 __exportStar(require("./candles"), exports);
 __exportStar(require("./line"), exports);
 __exportStar(require("./area"), exports);
+__exportStar(require("./bars"), exports);
 const _1 = require(".");
 function createChartStyle(chart) {
     switch (chart.options.style) {
@@ -27,6 +28,8 @@ function createChartStyle(chart) {
             return new _1.Line(chart);
         case 'area':
             return new _1.Area(chart);
+        case 'bars':
+            return new _1.Bars(chart);
     }
 }
 exports.createChartStyle = createChartStyle;

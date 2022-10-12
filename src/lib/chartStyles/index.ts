@@ -1,8 +1,9 @@
 export * from './candles'
 export * from './line'
 export * from './area'
+export * from './bars'
 
-import { Candles, Line, Area } from '.'
+import { Candles, Line, Area, Bars } from '.'
 import { Chart, ChartStyle } from '../core'
 
 export function createChartStyle(chart: Chart): ChartStyle {
@@ -13,5 +14,7 @@ export function createChartStyle(chart: Chart): ChartStyle {
       return new Line(chart)
       case 'area':
       return new Area(chart)
+      case 'bars':
+      return new Bars(chart)
   }
 }
