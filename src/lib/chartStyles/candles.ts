@@ -2,6 +2,7 @@ import { Chart, ChartStyle } from '../core'
 
 export class Candles extends ChartStyle {
   bars = true
+  empty = false
 
   constructor(chart: Chart) {
     super(chart)
@@ -16,11 +17,6 @@ export class Candles extends ChartStyle {
   drawCandles() {
     let data = this.chart.history
 
-    this.chart.moveTo(
-      this.chart.boundingRect.left - 10,
-      this.chart.mainCanvasHeight
-    )
-
     for (let i = 0; i < data.length; i++) {
       let x = Math.round(
         this.chart.boundingRect.left + i * this.chart.pointsGap
@@ -33,26 +29,25 @@ export class Candles extends ChartStyle {
 
       let { close, open, low, high } = this.chart.normalizePoint(data[i])
 
-      let color =
-        this.chart.options.candles?.colors[close > open ? 'lower' : 'higher']
+      let type = close > open ? 'lower' : 'higher'
 
-      this.chart.ctx.beginPath()
-
-      this.drawCandleStick(x, high, low, color)
-
-      if (halfCandle > 1) {
-        this.drawCandleBody(x - gap / 4 - 1, open, gap / 2, close - open, color)
+      if (this.empty && halfCandle > 1) {
+        this.drawCandleStick(x, high, Math.min(open, close), type)
+        this.drawCandleStick(x, Math.max(open, close), low, type)
+        this.drawCandleBody(x - gap / 4 - 1, open, gap / 2, close - open, type)
+      } else {
+        this.drawCandleStick(x, high, low, type)
       }
-
-      this.chart.ctx.closePath()
     }
   }
 
-  drawCandleStick(x: number, top: number, bottom: number, color: string) {
-    this.chart.moveTo(x, top)
-    this.chart.lineTo(x, bottom)
-    this.chart.ctx.strokeStyle = color
+  drawCandleStick(x: number, top: number, bottom: number, type: string) {
+    this.chart.ctx.beginPath()
+    this.chart.ctx.moveTo(Math.round(x)+0.5, top)
+    this.chart.ctx.lineTo(Math.round(x)+0.5, bottom+.5)
+    this.chart.ctx.strokeStyle = this.chart.options.candles?.colors[type]
     this.chart.ctx.stroke()
+    this.chart.ctx.closePath()
   }
 
   drawCandleBody(
@@ -60,10 +55,18 @@ export class Candles extends ChartStyle {
     top: number,
     right: number,
     bottom: number,
-    color: string
+    type: string
   ) {
-    this.chart.rect(left, top, right, bottom)
-    this.chart.ctx.fillStyle = color
+    this.chart.ctx.beginPath()
+    this.chart.ctx.rect(
+      Math.round(left) + 0.5,
+      Math.round(top) + 0.5,
+      Math.round(right) + 1,
+      Math.round(bottom)
+    )
+    this.chart.ctx.fillStyle = this.chart.options.candles?.colors[type]
     this.chart.ctx.fill()
+    this.chart.ctx.stroke()
+    this.chart.ctx.closePath()
   }
 }

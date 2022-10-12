@@ -19,6 +19,7 @@ __exportStar(require("./candles"), exports);
 __exportStar(require("./line"), exports);
 __exportStar(require("./area"), exports);
 __exportStar(require("./bars"), exports);
+__exportStar(require("./hollowCandles"), exports);
 const _1 = require(".");
 function createChartStyle(chart) {
     switch (chart.options.style) {
@@ -30,6 +31,8 @@ function createChartStyle(chart) {
             return new _1.Area(chart);
         case 'bars':
             return new _1.Bars(chart);
+        case 'hollow-candles':
+            return new _1.HollowCandles(chart);
     }
 }
 exports.createChartStyle = createChartStyle;

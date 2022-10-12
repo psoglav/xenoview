@@ -6,6 +6,7 @@ class Candles extends core_1.ChartStyle {
     constructor(chart) {
         super(chart);
         this.bars = true;
+        this.empty = false;
     }
     draw() {
         this.chart.getTopHistoryPrice();
@@ -13,9 +14,7 @@ class Candles extends core_1.ChartStyle {
         this.drawCandles();
     }
     drawCandles() {
-        var _a;
         let data = this.chart.history;
-        this.chart.moveTo(this.chart.boundingRect.left - 10, this.chart.mainCanvasHeight);
         for (let i = 0; i < data.length; i++) {
             let x = Math.round(this.chart.boundingRect.left + i * this.chart.pointsGap);
             let halfCandle = this.chart.pointsGap / 4;
@@ -25,25 +24,34 @@ class Candles extends core_1.ChartStyle {
             else if (x < -halfCandle)
                 continue;
             let { close, open, low, high } = this.chart.normalizePoint(data[i]);
-            let color = (_a = this.chart.options.candles) === null || _a === void 0 ? void 0 : _a.colors[close > open ? 'lower' : 'higher'];
-            this.chart.ctx.beginPath();
-            this.drawCandleStick(x, high, low, color);
-            if (halfCandle > 1) {
-                this.drawCandleBody(x - gap / 4 - 1, open, gap / 2, close - open, color);
+            let type = close > open ? 'lower' : 'higher';
+            if (this.empty && halfCandle > 1) {
+                this.drawCandleStick(x, high, Math.min(open, close), type);
+                this.drawCandleStick(x, Math.max(open, close), low, type);
+                this.drawCandleBody(x - gap / 4 - 1, open, gap / 2, close - open, type);
             }
-            this.chart.ctx.closePath();
+            else {
+                this.drawCandleStick(x, high, low, type);
+            }
         }
     }
-    drawCandleStick(x, top, bottom, color) {
-        this.chart.moveTo(x, top);
-        this.chart.lineTo(x, bottom);
-        this.chart.ctx.strokeStyle = color;
+    drawCandleStick(x, top, bottom, type) {
+        var _a;
+        this.chart.ctx.beginPath();
+        this.chart.ctx.moveTo(Math.round(x) + 0.5, top);
+        this.chart.ctx.lineTo(Math.round(x) + 0.5, bottom + .5);
+        this.chart.ctx.strokeStyle = (_a = this.chart.options.candles) === null || _a === void 0 ? void 0 : _a.colors[type];
         this.chart.ctx.stroke();
+        this.chart.ctx.closePath();
     }
-    drawCandleBody(left, top, right, bottom, color) {
-        this.chart.rect(left, top, right, bottom);
-        this.chart.ctx.fillStyle = color;
+    drawCandleBody(left, top, right, bottom, type) {
+        var _a;
+        this.chart.ctx.beginPath();
+        this.chart.ctx.rect(Math.round(left) + 0.5, Math.round(top) + 0.5, Math.round(right) + 1, Math.round(bottom));
+        this.chart.ctx.fillStyle = (_a = this.chart.options.candles) === null || _a === void 0 ? void 0 : _a.colors[type];
         this.chart.ctx.fill();
+        this.chart.ctx.stroke();
+        this.chart.ctx.closePath();
     }
 }
 exports.Candles = Candles;
