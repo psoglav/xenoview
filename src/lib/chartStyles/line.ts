@@ -1,6 +1,8 @@
 import { Chart, ChartStyle } from '../core'
 
 export class Line extends ChartStyle {
+  bars = false
+
   constructor(chart: Chart) {
     super(chart)
   }

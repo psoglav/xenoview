@@ -1,6 +1,8 @@
 import { Chart, ChartStyle } from '../core'
 
 export class Candles extends ChartStyle {
+  bars = true
+
   constructor(chart: Chart) {
     super(chart)
   }
