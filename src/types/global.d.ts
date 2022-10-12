@@ -27,7 +27,7 @@ declare global {
   }
 
   export namespace Chart {
-    type StyleName = 'candles' | 'line'
+    type StyleName = 'candles' | 'line' | 'area'
     interface Options {
       style?: Chart.StyleName,
       bgColor?: string

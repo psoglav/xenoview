@@ -17,6 +17,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createChartStyle = void 0;
 __exportStar(require("./candles"), exports);
 __exportStar(require("./line"), exports);
+__exportStar(require("./area"), exports);
 const _1 = require(".");
 function createChartStyle(chart) {
     switch (chart.options.style) {
@@ -24,6 +25,8 @@ function createChartStyle(chart) {
             return new _1.Candles(chart);
         case 'line':
             return new _1.Line(chart);
+        case 'area':
+            return new _1.Area(chart);
     }
 }
 exports.createChartStyle = createChartStyle;

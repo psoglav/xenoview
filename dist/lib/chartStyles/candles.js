@@ -5,6 +5,7 @@ const core_1 = require("../core");
 class Candles extends core_1.ChartStyle {
     constructor(chart) {
         super(chart);
+        this.bars = true;
     }
     draw() {
         var _a, _b, _c, _d;

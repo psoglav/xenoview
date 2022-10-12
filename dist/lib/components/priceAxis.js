@@ -62,7 +62,7 @@ class PriceAxis extends core_1.Component {
         let { close, open } = this.chart.normalizePoint(point);
         let y = close;
         let color = this.chart.options.line.color;
-        if (this.chart.options.style != 'line') {
+        if (this.chart.style.bars) {
             let type = close < open ? 'higher' : 'lower';
             color = this.chart.options.candles.colors[type];
         }
