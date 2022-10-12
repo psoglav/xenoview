@@ -8,9 +8,6 @@ export class Line extends ChartStyle {
   }
 
   draw() {
-    this.chart.getTopHistoryPrice()
-    this.chart.getBottomHistoryPrice()
-
     this.drawLine()
     this.drawLivePoint()
   }

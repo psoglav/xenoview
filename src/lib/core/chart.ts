@@ -80,10 +80,11 @@ export class Chart extends ChartData {
   loadHistory(value: History.Data) {
     this.transform.reset()
     this.history = value
-    this.visiblePoints = null
     this.chartData = this.normalizeData()
     this.initUIElements()
     this.loading(false)
+    this.getHighestPrice()
+    this.getLowestPrice()
     this.draw()
   }
 
@@ -308,7 +309,6 @@ export class Chart extends ChartData {
     if (this.options.autoScale) {
       this.boundingRect.top = 0
       this.boundingRect.bottom = this.mainCanvasHeight
-      this.filterVisiblePointsAndCache()
       this.draw()
     }
   }
@@ -417,6 +417,11 @@ export class Chart extends ChartData {
   draw(): void {
     this.clear(this.ctx)
 
+    if (this.options.autoScale) {
+      this.getHighestPrice()
+      this.getLowestPrice()
+    }
+
     if (!this.history) {
       this.loading(true)
     } else {
@@ -426,7 +431,6 @@ export class Chart extends ChartData {
       this.priceAxis.update()
       this.style.draw()
       this.pointer.update()
-
       this.ui.draw()
     }
   }

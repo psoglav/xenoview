@@ -5,10 +5,9 @@ import { Chart } from './chart'
 export abstract class ChartData {
   history: History.Data
   chartData: History.Data
-  visiblePoints: History.Data
 
-  topHistoryPrice: [number, number] = [0, 0]
-  bottomHistoryPrice: [number, number] = [0, 0]
+  highestPrice: [number, number] = [0, 0]
+  lowestPrice: [number, number] = [0, 0]
 
   private chart: Chart
 
@@ -28,7 +27,7 @@ export abstract class ChartData {
 
   updatePoint(
     point: History.Point,
-    value: { PRICE: number; LASTUPDATE: number },
+    value: { PRICE: number; LASTUPDATE: number }
   ) {
     point.close = value.PRICE
     point.time = value.LASTUPDATE
@@ -68,7 +67,7 @@ export abstract class ChartData {
         high: value.PRICE,
         open: value.PRICE,
         close: value.PRICE,
-        low: value.PRICE,
+        low: value.PRICE
       })
     }
 
@@ -89,25 +88,33 @@ export abstract class ChartData {
     )
   }
 
-  filterVisiblePoints(data: any[]) {
-    return data.filter((_, i) => {
-      let x: number = this.getPointX(i)
-      return x > 0 && x < this.chart.mainCanvasWidth
-    })
+  get visibleRange(): number[] {
+    let left = this.chart.boundingRect.left,
+      width = this.chart.mainCanvasWidth,
+      start = Math.round((left * -1) / this.pointsGap),
+      end = Math.round((left * -1 + width) / this.pointsGap)
+    end = Math.min(end, this.history.length - 1)
+    return [start, end]
   }
 
-  filterVisiblePointsAndCache() {
-    if (!this.history) return []
-    this.visiblePoints = this.filterVisiblePoints(this.history)
-    return this.visiblePoints
+  get visiblePoints() {
+    return this.history.slice(...this.visibleRange)
+  }
+
+  get lastPoint(): History.Point {
+    return this.history[this.history.length - 1]
+  }
+
+  get lastVisiblePoint(): History.Point {
+    return this.history[this.visibleRange[1]]
   }
 
   normalizeToPrice(y: number) {
     let minY = this.chart.boundingRect.bottom
     let maxY = this.chart.boundingRect.top
 
-    let minPrice = this.bottomHistoryPrice[1]
-    let maxPrice = this.topHistoryPrice[1]
+    let minPrice = this.lowestPrice[1]
+    let maxPrice = this.highestPrice[1]
 
     return minPrice + normalizeTo(y, minY, maxY, minPrice, maxPrice)
   }
@@ -116,8 +123,8 @@ export abstract class ChartData {
     let minY = this.chart.boundingRect.bottom
     let maxY = this.chart.boundingRect.top
 
-    let minPrice = this.bottomHistoryPrice[1]
-    let maxPrice = this.topHistoryPrice[1]
+    let minPrice = this.lowestPrice[1]
+    let maxPrice = this.highestPrice[1]
 
     return minY + normalizeTo(price, minPrice, maxPrice, minY, maxY)
   }
@@ -128,57 +135,57 @@ export abstract class ChartData {
       close: this.normalizeToY(point.close),
       open: this.normalizeToY(point.open),
       high: this.normalizeToY(point.high),
-      low: this.normalizeToY(point.low),
+      low: this.normalizeToY(point.low)
     }
   }
 
   normalizeData(): History.Data {
     let hist = this.history
     if (!hist?.length) return []
-    return hist.map((point) => this.normalizePoint(point))
+    return hist.map(point => this.normalizePoint(point))
   }
 
-  getTopHistoryPrice(): [number, number] {
-    let history: any = this.visiblePoints || this.filterVisiblePointsAndCache()
-    history = history.map(({ high }) => high)
+  getHighestPrice(): [number, number] {
+    let history: any = this.visiblePoints
 
-    let max = history[0]
+    let { high } = history[0]
+    let max = high
     let i = 0
 
     history.forEach((p, ii) => {
-      if (p > max) {
-        max = p
+      if (p.high > max) {
+        max = p.high
         i = ii
       }
     })
 
-    this.topHistoryPrice = [i, max]
+    this.highestPrice = [i, max]
 
-    return this.topHistoryPrice
+    return this.highestPrice
   }
 
-  getBottomHistoryPrice(): [number, number] {
-    let history: any = this.visiblePoints || this.filterVisiblePointsAndCache()
-    history = history.map(({ low }) => low)
+  getLowestPrice(): [number, number] {
+    let history: any = this.visiblePoints
 
-    let min = history[0]
+    let { low } = history[0]
+    let min = low
     let i = 0
 
     history.forEach((p, ii) => {
-      if (p < min) {
-        min = p
+      if (p.low < min) {
+        min = p.low
         i = ii
       }
     })
 
-    this.bottomHistoryPrice = [i, min]
+    this.lowestPrice = [i, min]
 
-    return this.bottomHistoryPrice
+    return this.lowestPrice
   }
 
   getGridRows() {
-    let t = this.topHistoryPrice[1]
-    let b = this.bottomHistoryPrice[1]
+    let t = this.highestPrice[1]
+    let b = this.lowestPrice[1]
 
     if (t == 0 && b == 0) return []
 
@@ -216,7 +223,7 @@ export abstract class ChartData {
 
     let prev = 0
 
-    return result.filter((i) => {
+    return result.filter(i => {
       let y = this.normalizeToY(i)
       let py = this.normalizeToY(prev)
 
@@ -233,7 +240,7 @@ export abstract class ChartData {
     let prev = 0
     return this.history
       .map((_, i) => i)
-      .filter((i) => {
+      .filter(i => {
         let x = this.getPointX(i)
         let px = this.getPointX(prev)
 

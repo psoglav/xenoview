@@ -24,7 +24,6 @@ export class Transform {
     this.boundingRect.right += mx
 
     this.clamp()
-    if (this.chart.options?.autoScale) this.chart.filterVisiblePointsAndCache()
   }
 
   // TODO: Make the calculations simpler
@@ -55,8 +54,6 @@ export class Transform {
       this.boundingRect.bottom -=
         (((this.boundingRect.bottom - origin) / d) * dy) / 100
     }
-
-    if (this.chart.options?.autoScale) this.chart.filterVisiblePointsAndCache()
   }
 
   reset(full?: boolean) {
@@ -69,7 +66,6 @@ export class Transform {
 
     if (full) {
       this.boundingRect.left = 0
-      this.chart.filterVisiblePointsAndCache()
     }
   }
 

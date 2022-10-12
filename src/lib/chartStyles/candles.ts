@@ -9,8 +9,6 @@ export class Candles extends ChartStyle {
   }
 
   draw() {
-    this.chart.getTopHistoryPrice()
-    this.chart.getBottomHistoryPrice()
     this.drawCandles()
   }
 

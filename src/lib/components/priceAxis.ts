@@ -37,7 +37,7 @@ export default class PriceAxis extends Component {
     this.chart.rescale(this.ctx)
   }
 
-  drawLabels() {
+  drawGridLabels() {
     let rows = this.chart.getGridRows()
 
     for (let i of rows) {
@@ -49,13 +49,13 @@ export default class PriceAxis extends Component {
     }
   }
 
-  drawPriceLabel() {
+  drawPointerPrice() {
     let y = this.chart.mousePosition.y - this.chart.canvasRect.top
     let price = this.chart.normalizeToPrice(y).toFixed(2)
     this.drawLabel(price, y, 'white', this.chart.options.pointer.bgColor, true)
   }
 
-  drawLastPriceLabel() {
+  drawLastPrice() {
     let data = this.chart.history
     if (!data || !data.length) return
     let point = data[data.length - 1]
@@ -102,9 +102,9 @@ export default class PriceAxis extends Component {
         this.ctx.lineWidth = 1
         this.ctx.fillStyle = this.chart.options.bgColor
         this.ctx.rect(
-          4 + 0.5,
+          0.5,
           Math.round(y) - 8.5,
-          this.chart.getWidth(this.ctx),
+          this.chart.getWidth(this.ctx)-1,
           20
         )
       }
@@ -128,11 +128,11 @@ export default class PriceAxis extends Component {
 
   update() {
     this.chart.clear(this.ctx)
-    this.drawLabels()
-    this.drawLastPriceLabel()
+    this.drawGridLabels()
+    this.drawLastPrice()
 
     if (this.chart.pointer.isVisible) {
-      this.drawPriceLabel()
+      this.drawPointerPrice()
     }
   }
 }

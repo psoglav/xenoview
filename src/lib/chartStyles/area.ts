@@ -9,9 +9,6 @@ export class Area extends Line {
   }
 
   draw() {
-    this.chart.getTopHistoryPrice()
-    this.chart.getBottomHistoryPrice()
-
     this.drawArea()
     this.drawLine()
     this.drawLivePoint()
