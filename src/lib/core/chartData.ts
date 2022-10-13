@@ -98,7 +98,7 @@ export abstract class ChartData {
   }
 
   get visiblePoints() {
-    return this.history.slice(...this.visibleRange)
+    return this.history?.slice(...this.visibleRange)
   }
 
   get lastPoint(): History.Point {
@@ -145,42 +145,23 @@ export abstract class ChartData {
     return hist.map(point => this.normalizePoint(point))
   }
 
-  getHighestPrice(): [number, number] {
+  getHighestAndLowestPrice() {
     let history: any = this.visiblePoints
 
-    let { high } = history[0]
-    let max = high
-    let i = 0
+    if (!history) return
+    
+    let { high, low } = history[0]
+    this.highestPrice = [0, high]
+    this.lowestPrice = [0, low]
 
-    history.forEach((p, ii) => {
-      if (p.high > max) {
-        max = p.high
-        i = ii
+    history.forEach((p, i) => {
+      if (p.high > this.highestPrice[1]) {
+        this.highestPrice = [i, p.high]
+      }
+      if (p.low < this.lowestPrice[1]) {
+        this.lowestPrice = [i, p.low]
       }
     })
-
-    this.highestPrice = [i, max]
-
-    return this.highestPrice
-  }
-
-  getLowestPrice(): [number, number] {
-    let history: any = this.visiblePoints
-
-    let { low } = history[0]
-    let min = low
-    let i = 0
-
-    history.forEach((p, ii) => {
-      if (p.low < min) {
-        min = p.low
-        i = ii
-      }
-    })
-
-    this.lowestPrice = [i, min]
-
-    return this.lowestPrice
   }
 
   getGridRows() {

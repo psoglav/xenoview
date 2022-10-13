@@ -58,8 +58,7 @@ class Chart extends _1.ChartData {
         this.chartData = this.normalizeData();
         this.initUIElements();
         this.loading(false);
-        this.getHighestPrice();
-        this.getLowestPrice();
+        this.getHighestAndLowestPrice();
         this.draw();
     }
     setTicker(ticker) {
@@ -293,8 +292,7 @@ class Chart extends _1.ChartData {
     draw() {
         this.clear(this.ctx);
         if (this.options.autoScale) {
-            this.getHighestPrice();
-            this.getLowestPrice();
+            this.getHighestAndLowestPrice();
         }
         if (!this.history) {
             this.loading(true);

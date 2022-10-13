@@ -28,8 +28,7 @@ export declare abstract class ChartData {
     normalizeToY(price: number): number;
     normalizePoint(point: History.Point): History.Point;
     normalizeData(): History.Data;
-    getHighestPrice(): [number, number];
-    getLowestPrice(): [number, number];
+    getHighestAndLowestPrice(): void;
     getGridRows(): any[];
     getGridColumns(): number[];
     abstract draw(): void;
