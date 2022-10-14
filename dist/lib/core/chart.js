@@ -68,6 +68,10 @@ class Chart extends _1.ChartData {
             this.updateCurrentPoint(ticker.state);
         }, 500);
     }
+    setStyle(value) {
+        this.options.style = value;
+        this.style = (0, chartStyles_1.createChartStyle)(this);
+    }
     createChart() {
         const preventDefault = function (e) {
             e.preventDefault();

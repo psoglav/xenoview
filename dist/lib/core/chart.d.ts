@@ -24,6 +24,7 @@ export declare class Chart extends ChartData {
     constructor(container: HTMLElement | string, options?: Chart.Options);
     loadHistory(value: History.Data): void;
     setTicker(ticker: Ticker): void;
+    setStyle(value: Chart.StyleName): void;
     createChart(): void;
     loading(value: boolean): void;
     createChartLayout(container: HTMLElement | string): void;

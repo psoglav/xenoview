@@ -95,6 +95,11 @@ export class Chart extends ChartData {
     }, 500)
   }
 
+  setStyle(value: Chart.StyleName) {
+    this.options.style = value
+    this.style = createChartStyle(this)
+  }
+
   createChart() {
     const preventDefault = function (e: Event) {
       e.preventDefault()
