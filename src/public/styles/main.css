@@ -16,7 +16,7 @@
 }
 .chart-container {
   width: 100%;
-  min-height: 150px;
+  height: 100%;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;

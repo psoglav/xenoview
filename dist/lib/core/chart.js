@@ -98,17 +98,20 @@ class Chart extends _1.ChartData {
         this.container.classList.add('chart-container');
         this.container.innerHTML = '';
         this.container.style.display = 'grid';
-        this.container.style.position = 'relative';
+        this.container.style.position = 'absolute';
+        this.container.style.top = '0';
+        this.container.style.left = '0';
         this.container.style.grid = '1fr 28px / 1fr 70px';
         this.createChart();
         let rect = this.container.getBoundingClientRect();
         this.setSize(rect.width - 70, rect.height - 28, this.canvas);
-        window.addEventListener('resize', () => {
+        const observer = new ResizeObserver(() => {
             rect = this.container.getBoundingClientRect();
             this.setSize(rect.width - 70, rect.height - 28, this.canvas);
             this.transform.clamp();
             this.draw();
         });
+        observer.observe(this.container);
         this.container.appendChild(this.canvas);
         this.rescale(this.ctx);
         this.ui = new _1.UI();
