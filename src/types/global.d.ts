@@ -29,7 +29,7 @@ declare global {
   export namespace Chart {
     type StyleName = 'candles' | 'line' | 'area' | 'bars' | 'hollow-candles'
     interface Options {
-      style?: Chart.StyleName,
+      style?: Chart.StyleName
       bgColor?: string
       textColor?: string
       autoScale?: boolean
@@ -67,6 +67,18 @@ declare global {
     }
     type Data = number[]
     type Container = Element | string
+  }
+
+  export namespace Ticker {
+    type Listener = (state: Ticker.State) => void
+    type State = {
+      PRICE: number
+      LASTUPDATE: number
+      open: number
+      high: number
+      low: number
+      close: number
+    }
   }
 
   export namespace History {

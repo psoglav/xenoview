@@ -5,6 +5,7 @@ const utils_1 = require("../utils");
 class Ticker {
     constructor(symbol, apiKey) {
         this.ws = null;
+        this.listeners = [];
         this.apiKey = '';
         this.sym = symbol;
         this.apiKey = apiKey;
@@ -24,7 +25,7 @@ class Ticker {
         let params = {
             fsym: symbol,
             tsym: 'USD',
-            tryConversion: false,
+            tryConversion: false
         };
         if (limit)
             params.limit = limit;
@@ -34,8 +35,8 @@ class Ticker {
         let response = await fetch(`https://min-api.cryptocompare.com/data/v2/histo${interval}?${q}`, {
             method: 'GET',
             headers: {
-                Authorization: 'Apikey ' + this.apiKey,
-            },
+                Authorization: 'Apikey ' + this.apiKey
+            }
         });
         return (await response.json()).Data.Data;
     }
@@ -57,8 +58,9 @@ class Ticker {
                     open: +data.k.o,
                     high: +data.k.h,
                     low: +data.k.l,
-                    close: +data.k.c,
+                    close: +data.k.c
                 };
+                this.listeners.forEach(cb => cb(this.state));
             }
         };
         this.ws.onclose = () => {
@@ -70,7 +72,7 @@ class Ticker {
         this.ws.onopen = () => {
             let subRequest = {
                 action: 'SubAdd',
-                subs: [`2~Coinbase~${symbol}~USD`],
+                subs: [`2~Coinbase~${symbol}~USD`]
             };
             this.ws.send(JSON.stringify(subRequest));
         };
@@ -80,6 +82,9 @@ class Ticker {
                 this.state = data;
             }
         };
+    }
+    addListener(cb) {
+        this.listeners.push(cb);
     }
 }
 exports.Ticker = Ticker;

@@ -1,15 +1,9 @@
 declare type HistoryInterval = 'day' | 'hour' | 'minute';
 export declare class Ticker {
-    state: {
-        PRICE: number;
-        LASTUPDATE: number;
-        open: number;
-        high: number;
-        low: number;
-        close: number;
-    } | undefined;
+    state: Ticker.State;
     sym: string;
     private ws;
+    private listeners;
     private apiKey;
     constructor(symbol: string, apiKey?: string);
     get currency(): any;
@@ -19,5 +13,6 @@ export declare class Ticker {
     init(): void;
     initBinance(): void;
     initCryptoCompare(symbol: string): void;
+    addListener(cb: Ticker.Listener): void;
 }
 export {};

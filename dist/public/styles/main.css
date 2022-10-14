@@ -16,5 +16,5 @@
 }
 .chart-container {
   width: 100%;
-  height: 600px;
+  min-height: 150px;
 }/*# sourceMappingURL=main.css.map */
