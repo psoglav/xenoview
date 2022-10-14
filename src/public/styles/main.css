@@ -17,4 +17,8 @@
 .chart-container {
   width: 100%;
   min-height: 150px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 }/*# sourceMappingURL=main.css.map */
