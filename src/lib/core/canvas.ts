@@ -152,7 +152,7 @@ export class Canvas {
     canvas.height = h
   }
 
-  rescale(ctx: CanvasRenderingContext2D) {
+  rescale(ctx?: CanvasRenderingContext2D) {
     let _ctx = ctx || this.ctx
     let pixelRatio = this.getPixelRatio(_ctx)
     let width = _ctx.canvas.clientWidth * pixelRatio
