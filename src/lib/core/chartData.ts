@@ -149,7 +149,7 @@ export abstract class ChartData {
     let history: any = this.visiblePoints
 
     if (!history) return
-    
+
     let { high, low } = history[0]
     this.highestPrice = [0, high]
     this.lowestPrice = [0, low]

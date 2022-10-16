@@ -1,4 +1,4 @@
-import { Chart } from '../core'
+import { Chart } from '../../../core'
 import { Candles } from './candles'
 
 export class Bars extends Candles {

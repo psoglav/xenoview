@@ -1,4 +1,5 @@
-import { Chart, ChartStyle } from '../core'
+import { Chart } from '../../../core'
+import ChartStyle from '../../../components/chart-style/chartStyle'
 
 export class Candles extends ChartStyle {
   bars = true
@@ -8,7 +9,7 @@ export class Candles extends ChartStyle {
     super(chart)
   }
 
-  draw() {
+  update() {
     this.drawCandles()
   }
 

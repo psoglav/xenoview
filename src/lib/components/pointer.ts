@@ -1,4 +1,4 @@
-import { Chart, Component } from '../core'
+import { Chart, Component, Canvas } from '../core'
 
 type PointerPosition = {
   x: number
@@ -40,18 +40,15 @@ export default class Pointer extends Component {
     this.position.y = this.chart.mousePosition.y
   }
 
-  update() {
+  update(canvas: Canvas) {
     if (!this.chart.chartData?.length || !this.isVisible) return
-
-    this.chart.ctx.strokeStyle = this.chart.options.pointer.fgColor
-
-    this.draw()
+    canvas.ctx.strokeStyle = this.chart.options.pointer.fgColor
+    this.draw(canvas.ctx)
   }
 
-  draw() {
-    let ctx = this.chart.ctx
-    let w = this.chart.mainCanvasWidth
-    let h = this.chart.mainCanvasHeight
+  draw(ctx: CanvasRenderingContext2D) {
+    let w = ctx.canvas.clientWidth
+    let h = ctx.canvas.clientHeight
     let x =
       Math.round(
         this.chart.boundingRect.left +
@@ -64,7 +61,7 @@ export default class Pointer extends Component {
           this.chart.canvasRect.top
       ) + 0.5
 
-    this.chart.ctx.setLineDash([5, 5])
+    ctx.setLineDash([5, 5])
 
     ctx.beginPath()
     ctx.moveTo(x, 0)
@@ -78,7 +75,7 @@ export default class Pointer extends Component {
     ctx.closePath()
     ctx.stroke()
 
-    this.chart.ctx.lineDashOffset = 0
-    this.chart.ctx.setLineDash([])
+    ctx.lineDashOffset = 0
+    ctx.setLineDash([])
   }
 }

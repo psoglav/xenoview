@@ -64,6 +64,8 @@ declare global {
       right: number
       top: number
       bottom: number
+      offsetX: number
+      offsetY: number
     }
     type Data = number[]
     type Container = Element | string

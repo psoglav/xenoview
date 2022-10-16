@@ -5,7 +5,8 @@ export * from './bars'
 export * from './hollowCandles'
 
 import { Candles, Line, Area, Bars, HollowCandles } from '.'
-import { Chart, ChartStyle } from '../core'
+import { Chart } from '@/lib/core'
+import { ChartStyle } from '@/lib/components'
 
 export function createChartStyle(chart: Chart): ChartStyle {
   switch (chart.options.style) {

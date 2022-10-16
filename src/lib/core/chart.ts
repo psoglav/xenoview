@@ -1,7 +1,7 @@
 import { Ticker } from '../ticker'
-import { Pointer, PriceAxis, TimeAxis, Loader } from '../components'
-import { ChartData, Transform, ChartStyle, UI, Label, UIElementGroup } from '.'
-import { createChartStyle } from '../chartStyles'
+import { Pointer, PriceAxis, TimeAxis, Loader, ChartStyle } from '../components'
+import { ChartData, Transform, ChartLayout, UI, Label, UIElementGroup } from '.'
+import { createChartStyle } from '../components/chart-style/styles'
 
 import '../../public/styles/main.css'
 
@@ -28,12 +28,18 @@ const defaultChartOptions: Chart.Options = {
 }
 
 export class Chart extends ChartData {
-  container: HTMLElement | undefined
-  canvas: HTMLCanvasElement
+  layout: ChartLayout
+
+  get chartLayer() {
+    return this.layout.layers.chart
+  }
+
+  get uiLayer() {
+    return this.layout.layers.ui
+  }
 
   options: Chart.Options = defaultChartOptions
 
-  style: ChartStyle
   ticker: Ticker
   ui: UI
 
@@ -46,7 +52,15 @@ export class Chart extends ChartData {
   loader: Loader
 
   get ctx(): CanvasRenderingContext2D {
-    return this.canvas.getContext('2d')
+    return this.layout.layers.chart.ctx
+  }
+
+  get canvas(): HTMLCanvasElement {
+    return this.layout.layers.chart.canvas
+  }
+
+  get container(): HTMLElement {
+    return this.layout.layoutContainer
   }
 
   get boundingRect(): Chart.BoundingRect {
@@ -57,22 +71,31 @@ export class Chart extends ChartData {
     this.transform.boundingRect = value
   }
 
+  get components() {
+    return {
+      ...this.uiLayer.components,
+      ...this.chartLayer.components
+    }
+  }
+
+  get style() {
+    return this.chartLayer.components.style as ChartStyle
+  }
+
   constructor(container: HTMLElement | string, options?: Chart.Options) {
     super()
     this.initData(this)
 
     if (options) this.options = { ...this.options, ...options }
 
-    this.createChartLayout(container)
+    this.layout = new ChartLayout(this, container)
 
-    this.style = createChartStyle(this)
+    this.transform = new Transform(this)
 
-    this.pointer = new Pointer(this)
+    this.pointer = <Pointer>this.components.pointer
     this.priceAxis = new PriceAxis(this)
     this.timeAxis = new TimeAxis(this)
     this.loader = new Loader(this)
-
-    this.transform = new Transform(this)
 
     this.bindEventListeners()
   }
@@ -81,7 +104,7 @@ export class Chart extends ChartData {
     this.transform.reset()
     this.history = value
     this.chartData = this.normalizeData()
-    this.initUIElements()
+    // this.initUIElements()
     this.loading(false)
     this.getHighestAndLowestPrice()
     this.draw()
@@ -97,73 +120,11 @@ export class Chart extends ChartData {
 
   setStyle(value: Chart.StyleName) {
     this.options.style = value
-    this.style = createChartStyle(this)
-  }
-
-  createChart() {
-    const preventDefault = function (e: Event) {
-      e.preventDefault()
-      e.stopPropagation()
-    }
-
-    this.canvas.oncontextmenu = preventDefault
-    this.canvas.onwheel = preventDefault
-
-    this.canvas.style.gridArea = '1 / 1 / 2 / 2'
-    this.canvas.style.width = '100%'
-    this.canvas.style.height = '100%'
-    this.canvas.style.cursor = 'crosshair'
-    this.canvas.style.transition = 'opacity .5s ease'
-
-    this.rescale(this.ctx)
+    this.chartLayer.components.style = createChartStyle(this)
   }
 
   loading(value: boolean) {
     this.loader.isActive = value
-  }
-
-  createChartLayout(container: HTMLElement | string) {
-    this.canvas = document.createElement('canvas')
-
-    this.ctx.lineWidth = 1 * this.getPixelRatio(this.ctx)
-
-    if (typeof container === 'string') {
-      this.container = document.querySelector<HTMLElement>(container)!
-    }
-
-    if (!this.container) {
-      this.error('no container is found')
-      return
-    }
-
-    this.container.classList.add('chart-container')
-    this.container.innerHTML = ''
-    this.container.style.display = 'grid'
-    this.container.style.position = 'absolute'
-    this.container.style.top = '0'
-    this.container.style.left = '0'
-
-    this.container.style.grid = '1fr 28px / 1fr 70px'
-
-    this.createChart()
-
-    let rect = this.container!.getBoundingClientRect()
-
-    this.setSize(rect.width - 70, rect.height - 28, this.canvas)
-
-    const observer = new ResizeObserver(() => {
-      rect = this.container!.getBoundingClientRect()
-      this.setSize(rect.width - 70, rect.height - 28, this.canvas)
-      this.transform.clamp()
-      this.draw()
-    })
-
-    observer.observe(this.container)
-
-    this.container!.appendChild(this.canvas)
-    this.rescale(this.ctx)
-
-    this.ui = new UI()
   }
 
   initUIElements() {
@@ -251,44 +212,44 @@ export class Chart extends ChartData {
 
     this.canvas.addEventListener('mouseleave', () => {
       this.pointer.isVisible = false
-      this.draw()
     })
 
-    this.canvas.addEventListener('mousedown', e => {
-      if (e.button == 0) {
-        e.preventDefault()
-        this.transform.isPanning = true
-      }
-    })
+    // this.canvas.addEventListener('mousedown', e => {
+    //   if (e.button == 0) {
+    //     e.preventDefault()
+    //     this.transform.isPanning = true
+    //   }
+    // })
 
     window.addEventListener('mousemove', e => {
       this.mousePosition.x = e.clientX
       this.mousePosition.y = e.clientY
 
-      if (this.transform.isPanning) {
-        let mx = e.movementX
-        let my = this.options.autoScale ? 0 : e.movementY
-        this.transform.move(mx, my)
-      }
+      // if (this.transform.isPanning) {
+      //   let mx = e.movementX
+      //   let my = this.options.autoScale ? 0 : e.movementY
+      //   this.transform.move(mx, my)
+      // }
 
       this.pointer.move()
-      this.draw()
+      this.uiLayer.update()
     })
 
-    window.addEventListener('mouseup', e => {
-      if (e.button == 0) {
-        this.transform.isPanning = false
-      }
-    })
+    // window.addEventListener('mouseup', e => {
+    //   if (e.button == 0) {
+    //     this.transform.isPanning = false
+    //   }
+    // })
 
     this.canvas.addEventListener('wheel', (e: any) => {
-      this.transform.zoom(
-        e.wheelDeltaY,
-        e.altKey ? -e.wheelDeltaY / 2 : 0,
-        e.ctrlKey ? this.mousePosition.x : null
-      )
+      // this.transform.zoom(
+      //   e.wheelDeltaY,
+      //   e.altKey ? -e.wheelDeltaY / 2 : 0,
+      //   e.ctrlKey ? this.mousePosition.x : null
+      // )
 
       this.pointer.move()
+      this.layout.layers.ui.update()
       this.draw()
     })
   }
@@ -302,11 +263,11 @@ export class Chart extends ChartData {
   }
 
   get mainCanvasWidth() {
-    return this.ctx.canvas.clientWidth
+    return this.canvas.clientWidth
   }
 
   get mainCanvasHeight() {
-    return this.ctx.canvas.clientHeight
+    return this.canvas.clientHeight
   }
 
   get canvasRect() {
@@ -426,6 +387,8 @@ export class Chart extends ChartData {
   draw(): void {
     this.clear(this.ctx)
 
+    console.log('chart: draw call')
+
     if (this.options.autoScale) {
       this.getHighestAndLowestPrice()
     }
@@ -437,9 +400,8 @@ export class Chart extends ChartData {
       this.drawGridRows()
       this.timeAxis.update()
       this.priceAxis.update()
-      this.style.draw()
-      this.pointer.update()
-      this.ui.draw()
+      this.layout.layers.chart.update()
+      // this.ui.draw()
     }
   }
 

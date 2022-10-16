@@ -1,4 +1,5 @@
 import { Chart, Component } from '../core'
+import ChartStyle from '../components/chart-style/chartStyle'
 
 export default class PriceAxis extends Component {
   public canvas: HTMLCanvasElement

@@ -10,6 +10,7 @@ export class Transform {
 
   constructor(chart: Chart) {
     this.chart = chart
+    this.reset()
   }
 
   move(mx: number, my: number) {
@@ -61,7 +62,9 @@ export class Transform {
       top: 35,
       bottom: this.chart.mainCanvasHeight - 35,
       left: this.chart.mainCanvasWidth * -10,
-      right: this.chart.mainCanvasWidth
+      right: this.chart.mainCanvasWidth,
+      offsetX: 0,
+      offsetY: 0
     }
 
     if (full) {
