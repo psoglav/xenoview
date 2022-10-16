@@ -42,44 +42,43 @@ export default class Pointer extends Component {
 
   update() {
     if (!this.chart.chartData?.length || !this.isVisible) return
+
     this.chart.ctx.strokeStyle = this.chart.options.pointer.fgColor
 
-    this.chart.ctx.setLineDash([5, 8])
-
-    this.drawVerticalLine()
-    this.drawHorizontalLine()
-
-    this.chart.ctx.setLineDash([])
+    this.draw()
   }
 
-  drawVerticalLine() {
+  draw() {
     let ctx = this.chart.ctx
-    let x = Math.round(
-      this.chart.boundingRect.left +
-        this.chart.pointsGap * this.focusedPointIndex
-    ) + 0.5
+    let w = this.chart.mainCanvasWidth
+    let h = this.chart.mainCanvasHeight
+    let x =
+      Math.round(
+        this.chart.boundingRect.left +
+          this.chart.pointsGap * this.focusedPointIndex
+      ) + 0.5
+    let y =
+      Math.round(
+        this.position.y +
+          (this.chart.mainCanvasHeight % 2) / 2 -
+          this.chart.canvasRect.top
+      ) + 0.5
 
-    this.chart.ctx.lineDashOffset = (this.chart.mainCanvasHeight % 2)
+    this.chart.ctx.setLineDash([5, 5])
 
     ctx.beginPath()
     ctx.moveTo(x, 0)
-    ctx.lineTo(x, this.chart.mainCanvasHeight)
+    ctx.lineTo(x, Math.max(w, h))
     ctx.closePath()
     ctx.stroke()
-    this.chart.ctx.lineDashOffset = 0
-  }
-
-  drawHorizontalLine() {
-    let ctx = this.chart.ctx
-    let y = Math.round((this.position.y + (this.chart.mainCanvasHeight % 2) / 2) - this.chart.canvasRect.top) + 0.5
-
-    this.chart.ctx.lineDashOffset = (this.chart.mainCanvasWidth % 2) / 2
 
     ctx.beginPath()
     ctx.moveTo(0, y)
-    ctx.lineTo(this.chart.mainCanvasWidth, y)
+    ctx.lineTo(Math.max(w, h), y)
     ctx.closePath()
     ctx.stroke()
+
     this.chart.ctx.lineDashOffset = 0
+    this.chart.ctx.setLineDash([])
   }
 }
