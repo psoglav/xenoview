@@ -1,7 +1,7 @@
 import { Ticker } from '../ticker'
-import { Pointer, PriceAxis, TimeAxis, Loader } from '../components'
-import { ChartData, Transform, ChartStyle, UI, Label, UIElementGroup } from '.'
-import { createChartStyle } from '../chartStyles'
+import { Pointer, Loader, ChartStyle } from '../components'
+import { ChartData, Transform, ChartLayout, UI, Label, UIElementGroup } from '.'
+import { createChartStyle } from '../components/chart-style/styles'
 
 import '../../public/styles/main.css'
 
@@ -28,25 +28,36 @@ const defaultChartOptions: Chart.Options = {
 }
 
 export class Chart extends ChartData {
-  container: HTMLElement | undefined
-  canvas: HTMLCanvasElement
+  layout: ChartLayout
+
+  get chartLayer() {
+    return this.layout.chartLayers.view
+  }
+
+  get uiLayer() {
+    return this.layout.chartLayers.ui
+  }
 
   options: Chart.Options = defaultChartOptions
 
-  style: ChartStyle
   ticker: Ticker
   ui: UI
 
   transform: Transform
   mousePosition = { x: 0, y: 0 }
 
-  pointer: Pointer
-  priceAxis: PriceAxis
-  timeAxis: TimeAxis
   loader: Loader
 
   get ctx(): CanvasRenderingContext2D {
-    return this.canvas.getContext('2d')
+    return this.chartLayer.ctx
+  }
+
+  get canvas(): HTMLCanvasElement {
+    return this.chartLayer.canvas
+  }
+
+  get container(): HTMLElement {
+    return this.layout.layoutContainer
   }
 
   get boundingRect(): Chart.BoundingRect {
@@ -57,39 +68,62 @@ export class Chart extends ChartData {
     this.transform.boundingRect = value
   }
 
+  get components() {
+    return {
+      ...this.uiLayer.components,
+      ...this.chartLayer.components
+    }
+  }
+
+  get style() {
+    return this.chartLayer.components.style as ChartStyle
+  }
+
+  get pointer() {
+    return this.components.pointer as Pointer
+  }
+
   constructor(container: HTMLElement | string, options?: Chart.Options) {
     super()
     this.initData(this)
 
     if (options) this.options = { ...this.options, ...options }
 
-    this.createChartLayout(container)
-
-    this.style = createChartStyle(this)
-
-    this.pointer = new Pointer(this)
-    this.priceAxis = new PriceAxis(this)
-    this.timeAxis = new TimeAxis(this)
+    this.layout = new ChartLayout(this, container)
+    this.transform = new Transform(this)
     this.loader = new Loader(this)
 
-    this.transform = new Transform(this)
-
     this.bindEventListeners()
+    this.render()
+  }
+
+  render() {
+    if (this.options.autoScale) {
+      this.getHighestAndLowestPrice()
+    }
+
+    if (!this.history) {
+      this.loading(true)
+    } else {
+      this.chartLayer.update()
+      this.uiLayer.update()
+      this.layout.priceAxisCanvas.update()
+      this.layout.timeAxisCanvas.update()
+    }
+
+    requestAnimationFrame(this.render.bind(this))
   }
 
   loadHistory(value: History.Data) {
     this.transform.reset()
     this.history = value
     this.chartData = this.normalizeData()
-    this.initUIElements()
     this.loading(false)
     this.getHighestAndLowestPrice()
-    this.draw()
   }
 
   setTicker(ticker: Ticker) {
     this.ticker = ticker
-    this.draw()
     setInterval(() => {
       this.updateCurrentPoint(ticker.state)
     }, 500)
@@ -97,73 +131,11 @@ export class Chart extends ChartData {
 
   setStyle(value: Chart.StyleName) {
     this.options.style = value
-    this.style = createChartStyle(this)
-  }
-
-  createChart() {
-    const preventDefault = function (e: Event) {
-      e.preventDefault()
-      e.stopPropagation()
-    }
-
-    this.canvas.oncontextmenu = preventDefault
-    this.canvas.onwheel = preventDefault
-
-    this.canvas.style.gridArea = '1 / 1 / 2 / 2'
-    this.canvas.style.width = '100%'
-    this.canvas.style.height = '100%'
-    this.canvas.style.cursor = 'crosshair'
-    this.canvas.style.transition = 'opacity .5s ease'
-
-    this.rescale(this.ctx)
+    this.chartLayer.components.style = createChartStyle(this)
   }
 
   loading(value: boolean) {
     this.loader.isActive = value
-  }
-
-  createChartLayout(container: HTMLElement | string) {
-    this.canvas = document.createElement('canvas')
-
-    this.ctx.lineWidth = 1 * this.getPixelRatio(this.ctx)
-
-    if (typeof container === 'string') {
-      this.container = document.querySelector<HTMLElement>(container)!
-    }
-
-    if (!this.container) {
-      this.error('no container is found')
-      return
-    }
-
-    this.container.classList.add('chart-container')
-    this.container.innerHTML = ''
-    this.container.style.display = 'grid'
-    this.container.style.position = 'absolute'
-    this.container.style.top = '0'
-    this.container.style.left = '0'
-
-    this.container.style.grid = '1fr 28px / 1fr 70px'
-
-    this.createChart()
-
-    let rect = this.container!.getBoundingClientRect()
-
-    this.setSize(rect.width - 70, rect.height - 28, this.canvas)
-
-    const observer = new ResizeObserver(() => {
-      rect = this.container!.getBoundingClientRect()
-      this.setSize(rect.width - 70, rect.height - 28, this.canvas)
-      this.transform.clamp()
-      this.draw()
-    })
-
-    observer.observe(this.container)
-
-    this.container!.appendChild(this.canvas)
-    this.rescale(this.ctx)
-
-    this.ui = new UI()
   }
 
   initUIElements() {
@@ -251,7 +223,6 @@ export class Chart extends ChartData {
 
     this.canvas.addEventListener('mouseleave', () => {
       this.pointer.isVisible = false
-      this.draw()
     })
 
     this.canvas.addEventListener('mousedown', e => {
@@ -272,7 +243,6 @@ export class Chart extends ChartData {
       }
 
       this.pointer.move()
-      this.draw()
     })
 
     window.addEventListener('mouseup', e => {
@@ -289,7 +259,6 @@ export class Chart extends ChartData {
       )
 
       this.pointer.move()
-      this.draw()
     })
   }
 
@@ -302,11 +271,11 @@ export class Chart extends ChartData {
   }
 
   get mainCanvasWidth() {
-    return this.ctx.canvas.clientWidth
+    return this.canvas.clientWidth
   }
 
   get mainCanvasHeight() {
-    return this.ctx.canvas.clientHeight
+    return this.canvas.clientHeight
   }
 
   get canvasRect() {
@@ -318,7 +287,6 @@ export class Chart extends ChartData {
     if (this.options.autoScale) {
       this.boundingRect.top = 0
       this.boundingRect.bottom = this.mainCanvasHeight
-      this.draw()
     }
   }
 
@@ -421,59 +389,5 @@ export class Chart extends ChartData {
     this.ctx.fillStyle = 'white'
     this.ctx.font = '12px Arial'
     this.ctx.fillText(text, x, y)
-  }
-
-  draw(): void {
-    this.clear(this.ctx)
-
-    if (this.options.autoScale) {
-      this.getHighestAndLowestPrice()
-    }
-
-    if (!this.history) {
-      this.loading(true)
-    } else {
-      this.drawGridColumns()
-      this.drawGridRows()
-      this.timeAxis.update()
-      this.priceAxis.update()
-      this.style.draw()
-      this.pointer.update()
-      this.ui.draw()
-    }
-  }
-
-  drawGridRows() {
-    let ctx = this.ctx
-    let rows = this.getGridRows()
-
-    ctx.beginPath()
-    ctx.strokeStyle = '#7777aa33'
-
-    for (let i of rows) {
-      let y = this.normalizeToY(i)
-      this.moveTo(0, y, ctx)
-      this.lineTo(this.getWidth(ctx), y, ctx)
-    }
-
-    ctx.stroke()
-    ctx.closePath()
-  }
-
-  drawGridColumns() {
-    let ctx = this.ctx
-    let cols = this.getGridColumns()
-
-    ctx.beginPath()
-    ctx.strokeStyle = '#7777aa33'
-
-    for (let i of cols) {
-      let x = this.getPointX(i)
-      this.moveTo(x, 0, ctx)
-      this.lineTo(x, this.mainCanvasHeight, ctx)
-    }
-
-    ctx.stroke()
-    ctx.closePath()
   }
 }

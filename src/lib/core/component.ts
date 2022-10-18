@@ -1,4 +1,4 @@
-import { Chart } from './chart'
+import { Chart, Canvas } from '.'
 
 export abstract class Component {
   chart: Chart
@@ -7,5 +7,5 @@ export abstract class Component {
     this.chart = chart
   }
 
-  abstract update(): void
+  abstract update(canvas: Canvas): void
 }
