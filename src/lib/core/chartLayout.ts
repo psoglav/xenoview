@@ -1,4 +1,4 @@
-import { Chart, UI, Canvas, CanvasOptions } from '.'
+import { Chart, Canvas } from '.'
 import { Pointer, Grid } from '../components'
 import { createChartStyle } from '../components/chart-style/styles'
 
@@ -44,8 +44,6 @@ export class ChartLayout {
       this.createChartContainer()
       this.createPriceContainer()
       this.createTimeContainer()
-
-      // this.chart.ui = new UI()
     }
   }
 
@@ -79,18 +77,9 @@ export class ChartLayout {
 
     this.layers.ui.canvas.style.pointerEvents = 'none'
 
-    let rect = el.getBoundingClientRect()
-
     const observer = new ResizeObserver(() => {
       if (!this.chart.transform) return
-      // rect = el.getBoundingClientRect()
-      //
-      // Object.values(this.layers).forEach(canvas => {
-      // canvas.fitToParent()
-      // })
-
       this.chart.transform.clamp()
-      // this.chart.draw()
     })
 
     observer.observe(el)
