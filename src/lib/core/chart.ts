@@ -46,15 +46,14 @@ export class Chart extends ChartData {
   transform: Transform
   mousePosition = { x: 0, y: 0 }
 
-  pointer: Pointer
   loader: Loader
 
   get ctx(): CanvasRenderingContext2D {
-    return this.layout.chartLayers.view.ctx
+    return this.chartLayer.ctx
   }
 
   get canvas(): HTMLCanvasElement {
-    return this.layout.chartLayers.view.canvas
+    return this.chartLayer.canvas
   }
 
   get container(): HTMLElement {
@@ -80,6 +79,10 @@ export class Chart extends ChartData {
     return this.chartLayer.components.style as ChartStyle
   }
 
+  get pointer() {
+    return this.components.pointer as Pointer
+  }
+
   constructor(container: HTMLElement | string, options?: Chart.Options) {
     super()
     this.initData(this)
@@ -87,20 +90,14 @@ export class Chart extends ChartData {
     if (options) this.options = { ...this.options, ...options }
 
     this.layout = new ChartLayout(this, container)
-
     this.transform = new Transform(this)
-
-    this.pointer = <Pointer>this.components.pointer
     this.loader = new Loader(this)
 
     this.bindEventListeners()
-
     this.render()
   }
 
   render() {
-    this.clear(this.ctx)
-
     if (this.options.autoScale) {
       this.getHighestAndLowestPrice()
     }
@@ -290,7 +287,6 @@ export class Chart extends ChartData {
     if (this.options.autoScale) {
       this.boundingRect.top = 0
       this.boundingRect.bottom = this.mainCanvasHeight
-      this.draw()
     }
   }
 
