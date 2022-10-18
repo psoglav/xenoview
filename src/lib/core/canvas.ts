@@ -2,35 +2,18 @@ import { Component } from '.'
 
 export type CanvasOptions = {
   container: HTMLElement
-  zIndex?: number
   components: {
     [name: string]: Component
   }
+  updateByRequest?: boolean
+  zIndex?: number
 }
 
 export class Canvas {
   options: CanvasOptions
   raw: HTMLCanvasElement
 
-  global = {
-    scale: 1,
-    offset: {
-      x: 0,
-      y: 0
-    }
-  }
-
-  pan = {
-    enabled: false,
-    start: {
-      x: 0,
-      y: 0
-    },
-    offset: {
-      x: 0,
-      y: 0
-    }
-  }
+  public needsUpdate: boolean = true
 
   get canvas() {
     return this.raw
@@ -91,12 +74,16 @@ export class Canvas {
   }
 
   update() {
-    this.rescale()
-    this.clear()
+    if (!this.options.updateByRequest || this.needsUpdate) {
+      this.rescale()
+      this.clear()
 
-    Object.values(this.options.components).forEach(component => {
-      component.update(this)
-    })
+      Object.values(this.options.components).forEach(component => {
+        component.update(this)
+      })
+
+      this.needsUpdate = false
+    }
   }
 
   clear() {

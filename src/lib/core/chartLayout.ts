@@ -64,6 +64,7 @@ export class ChartLayout {
     this.chartLayers.view = new Canvas({
       container: el,
       zIndex: 0,
+      // updateByRequest: true,
       components: {
         grid: new Grid(this.chart),
         style: createChartStyle(this.chart)
@@ -102,6 +103,7 @@ export class ChartLayout {
 
     this.priceAxisCanvas = new Canvas({
       container: el,
+      // updateByRequest: true,
       components: {
         priceAxis
       }

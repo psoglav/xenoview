@@ -9,6 +9,8 @@ export abstract class ChartData {
   highestPrice: [number, number] = [0, 0]
   lowestPrice: [number, number] = [0, 0]
 
+  renderedChartLength: number = 0
+
   private chart: Chart
 
   get chartFullWidth(): number {
@@ -70,13 +72,11 @@ export abstract class ChartData {
         low: value.PRICE
       })
     }
+
+    // this.chart.chartLayer.needsUpdate = true
+    // this.chart.layout.priceAxisCanvas.needsUpdate = true
   }
 
-  /**
-   * Get point X position.
-   * @param {number | History.Point} value a point or an index of it
-   * @returns {number} X position
-   */
   getPointX(value): number {
     let i = value
     let data = this.history
