@@ -12,7 +12,6 @@ export type CanvasOptions = {
 export class Canvas {
   options: CanvasOptions
   raw: HTMLCanvasElement
-  offscreenCanvas: HTMLCanvasElement
 
   global = {
     scale: 1,
@@ -35,7 +34,7 @@ export class Canvas {
   }
 
   get canvas() {
-    return this.offscreenCanvas || this.raw
+    return this.raw
   }
 
   get ctx() {
@@ -60,22 +59,10 @@ export class Canvas {
   }
 
   create() {
-    this.raw = this.createRawCanvas()
-
-    if (this.options.panning) {
-      this.offscreenCanvas = this.createRawCanvas()
-      // this.canvas.style.display = 'none'
-      this.raw.style.pointerEvents = 'none'
-      this.canvas.style.zIndex = (this.options.zIndex + 1).toString()
-      this.canvas.addEventListener('mousedown', this.startPan.bind(this))
-      this.canvas.addEventListener('mouseleave', this.endPan.bind(this))
-      this.canvas.addEventListener('mouseup', this.endPan.bind(this))
-      this.canvas.addEventListener('mousemove', this.trackMouse.bind(this))
-    this.canvas.addEventListener('mousemove', this.update.bind(this))
-    }
+    this.raw = this.createCanvas()
   }
 
-  private createRawCanvas() {
+  private createCanvas() {
     const preventDefault = function (e: Event) {
       e.preventDefault()
       e.stopPropagation()
@@ -108,8 +95,6 @@ export class Canvas {
     this.rescale()
     this.clear()
 
-    this.ctx.translate(this.pan.offset.x, this.pan.offset.y)
-
     Object.values(this.options.components).forEach(component => {
       component.update(this)
     })
@@ -117,28 +102,6 @@ export class Canvas {
 
   clear() {
     this.ctx.clearRect(0, 0, this.width, this.height)
-  }
-
-  private startPan(e: MouseEvent) {
-    this.pan.start.x = e.clientX
-    this.pan.start.y = e.clientY
-    this.pan.enabled = true
-  }
-
-  private endPan(e: MouseEvent) {
-    this.pan.start.x = null
-    this.pan.start.y = null
-    this.global.offset.x = this.pan.offset.x
-    this.global.offset.y = this.pan.offset.y
-    this.pan.enabled = false
-  }
-
-  private trackMouse(e: MouseEvent) {
-    if(!this.pan.enabled) return
-    let offsetX = e.clientX - this.pan.start.x
-    let offsetY = e.clientY - this.pan.start.y
-    this.pan.offset.x = this.global.offset.x + offsetX
-    this.pan.offset.y = this.global.offset.y + offsetY
   }
 
   fitToParent() {
