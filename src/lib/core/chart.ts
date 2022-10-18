@@ -112,8 +112,6 @@ export class Chart extends ChartData {
     if (!this.history) {
       this.loading(true)
     } else {
-      this.drawGridColumns()
-      this.drawGridRows()
       this.timeAxis.update()
       this.priceAxis.update()
       this.layout.layers.chart.update()
@@ -401,39 +399,5 @@ export class Chart extends ChartData {
     this.ctx.fillStyle = 'white'
     this.ctx.font = '12px Arial'
     this.ctx.fillText(text, x, y)
-  }
-
-  drawGridRows() {
-    let ctx = this.ctx
-    let rows = this.getGridRows()
-
-    ctx.beginPath()
-    ctx.strokeStyle = '#7777aa33'
-
-    for (let i of rows) {
-      let y = this.normalizeToY(i)
-      this.moveTo(0, y, ctx)
-      this.lineTo(this.getWidth(ctx), y, ctx)
-    }
-
-    ctx.stroke()
-    ctx.closePath()
-  }
-
-  drawGridColumns() {
-    let ctx = this.ctx
-    let cols = this.getGridColumns()
-
-    ctx.beginPath()
-    ctx.strokeStyle = '#7777aa33'
-
-    for (let i of cols) {
-      let x = this.getPointX(i)
-      this.moveTo(x, 0, ctx)
-      this.lineTo(x, this.mainCanvasHeight, ctx)
-    }
-
-    ctx.stroke()
-    ctx.closePath()
   }
 }

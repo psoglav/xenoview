@@ -1,6 +1,6 @@
 import { Chart, UI, Canvas, CanvasOptions } from '.'
-import { Pointer } from '../components'
-import { createChartStyle, Area } from '../components/chart-style/styles'
+import { Pointer, Grid } from '../components'
+import { createChartStyle } from '../components/chart-style/styles'
 
 export class ChartLayout {
   chart: Chart
@@ -64,6 +64,7 @@ export class ChartLayout {
       zIndex: 0,
       panning: true,
       components: {
+        grid: new Grid(this.chart),
         style: createChartStyle(this.chart)
       }
     })
