@@ -98,6 +98,30 @@ export class Chart extends ChartData {
     this.loader = new Loader(this)
 
     this.bindEventListeners()
+
+    this.render()
+  }
+
+  render() {
+    this.clear(this.ctx)
+
+    if (this.options.autoScale) {
+      this.getHighestAndLowestPrice()
+    }
+
+    if (!this.history) {
+      this.loading(true)
+    } else {
+      this.drawGridColumns()
+      this.drawGridRows()
+      this.timeAxis.update()
+      this.priceAxis.update()
+      this.layout.layers.chart.update()
+      // this.ui.draw()
+      this.uiLayer.update()
+    }
+
+    requestAnimationFrame(this.render.bind(this))
   }
 
   loadHistory(value: History.Data) {
@@ -107,12 +131,10 @@ export class Chart extends ChartData {
     // this.initUIElements()
     this.loading(false)
     this.getHighestAndLowestPrice()
-    this.draw()
   }
 
   setTicker(ticker: Ticker) {
     this.ticker = ticker
-    this.draw()
     setInterval(() => {
       this.updateCurrentPoint(ticker.state)
     }, 500)
@@ -214,43 +236,40 @@ export class Chart extends ChartData {
       this.pointer.isVisible = false
     })
 
-    // this.canvas.addEventListener('mousedown', e => {
-    //   if (e.button == 0) {
-    //     e.preventDefault()
-    //     this.transform.isPanning = true
-    //   }
-    // })
+    this.canvas.addEventListener('mousedown', e => {
+      if (e.button == 0) {
+        e.preventDefault()
+        this.transform.isPanning = true
+      }
+    })
 
     window.addEventListener('mousemove', e => {
       this.mousePosition.x = e.clientX
       this.mousePosition.y = e.clientY
 
-      // if (this.transform.isPanning) {
-      //   let mx = e.movementX
-      //   let my = this.options.autoScale ? 0 : e.movementY
-      //   this.transform.move(mx, my)
-      // }
+      if (this.transform.isPanning) {
+        let mx = e.movementX
+        let my = this.options.autoScale ? 0 : e.movementY
+        this.transform.move(mx, my)
+      }
 
       this.pointer.move()
-      this.uiLayer.update()
     })
 
-    // window.addEventListener('mouseup', e => {
-    //   if (e.button == 0) {
-    //     this.transform.isPanning = false
-    //   }
-    // })
+    window.addEventListener('mouseup', e => {
+      if (e.button == 0) {
+        this.transform.isPanning = false
+      }
+    })
 
     this.canvas.addEventListener('wheel', (e: any) => {
-      // this.transform.zoom(
-      //   e.wheelDeltaY,
-      //   e.altKey ? -e.wheelDeltaY / 2 : 0,
-      //   e.ctrlKey ? this.mousePosition.x : null
-      // )
+      this.transform.zoom(
+        e.wheelDeltaY,
+        e.altKey ? -e.wheelDeltaY / 2 : 0,
+        e.ctrlKey ? this.mousePosition.x : null
+      )
 
       this.pointer.move()
-      this.layout.layers.ui.update()
-      this.draw()
     })
   }
 
@@ -382,27 +401,6 @@ export class Chart extends ChartData {
     this.ctx.fillStyle = 'white'
     this.ctx.font = '12px Arial'
     this.ctx.fillText(text, x, y)
-  }
-
-  draw(): void {
-    this.clear(this.ctx)
-
-    console.log('chart: draw call')
-
-    if (this.options.autoScale) {
-      this.getHighestAndLowestPrice()
-    }
-
-    if (!this.history) {
-      this.loading(true)
-    } else {
-      this.drawGridColumns()
-      this.drawGridRows()
-      this.timeAxis.update()
-      this.priceAxis.update()
-      this.layout.layers.chart.update()
-      // this.ui.draw()
-    }
   }
 
   drawGridRows() {

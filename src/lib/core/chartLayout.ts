@@ -82,14 +82,14 @@ export class ChartLayout {
 
     const observer = new ResizeObserver(() => {
       if (!this.chart.transform) return
-      rect = el.getBoundingClientRect()
-
-      Object.values(this.layers).forEach(canvas => {
-        canvas.fitToParent()
-      })
+      // rect = el.getBoundingClientRect()
+      //
+      // Object.values(this.layers).forEach(canvas => {
+      // canvas.fitToParent()
+      // })
 
       this.chart.transform.clamp()
-      this.chart.draw()
+      // this.chart.draw()
     })
 
     observer.observe(el)

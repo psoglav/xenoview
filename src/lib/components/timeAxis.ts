@@ -89,7 +89,6 @@ export default class TimeAxis extends Component {
   zoom(dx: number) {
     if (this.isZooming) {
       this.chart.transform.zoom(dx / -100, 0)
-      this.chart.draw()
     }
   }
 

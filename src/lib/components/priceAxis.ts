@@ -143,7 +143,6 @@ export default class PriceAxis extends Component {
   zoom(dy: number) {
     if (this.isZooming) {
       this.chart.transform.zoom(0, dy)
-      this.chart.draw()
     }
   }
 

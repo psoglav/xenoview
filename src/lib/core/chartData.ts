@@ -70,8 +70,6 @@ export abstract class ChartData {
         low: value.PRICE
       })
     }
-
-    this.draw()
   }
 
   /**
@@ -233,6 +231,4 @@ export abstract class ChartData {
         return 1
       })
   }
-
-  abstract draw(): void
 }
