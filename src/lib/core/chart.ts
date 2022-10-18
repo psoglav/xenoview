@@ -1,5 +1,5 @@
 import { Ticker } from '../ticker'
-import { Pointer, PriceAxis, TimeAxis, Loader, ChartStyle } from '../components'
+import { Pointer, Loader, ChartStyle } from '../components'
 import { ChartData, Transform, ChartLayout, UI, Label, UIElementGroup } from '.'
 import { createChartStyle } from '../components/chart-style/styles'
 
@@ -31,11 +31,11 @@ export class Chart extends ChartData {
   layout: ChartLayout
 
   get chartLayer() {
-    return this.layout.layers.chart
+    return this.layout.chartLayers.view
   }
 
   get uiLayer() {
-    return this.layout.layers.ui
+    return this.layout.chartLayers.ui
   }
 
   options: Chart.Options = defaultChartOptions
@@ -47,16 +47,14 @@ export class Chart extends ChartData {
   mousePosition = { x: 0, y: 0 }
 
   pointer: Pointer
-  priceAxis: PriceAxis
-  timeAxis: TimeAxis
   loader: Loader
 
   get ctx(): CanvasRenderingContext2D {
-    return this.layout.layers.chart.ctx
+    return this.layout.chartLayers.view.ctx
   }
 
   get canvas(): HTMLCanvasElement {
-    return this.layout.layers.chart.canvas
+    return this.layout.chartLayers.view.canvas
   }
 
   get container(): HTMLElement {
@@ -93,8 +91,6 @@ export class Chart extends ChartData {
     this.transform = new Transform(this)
 
     this.pointer = <Pointer>this.components.pointer
-    this.priceAxis = new PriceAxis(this)
-    this.timeAxis = new TimeAxis(this)
     this.loader = new Loader(this)
 
     this.bindEventListeners()
@@ -112,11 +108,10 @@ export class Chart extends ChartData {
     if (!this.history) {
       this.loading(true)
     } else {
-      this.timeAxis.update()
-      this.priceAxis.update()
-      this.layout.layers.chart.update()
-      // this.ui.draw()
+      this.chartLayer.update()
       this.uiLayer.update()
+      this.layout.priceAxisCanvas.update()
+      this.layout.timeAxisCanvas.update()
     }
 
     requestAnimationFrame(this.render.bind(this))
@@ -126,7 +121,6 @@ export class Chart extends ChartData {
     this.transform.reset()
     this.history = value
     this.chartData = this.normalizeData()
-    // this.initUIElements()
     this.loading(false)
     this.getHighestAndLowestPrice()
   }

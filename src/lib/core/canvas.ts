@@ -2,8 +2,7 @@ import { Component } from '.'
 
 export type CanvasOptions = {
   container: HTMLElement
-  zIndex: number
-  panning?: boolean
+  zIndex?: number
   components: {
     [name: string]: Component
   }
@@ -80,7 +79,7 @@ export class Canvas {
     el.style.height = '100%'
     el.style.position = 'absolute'
     el.style.inset = '0'
-    el.style.zIndex = this.options.zIndex.toString()
+    el.style.zIndex = (this.options.zIndex || 0).toString()
 
     let rect = this.options.container.getBoundingClientRect()
     this.setSize(rect.width, rect.height, el)
