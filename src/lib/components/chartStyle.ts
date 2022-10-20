@@ -69,8 +69,8 @@ export class Line extends ChartStyle {
     ctx.beginPath()
 
     for (let i = 0; i < data.length - 1; i++) {
-      var x1 = this.chart.boundingRect.left + i * this.chart.pointsGap
-      var x2 = this.chart.boundingRect.left + (i + 1) * this.chart.pointsGap
+      var x1 = this.chart.getPointX(i)
+      var x2 = this.chart.getPointX(i + 1)
 
       if (x1 > this.chart.mainCanvasWidth) break
       else if (x2 < 0) continue
@@ -108,9 +108,7 @@ export class Candles extends ChartStyle {
     let data = this.chart.history
 
     for (let i = 0; i < data.length; i++) {
-      let x = Math.round(
-        this.chart.boundingRect.left + i * this.chart.pointsGap
-      )
+      let x = Math.round(this.chart.getPointX(i))
       let halfCandle = this.chart.pointsGap / 4
       let gap = Math.round(this.chart.pointsGap) + (this.chart.pointsGap % 2)
 
@@ -195,8 +193,8 @@ export class Area extends Line {
     this.chart.lineTo(this.chart.getPointX(0), this.chart.normalizeToY(data[0].close))
 
     for (let i = 0; i < data.length - 1; i++) {
-      var x1 = this.chart.boundingRect.left + i * this.chart.pointsGap
-      var x2 = this.chart.boundingRect.left + (i + 1) * this.chart.pointsGap
+      var x1 = this.chart.getPointX(i)
+      var x2 = this.chart.getPointX(i + 1)
 
       if (x1 > this.chart.mainCanvasWidth) break
       else if (x2 < 0) continue
