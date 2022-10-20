@@ -29,7 +29,7 @@ export class Transform {
 
   // TODO: Make the calculations simpler
   zoom(dx: number, dy: number, xOrigin?: number) {
-    if (dx < 0 && this.chart.pointsGap < 1.7) return
+    if (dx < 0 && this.chart.pointsGap < 1) return
     if (dx > 0 && this.chart.pointsGap > 350) return
 
     dx = dx < 0 ? Math.max(dx, -1) : Math.min(dx, 1)
