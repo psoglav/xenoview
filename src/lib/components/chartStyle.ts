@@ -190,8 +190,9 @@ export class Area extends Line {
     grd.addColorStop(1, this.chart.options.line.color + '07')
 
     ctx.beginPath()
-    this.chart.moveTo(0, this.chart.mainCanvasHeight)
-    this.chart.lineTo(0, this.chart.normalizeToY(data[0].close))
+
+    this.chart.moveTo(this.chart.getPointX(0), this.chart.mainCanvasHeight)
+    this.chart.lineTo(this.chart.getPointX(0), this.chart.normalizeToY(data[0].close))
 
     for (let i = 0; i < data.length - 1; i++) {
       var x1 = this.chart.boundingRect.left + i * this.chart.pointsGap
