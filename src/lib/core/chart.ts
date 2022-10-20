@@ -1,7 +1,7 @@
 import { Ticker } from '../ticker'
-import { Pointer, Loader, ChartStyle } from '../components'
+import { Pointer, Loader, ChartStyle, } from '../components'
 import { ChartData, Transform, ChartLayout, UI, Label, UIElementGroup } from '.'
-import { createChartStyle } from '../components/chart-style/styles'
+import { createChartStyle } from '../components/chartStyle'
 
 import '../../public/styles/main.css'
 

@@ -1,7 +1,6 @@
-import { tSMethodSignature } from '@babel/types'
 import { Chart, Canvas } from '.'
 import { Pointer, Grid, TimeAxis, PriceAxis } from '../components'
-import { createChartStyle } from '../components/chart-style/styles'
+import { createChartStyle } from '../components/chartStyle'
 
 export class ChartLayout {
   chart: Chart
