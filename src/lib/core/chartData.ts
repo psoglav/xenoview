@@ -91,6 +91,8 @@ export abstract class ChartData {
       width = this.chart.mainCanvasWidth,
       start = Math.round((left * -1) / this.pointsGap),
       end = Math.round((left * -1 + width) / this.pointsGap)
+
+    start = Math.max(start, 0)
     end = Math.min(end, this.history.length - 1)
     return [start, end]
   }
