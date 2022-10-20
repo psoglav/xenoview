@@ -73,10 +73,13 @@ export class Transform {
   }
 
   clamp() {
-    this.boundingRect.left > 0 && (this.boundingRect.left = 0)
+    let w = this.chart.mainCanvasWidth
+    let gap = this.chart.pointsGap
 
-    if (this.boundingRect.right < this.chart.mainCanvasWidth - 200) {
-      this.boundingRect.right = this.chart.mainCanvasWidth - 200
+    if (this.boundingRect.right < gap * 3) {
+      this.boundingRect.right = gap * 3
+    } else if (this.boundingRect.left > w - gap * 3) {
+      this.boundingRect.left = w - gap * 3
     }
   }
 }
