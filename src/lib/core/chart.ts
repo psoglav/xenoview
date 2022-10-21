@@ -5,6 +5,10 @@ import { createChartStyle } from '../components/chartStyle'
 
 import '../../public/styles/main.css'
 
+import moment from 'moment'
+
+console.log(moment().format('HH:mm'))
+
 const defaultChartOptions: Chart.Options = {
   style: 'candles',
   bgColor: '#151924',
