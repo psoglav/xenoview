@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Chart = void 0;
 const components_1 = require("../components");
 const _1 = require(".");
-const chartStyles_1 = require("../chartStyles");
+const chartStyle_1 = require("../components/chartStyle");
 require("../../public/styles/main.css");
 const defaultChartOptions = {
     style: 'candles',
@@ -34,17 +34,26 @@ class Chart extends _1.ChartData {
         this.initData(this);
         if (options)
             this.options = Object.assign(Object.assign({}, this.options), options);
-        this.createChartLayout(container);
-        this.style = (0, chartStyles_1.createChartStyle)(this);
-        this.pointer = new components_1.Pointer(this);
-        this.priceAxis = new components_1.PriceAxis(this);
-        this.timeAxis = new components_1.TimeAxis(this);
-        this.loader = new components_1.Loader(this);
+        this.layout = new _1.ChartLayout(this, container);
         this.transform = new _1.Transform(this);
+        this.loader = new components_1.Loader(this);
         this.bindEventListeners();
+        this.render();
+    }
+    get chartLayer() {
+        return this.layout.chartLayers.view;
+    }
+    get uiLayer() {
+        return this.layout.chartLayers.ui;
     }
     get ctx() {
-        return this.canvas.getContext('2d');
+        return this.chartLayer.ctx;
+    }
+    get canvas() {
+        return this.chartLayer.canvas;
+    }
+    get container() {
+        return this.layout.layoutContainer;
     }
     get boundingRect() {
         return this.transform.boundingRect;
@@ -52,73 +61,50 @@ class Chart extends _1.ChartData {
     set boundingRect(value) {
         this.transform.boundingRect = value;
     }
+    get components() {
+        return Object.assign(Object.assign({}, this.uiLayer.components), this.chartLayer.components);
+    }
+    get style() {
+        return this.chartLayer.components.style;
+    }
+    get pointer() {
+        return this.components.pointer;
+    }
+    render() {
+        if (this.options.autoScale) {
+            this.getHighestAndLowestPrice();
+        }
+        if (!this.history) {
+            this.loading(true);
+        }
+        else {
+            this.chartLayer.update();
+            this.uiLayer.update();
+            this.layout.priceAxisCanvas.update();
+            this.layout.timeAxisCanvas.update();
+        }
+        requestAnimationFrame(this.render.bind(this));
+    }
     loadHistory(value) {
         this.transform.reset();
         this.history = value;
         this.chartData = this.normalizeData();
-        this.initUIElements();
         this.loading(false);
         this.getHighestAndLowestPrice();
-        this.draw();
+        this.chartLayer.needsUpdate = true;
     }
     setTicker(ticker) {
         this.ticker = ticker;
-        this.draw();
         setInterval(() => {
             this.updateCurrentPoint(ticker.state);
         }, 500);
     }
     setStyle(value) {
         this.options.style = value;
-        this.style = (0, chartStyles_1.createChartStyle)(this);
-    }
-    createChart() {
-        const preventDefault = function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        };
-        this.canvas.oncontextmenu = preventDefault;
-        this.canvas.onwheel = preventDefault;
-        this.canvas.style.gridArea = '1 / 1 / 2 / 2';
-        this.canvas.style.width = '100%';
-        this.canvas.style.height = '100%';
-        this.canvas.style.cursor = 'crosshair';
-        this.canvas.style.transition = 'opacity .5s ease';
-        this.rescale(this.ctx);
+        this.chartLayer.components.style = (0, chartStyle_1.createChartStyle)(this);
     }
     loading(value) {
         this.loader.isActive = value;
-    }
-    createChartLayout(container) {
-        this.canvas = document.createElement('canvas');
-        this.ctx.lineWidth = 1 * this.getPixelRatio(this.ctx);
-        if (typeof container === 'string') {
-            this.container = document.querySelector(container);
-        }
-        if (!this.container) {
-            this.error('no container is found');
-            return;
-        }
-        this.container.classList.add('chart-container');
-        this.container.innerHTML = '';
-        this.container.style.display = 'grid';
-        this.container.style.position = 'absolute';
-        this.container.style.top = '0';
-        this.container.style.left = '0';
-        this.container.style.grid = '1fr 28px / 1fr 70px';
-        this.createChart();
-        let rect = this.container.getBoundingClientRect();
-        this.setSize(rect.width - 70, rect.height - 28, this.canvas);
-        const observer = new ResizeObserver(() => {
-            rect = this.container.getBoundingClientRect();
-            this.setSize(rect.width - 70, rect.height - 28, this.canvas);
-            this.transform.clamp();
-            this.draw();
-        });
-        observer.observe(this.container);
-        this.container.appendChild(this.canvas);
-        this.rescale(this.ctx);
-        this.ui = new _1.UI();
     }
     initUIElements() {
         let h = this.history;
@@ -171,7 +157,6 @@ class Chart extends _1.ChartData {
         });
         this.canvas.addEventListener('mouseleave', () => {
             this.pointer.isVisible = false;
-            this.draw();
         });
         this.canvas.addEventListener('mousedown', e => {
             if (e.button == 0) {
@@ -188,7 +173,6 @@ class Chart extends _1.ChartData {
                 this.transform.move(mx, my);
             }
             this.pointer.move();
-            this.draw();
         });
         window.addEventListener('mouseup', e => {
             if (e.button == 0) {
@@ -198,7 +182,6 @@ class Chart extends _1.ChartData {
         this.canvas.addEventListener('wheel', (e) => {
             this.transform.zoom(e.wheelDeltaY, e.altKey ? -e.wheelDeltaY / 2 : 0, e.ctrlKey ? this.mousePosition.x : null);
             this.pointer.move();
-            this.draw();
         });
     }
     getWidth(ctx) {
@@ -208,10 +191,10 @@ class Chart extends _1.ChartData {
         return ctx.canvas.height * this.getPixelRatio(ctx);
     }
     get mainCanvasWidth() {
-        return this.ctx.canvas.clientWidth;
+        return this.canvas.clientWidth;
     }
     get mainCanvasHeight() {
-        return this.ctx.canvas.clientHeight;
+        return this.canvas.clientHeight;
     }
     get canvasRect() {
         return this.ctx.canvas.getBoundingClientRect();
@@ -221,7 +204,6 @@ class Chart extends _1.ChartData {
         if (this.options.autoScale) {
             this.boundingRect.top = 0;
             this.boundingRect.bottom = this.mainCanvasHeight;
-            this.draw();
         }
     }
     setSize(w, h, canvas) {
@@ -295,50 +277,6 @@ class Chart extends _1.ChartData {
         this.ctx.fillStyle = 'white';
         this.ctx.font = '12px Arial';
         this.ctx.fillText(text, x, y);
-    }
-    draw() {
-        this.clear(this.ctx);
-        if (this.options.autoScale) {
-            this.getHighestAndLowestPrice();
-        }
-        if (!this.history) {
-            this.loading(true);
-        }
-        else {
-            this.drawGridColumns();
-            this.drawGridRows();
-            this.timeAxis.update();
-            this.priceAxis.update();
-            this.style.draw();
-            this.pointer.update();
-            this.ui.draw();
-        }
-    }
-    drawGridRows() {
-        let ctx = this.ctx;
-        let rows = this.getGridRows();
-        ctx.beginPath();
-        ctx.strokeStyle = '#7777aa33';
-        for (let i of rows) {
-            let y = this.normalizeToY(i);
-            this.moveTo(0, y, ctx);
-            this.lineTo(this.getWidth(ctx), y, ctx);
-        }
-        ctx.stroke();
-        ctx.closePath();
-    }
-    drawGridColumns() {
-        let ctx = this.ctx;
-        let cols = this.getGridColumns();
-        ctx.beginPath();
-        ctx.strokeStyle = '#7777aa33';
-        for (let i of cols) {
-            let x = this.getPointX(i);
-            this.moveTo(x, 0, ctx);
-            this.lineTo(x, this.mainCanvasHeight, ctx);
-        }
-        ctx.stroke();
-        ctx.closePath();
     }
 }
 exports.Chart = Chart;

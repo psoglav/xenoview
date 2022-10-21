@@ -6,6 +6,7 @@ class ChartData {
     constructor() {
         this.highestPrice = [0, 0];
         this.lowestPrice = [0, 0];
+        this.renderedChartLength = 0;
     }
     get chartFullWidth() {
         return this.chart.boundingRect.right - this.chart.boundingRect.left;
@@ -54,13 +55,9 @@ class ChartData {
                 low: value.PRICE
             });
         }
-        this.draw();
+        // this.chart.chartLayer.needsUpdate = true
+        // this.chart.layout.priceAxisCanvas.needsUpdate = true
     }
-    /**
-     * Get point X position.
-     * @param {number | History.Point} value a point or an index of it
-     * @returns {number} X position
-     */
     getPointX(value) {
         let i = value;
         let data = this.history;
@@ -70,6 +67,7 @@ class ChartData {
     }
     get visibleRange() {
         let left = this.chart.boundingRect.left, width = this.chart.mainCanvasWidth, start = Math.round((left * -1) / this.pointsGap), end = Math.round((left * -1 + width) / this.pointsGap);
+        start = Math.max(start - 1, 0);
         end = Math.min(end, this.history.length - 1);
         return [start, end];
     }

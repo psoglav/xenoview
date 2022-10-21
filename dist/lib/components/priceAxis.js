@@ -5,47 +5,22 @@ class PriceAxis extends core_1.Component {
     constructor(chart) {
         super(chart);
         this.isZooming = false;
-        this.createCanvas();
-        this.bindEventListeners();
     }
-    get ctx() {
-        return this.canvas.getContext('2d');
-    }
-    bindEventListeners() {
-        this.canvas.addEventListener('mousedown', () => (this.isZooming = true));
-        this.canvas.addEventListener('mouseup', () => (this.isZooming = false));
-        window.addEventListener('mousemove', e => this.zoom(e === null || e === void 0 ? void 0 : e.movementY));
-        window.addEventListener('mouseup', () => (this.isZooming = false));
-        window.addEventListener('resize', () => {
-            let rect = this.chart.container.getBoundingClientRect();
-            this.chart.setSize(70, rect.height - 28, this.canvas);
-            this.update();
-        });
-    }
-    createCanvas() {
-        this.canvas = document.createElement('canvas');
-        this.canvas.style.gridArea = '1 / 2 / 2 / 3';
-        this.canvas.style.width = '70px';
-        this.canvas.style.height = '100%';
-        this.canvas.style.cursor = 'n-resize';
-        this.chart.container.appendChild(this.canvas);
-        this.chart.rescale(this.ctx);
-    }
-    drawGridLabels() {
+    drawGridLabels(ctx) {
         let rows = this.chart.getGridRows();
         for (let i of rows) {
             let y = this.chart.normalizeToY(i);
-            this.chart.moveTo(0, y, this.ctx);
-            this.chart.lineTo(this.chart.getWidth(this.ctx), y, this.ctx);
-            this.drawLabel(i.toFixed(2), y, this.chart.options.textColor);
+            this.chart.moveTo(0, y, ctx);
+            this.chart.lineTo(this.chart.getWidth(ctx), y, ctx);
+            this.drawLabel(i.toFixed(2), y, ctx, this.chart.options.textColor);
         }
     }
-    drawPointerPrice() {
+    drawPointerPrice(ctx) {
         let y = this.chart.mousePosition.y - this.chart.canvasRect.top;
         let price = this.chart.normalizeToPrice(y).toFixed(2);
-        this.drawLabel(price, y, 'white', this.chart.options.pointer.bgColor, true);
+        this.drawLabel(price, y, ctx, 'white', this.chart.options.pointer.bgColor, true);
     }
-    drawLastVisiblePrice() {
+    drawLastVisiblePrice(ctx) {
         let last = this.chart.lastPoint;
         if (this.chart.getPointX(last) < this.chart.mainCanvasWidth)
             return;
@@ -60,9 +35,9 @@ class PriceAxis extends core_1.Component {
             y = Math.min(y, my - 21);
         let type = lastVisible.close < lastVisible.open ? 'lower' : 'higher';
         let color = this.chart.options.candles.colors[type];
-        this.drawLabel(lastVisible.close, y, color, color);
+        this.drawLabel(lastVisible.close, y, ctx, color, color);
     }
-    drawLastPrice() {
+    drawLastPrice(ctx) {
         let data = this.chart.history;
         if (!data || !data.length)
             return;
@@ -82,44 +57,43 @@ class PriceAxis extends core_1.Component {
         this.chart.ctx.closePath();
         this.chart.ctx.stroke();
         this.chart.ctx.setLineDash([]);
-        this.drawLabel(point.close.toFixed(2), y, 'white', color, true);
+        this.drawLabel(point.close.toFixed(2), y, ctx, 'white', color, true);
     }
-    drawLabel(text, y, fgColor, bgColor, fill) {
+    drawLabel(text, y, ctx, fgColor, bgColor, fill) {
         if (bgColor) {
-            this.ctx.beginPath();
-            this.ctx.strokeStyle = bgColor;
-            this.ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.strokeStyle = bgColor;
+            ctx.lineJoin = 'round';
             if (fill) {
-                this.ctx.lineWidth = 8;
-                this.ctx.fillStyle = bgColor;
-                this.ctx.rect(4, y - 5, this.chart.getWidth(this.ctx), 12);
+                ctx.lineWidth = 8;
+                ctx.fillStyle = bgColor;
+                ctx.rect(4, y - 5, this.chart.getWidth(ctx), 12);
             }
             else {
-                this.ctx.lineWidth = 1;
-                this.ctx.fillStyle = this.chart.options.bgColor;
-                this.ctx.rect(0.5, Math.round(y) - 8.5, this.chart.getWidth(this.ctx) - 1, 20);
+                ctx.lineWidth = 1;
+                ctx.fillStyle = this.chart.options.bgColor;
+                ctx.rect(0.5, Math.round(y) - 8.5, this.chart.getWidth(ctx) - 1, 20);
             }
-            this.ctx.fill();
-            this.ctx.stroke();
-            this.ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
         }
-        this.ctx.fillStyle = fgColor;
-        this.ctx.font = '11px Verdana';
-        this.ctx.fillText(text, 10, y + 5);
+        ctx.fillStyle = fgColor;
+        ctx.font = '11px Verdana';
+        ctx.fillText(text, 10, y + 5);
     }
     zoom(dy) {
         if (this.isZooming) {
             this.chart.transform.zoom(0, dy);
-            this.chart.draw();
         }
     }
-    update() {
-        this.chart.clear(this.ctx);
-        this.drawGridLabels();
-        this.drawLastPrice();
-        this.drawLastVisiblePrice();
+    update(canvas) {
+        this.chart.clear(canvas.ctx);
+        this.drawGridLabels(canvas.ctx);
+        this.drawLastPrice(canvas.ctx);
+        this.drawLastVisiblePrice(canvas.ctx);
         if (this.chart.pointer.isVisible) {
-            this.drawPointerPrice();
+            this.drawPointerPrice(canvas.ctx);
         }
     }
 }

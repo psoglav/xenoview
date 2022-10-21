@@ -1,4 +1,4 @@
-import { Chart, Component } from '../core';
+import { Chart, Component, Canvas } from '../core';
 export default class Pointer extends Component {
     isVisible: Boolean;
     focusedPointIndex: number;
@@ -6,6 +6,6 @@ export default class Pointer extends Component {
     private position;
     constructor(chart: Chart);
     move(): void;
-    update(): void;
-    draw(): void;
+    update(canvas: Canvas): void;
+    draw(ctx: CanvasRenderingContext2D): void;
 }

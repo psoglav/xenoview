@@ -25,23 +25,22 @@ class Pointer extends core_1.Component {
         this.focusedPoint = this.chart.history[i];
         this.position.y = this.chart.mousePosition.y;
     }
-    update() {
+    update(canvas) {
         var _a;
         if (!((_a = this.chart.chartData) === null || _a === void 0 ? void 0 : _a.length) || !this.isVisible)
             return;
-        this.chart.ctx.strokeStyle = this.chart.options.pointer.fgColor;
-        this.draw();
+        canvas.ctx.strokeStyle = this.chart.options.pointer.fgColor;
+        this.draw(canvas.ctx);
     }
-    draw() {
-        let ctx = this.chart.ctx;
-        let w = this.chart.mainCanvasWidth;
-        let h = this.chart.mainCanvasHeight;
+    draw(ctx) {
+        let w = ctx.canvas.clientWidth;
+        let h = ctx.canvas.clientHeight;
         let x = Math.round(this.chart.boundingRect.left +
             this.chart.pointsGap * this.focusedPointIndex) + 0.5;
         let y = Math.round(this.position.y +
             (this.chart.mainCanvasHeight % 2) / 2 -
             this.chart.canvasRect.top) + 0.5;
-        this.chart.ctx.setLineDash([5, 5]);
+        ctx.setLineDash([5, 5]);
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, Math.max(w, h));
@@ -52,8 +51,8 @@ class Pointer extends core_1.Component {
         ctx.lineTo(Math.max(w, h), y);
         ctx.closePath();
         ctx.stroke();
-        this.chart.ctx.lineDashOffset = 0;
-        this.chart.ctx.setLineDash([]);
+        ctx.lineDashOffset = 0;
+        ctx.setLineDash([]);
     }
 }
 exports.default = Pointer;

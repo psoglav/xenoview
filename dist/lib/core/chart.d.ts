@@ -1,12 +1,12 @@
 import { Ticker } from '../ticker';
-import { Pointer, PriceAxis, TimeAxis, Loader } from '../components';
-import { ChartData, Transform, ChartStyle, UI } from '.';
+import { Pointer, Loader, ChartStyle } from '../components';
+import { ChartData, Transform, ChartLayout, UI } from '.';
 import '../../public/styles/main.css';
 export declare class Chart extends ChartData {
-    container: HTMLElement | undefined;
-    canvas: HTMLCanvasElement;
+    layout: ChartLayout;
+    get chartLayer(): import("./canvas").Canvas;
+    get uiLayer(): import("./canvas").Canvas;
     options: Chart.Options;
-    style: ChartStyle;
     ticker: Ticker;
     ui: UI;
     transform: Transform;
@@ -14,20 +14,23 @@ export declare class Chart extends ChartData {
         x: number;
         y: number;
     };
-    pointer: Pointer;
-    priceAxis: PriceAxis;
-    timeAxis: TimeAxis;
     loader: Loader;
     get ctx(): CanvasRenderingContext2D;
+    get canvas(): HTMLCanvasElement;
+    get container(): HTMLElement;
     get boundingRect(): Chart.BoundingRect;
     set boundingRect(value: Chart.BoundingRect);
+    get components(): {
+        [x: string]: import("./component").Component;
+    };
+    get style(): ChartStyle;
+    get pointer(): Pointer;
     constructor(container: HTMLElement | string, options?: Chart.Options);
+    render(): void;
     loadHistory(value: History.Data): void;
     setTicker(ticker: Ticker): void;
     setStyle(value: Chart.StyleName): void;
-    createChart(): void;
     loading(value: boolean): void;
-    createChartLayout(container: HTMLElement | string): void;
     initUIElements(): void;
     bindEventListeners(): void;
     getWidth(ctx: CanvasRenderingContext2D): number;
@@ -48,7 +51,4 @@ export declare class Chart extends ChartData {
     error(msg: string): void;
     log(...msg: any): void;
     debug(text: any, x: number, y: number): void;
-    draw(): void;
-    drawGridRows(): void;
-    drawGridColumns(): void;
 }

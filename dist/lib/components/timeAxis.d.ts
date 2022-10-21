@@ -1,13 +1,9 @@
-import { Chart, Component } from '../core';
+import { Canvas, Chart, Component } from '../core';
 export default class TimeAxis extends Component {
-    canvas: HTMLCanvasElement;
-    get ctx(): CanvasRenderingContext2D;
     isZooming: boolean;
     constructor(chart: Chart);
-    bindEventListeners(): void;
-    createCanvas(): void;
-    drawLabels(): void;
-    drawTimeMarker(): void;
+    drawLabels(ctx: CanvasRenderingContext2D): void;
+    drawTimeMarker(ctx: CanvasRenderingContext2D): void;
     zoom(dx: number): void;
-    update(): void;
+    update(canvas: Canvas): void;
 }

@@ -4,6 +4,7 @@ export declare abstract class ChartData {
     chartData: History.Data;
     highestPrice: [number, number];
     lowestPrice: [number, number];
+    renderedChartLength: number;
     private chart;
     get chartFullWidth(): number;
     get pointsGap(): number;
@@ -14,11 +15,6 @@ export declare abstract class ChartData {
         LASTUPDATE: number;
     }): void;
     updateCurrentPoint(value: any): void;
-    /**
-     * Get point X position.
-     * @param {number | History.Point} value a point or an index of it
-     * @returns {number} X position
-     */
     getPointX(value: any): number;
     get visibleRange(): number[];
     get visiblePoints(): History.Point[];
@@ -31,5 +27,4 @@ export declare abstract class ChartData {
     getHighestAndLowestPrice(): void;
     getGridRows(): any[];
     getGridColumns(): number[];
-    abstract draw(): void;
 }

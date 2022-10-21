@@ -6,6 +6,7 @@ class Transform {
         this.isPanning = false;
         this.ZOOM_RATE = 1;
         this.chart = chart;
+        this.reset();
     }
     move(mx, my) {
         this.boundingRect.top += my;
@@ -20,7 +21,7 @@ class Transform {
     }
     // TODO: Make the calculations simpler
     zoom(dx, dy, xOrigin) {
-        if (dx < 0 && this.chart.pointsGap < 1.7)
+        if (dx < 0 && this.chart.pointsGap < 1)
             return;
         if (dx > 0 && this.chart.pointsGap > 350)
             return;
@@ -48,16 +49,22 @@ class Transform {
             top: 35,
             bottom: this.chart.mainCanvasHeight - 35,
             left: this.chart.mainCanvasWidth * -10,
-            right: this.chart.mainCanvasWidth
+            right: this.chart.mainCanvasWidth,
+            offsetX: 0,
+            offsetY: 0
         };
         if (full) {
             this.boundingRect.left = 0;
         }
     }
     clamp() {
-        this.boundingRect.left > 0 && (this.boundingRect.left = 0);
-        if (this.boundingRect.right < this.chart.mainCanvasWidth - 200) {
-            this.boundingRect.right = this.chart.mainCanvasWidth - 200;
+        let w = this.chart.mainCanvasWidth;
+        let gap = this.chart.pointsGap;
+        if (this.boundingRect.right < gap * 3) {
+            this.boundingRect.right = gap * 3;
+        }
+        else if (this.boundingRect.left > w - gap * 3) {
+            this.boundingRect.left = w - gap * 3;
         }
     }
 }
