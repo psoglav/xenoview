@@ -102,6 +102,7 @@ class Chart extends _1.ChartData {
     setStyle(value) {
         this.options.style = value;
         this.chartLayer.components.style = (0, chartStyle_1.createChartStyle)(this);
+        this.chartLayer.needsUpdate = true;
     }
     loading(value) {
         this.loader.isActive = value;
@@ -173,6 +174,7 @@ class Chart extends _1.ChartData {
                 this.transform.move(mx, my);
             }
             this.pointer.move();
+            this.uiLayer.update();
         });
         window.addEventListener('mouseup', e => {
             if (e.button == 0) {

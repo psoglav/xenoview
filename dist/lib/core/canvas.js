@@ -50,7 +50,7 @@ class Canvas {
         if (!this.options.updateByRequest || this.needsUpdate) {
             this.rescale();
             this.clear();
-            Object.values(this.options.components).forEach(component => {
+            Object.entries(this.options.components).forEach(([key, component]) => {
                 component.update(this);
             });
             this.needsUpdate = false;

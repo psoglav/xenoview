@@ -18,6 +18,7 @@ class Transform {
         this.boundingRect.left += mx;
         this.boundingRect.right += mx;
         this.clamp();
+        this.chart.chartLayer.needsUpdate = true;
     }
     // TODO: Make the calculations simpler
     zoom(dx, dy, xOrigin) {
@@ -43,6 +44,7 @@ class Transform {
             this.boundingRect.bottom -=
                 (((this.boundingRect.bottom - origin) / d) * dy) / 100;
         }
+        this.chart.chartLayer.needsUpdate = true;
     }
     reset(full) {
         this.boundingRect = {
