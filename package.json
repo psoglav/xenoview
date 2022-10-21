@@ -6,6 +6,7 @@
   "types": "dist/index.d.js",
   "scripts": {
     "build": "yarn remove-build && tsc && yarn copy-public",
+    "build:commit": "yarn build && git add dist && git chore 'update build'",
     "dev": "cd sandbox && yarn dev",
     "watch": "tsc --watch",
     "test": "jest",
@@ -13,7 +14,7 @@
     "remove-build": "rm -rf ./dist",
     "copy-public": "cp -r ./src/public/ ./dist/",
     "commit": "git add src && git commit",
-    "commit:sub": "git add sandbox && git commit -m 'chore: update submodule' --no-verify"
+    "commit:sub": "git add sandbox && git commit -m 'chore: update submodule'"
   },
   "license": "MIT",
   "devDependencies": {
