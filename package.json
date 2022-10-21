@@ -2,6 +2,7 @@
   "name": "xenoview",
   "author": "psoglav",
   "version": "1.0.0",
+  "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "scripts": {
@@ -16,7 +17,10 @@
     "commit": "git add src && git commit",
     "commit:sub": "git add sandbox && git commit -m 'chore: update submodule'"
   },
-  "license": "MIT",
+  "dependencies": {
+    "moment": "^2.29.4",
+    "moment-range": "^4.0.2"
+  },
   "devDependencies": {
     "@types/jest": "^28.1.6",
     "husky": "^8.0.1",
