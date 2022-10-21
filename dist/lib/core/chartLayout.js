@@ -43,7 +43,7 @@ class ChartLayout {
         this.chartLayers.view = new _1.Canvas({
             container: el,
             zIndex: 0,
-            updateByRequest: true,
+            // updateByRequest: true,
             components: {
                 grid: new components_1.Grid(this.chart),
                 style: (0, chartStyle_1.createChartStyle)(this.chart)

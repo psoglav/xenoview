@@ -50,7 +50,7 @@ class Transform {
         this.boundingRect = {
             top: 35,
             bottom: this.chart.mainCanvasHeight - 35,
-            left: this.chart.mainCanvasWidth * -10,
+            left: 0,
             right: this.chart.mainCanvasWidth,
             offsetX: 0,
             offsetY: 0

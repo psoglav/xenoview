@@ -1,18 +1,18 @@
-declare type HistoryInterval = 'day' | 'hour' | 'minute';
 export declare class Ticker {
     state: Ticker.State;
-    sym: string;
+    private symbol;
+    private interval;
+    private range;
     private ws;
     private listeners;
-    private apiKey;
-    constructor(symbol: string, apiKey?: string);
+    constructor(symbol: string, interval: Ticker.Interval);
     get currency(): any;
-    get symbol(): string;
-    set symbol(value: string);
-    fetchHistory(symbol: string, interval: HistoryInterval, limit?: number): Promise<History.Data>;
+    setSymbol(value: any): void;
+    setInterval(value: Ticker.Interval): void;
+    setRange(value: Ticker.DateRange): void;
+    get historyRange(): [number, number];
+    fetchHistory(): Promise<History.Data>;
     init(): void;
-    initBinance(): void;
-    initCryptoCompare(symbol: string): void;
+    subscribe(): void;
     addListener(cb: Ticker.Listener): void;
 }
-export {};
