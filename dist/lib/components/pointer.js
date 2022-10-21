@@ -36,7 +36,8 @@ class Pointer extends core_1.Component {
         let w = ctx.canvas.clientWidth;
         let h = ctx.canvas.clientHeight;
         let x = Math.round(this.chart.boundingRect.left +
-            this.chart.pointsGap * this.focusedPointIndex) + 0.5;
+            this.chart.pointsGap *
+                Math.round(this.chart.getPointIndexByX(this.chart.mousePosition.x - this.chart.canvasRect.left))) + 0.5;
         let y = Math.round(this.position.y +
             (this.chart.mainCanvasHeight % 2) / 2 -
             this.chart.canvasRect.top) + 0.5;

@@ -62,7 +62,7 @@ class ChartData {
         let data = this.history;
         if (typeof value == 'object')
             i = data.indexOf(value);
-        return (this.chart.boundingRect.left + (this.chartFullWidth / data.length) * i);
+        return this.chart.boundingRect.left + this.pointsGap * i;
     }
     get visibleRange() {
         let left = this.chart.boundingRect.left, width = this.chart.mainCanvasWidth, start = Math.round((left * -1) / this.pointsGap), end = Math.round((left * -1 + width) / this.pointsGap);
@@ -93,6 +93,10 @@ class ChartData {
         let minPrice = this.lowestPrice[1];
         let maxPrice = this.highestPrice[1];
         return minY + (0, utils_1.normalizeTo)(price, minPrice, maxPrice, minY, maxY);
+    }
+    getPointIndexByX(x) {
+        let left = this.chart.boundingRect.left;
+        return (x + left * -1) / this.pointsGap;
     }
     normalizePoint(point) {
         return Object.assign(Object.assign({}, point), { close: this.normalizeToY(point.close), open: this.normalizeToY(point.open), high: this.normalizeToY(point.high), low: this.normalizeToY(point.low) });

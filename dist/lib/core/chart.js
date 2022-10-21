@@ -174,7 +174,6 @@ class Chart extends _1.ChartData {
                 this.transform.move(mx, my);
             }
             this.pointer.move();
-            this.uiLayer.update();
         });
         window.addEventListener('mouseup', e => {
             if (e.button == 0) {
