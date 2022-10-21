@@ -80,9 +80,7 @@ export abstract class ChartData {
     let i = value
     let data = this.history
     if (typeof value == 'object') i = data.indexOf(value)
-    return (
-      this.chart.boundingRect.left + (this.chartFullWidth / data.length) * i
-    )
+    return this.chart.boundingRect.left + this.pointsGap * i
   }
 
   get visibleRange(): number[] {
@@ -91,7 +89,7 @@ export abstract class ChartData {
       start = Math.round((left * -1) / this.pointsGap),
       end = Math.round((left * -1 + width) / this.pointsGap)
 
-    start = Math.max(start-1, 0)
+    start = Math.max(start - 1, 0)
     end = Math.min(end, this.history.length - 1)
     return [start, end]
   }
