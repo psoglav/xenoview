@@ -126,6 +126,11 @@ export abstract class ChartData {
     return minY + normalizeTo(price, minPrice, maxPrice, minY, maxY)
   }
 
+  getPointIndexByX(x: number): number {
+    let left = this.chart.boundingRect.left
+    return (x + left * -1) / this.pointsGap
+  }
+
   normalizePoint(point: History.Point): History.Point {
     return {
       ...point,

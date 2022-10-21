@@ -245,7 +245,6 @@ export class Chart extends ChartData {
       }
 
       this.pointer.move()
-      this.uiLayer.update()
     })
 
     window.addEventListener('mouseup', e => {

@@ -52,7 +52,12 @@ export default class Pointer extends Component {
     let x =
       Math.round(
         this.chart.boundingRect.left +
-          this.chart.pointsGap * this.focusedPointIndex
+          this.chart.pointsGap *
+            Math.round(
+              this.chart.getPointIndexByX(
+                this.chart.mousePosition.x - this.chart.canvasRect.left
+              )
+            )
       ) + 0.5
     let y =
       Math.round(
