@@ -1,79 +1,94 @@
-import { symbolToCurrency } from '../utils'
-
-type HistoryInterval = 'day' | 'hour' | 'minute'
+import { symbolToCurrency, dateRangeToMilliseconds, getIntervalByDateRange } from '../utils'
 
 export class Ticker {
   public state: Ticker.State
 
-  public sym: string
+  private symbol: string
+  private interval: Ticker.Interval
+  private range: Ticker.DateRange = '5d'
 
   private ws: WebSocket = null
   private listeners: Ticker.Listener[] = []
-  private apiKey = ''
 
-  constructor(symbol: string, apiKey?: string) {
-    this.sym = symbol
-    this.apiKey = apiKey
+  constructor(symbol: string, interval: Ticker.Interval) {
+    this.symbol = symbol
+    this.interval = interval
 
     this.init()
   }
 
   get currency() {
-    return symbolToCurrency(this.sym)
+    return symbolToCurrency(this.symbol)
   }
 
-  get symbol() {
-    return this.sym
-  }
-
-  set symbol(value) {
-    this.sym = value
+  setSymbol(value) {
+    this.symbol = value
     this.init()
   }
 
-  async fetchHistory(
-    symbol: string,
-    interval: HistoryInterval,
-    limit?: number
-  ): Promise<History.Data> {
+  setInterval(value: Ticker.Interval) {
+    this.interval = value
+    this.init()
+  }
+
+  setRange(value: Ticker.DateRange) {
+    this.range = value
+    this.interval = getIntervalByDateRange(value)
+  }
+
+  get historyRange(): [number, number] {
+    let cur = +new Date()
+    return [cur - dateRangeToMilliseconds(this.range), cur]
+  }
+
+  async fetchHistory(): Promise<History.Data> {
     let params: any = {
-      fsym: symbol,
-      tsym: 'USD',
-      tryConversion: false
+      symbol: this.symbol + 'USDT',
+      interval: this.interval,
+      startTime: this.historyRange[0],
+      endTime: this.historyRange[1],
+      limit: 1000
     }
 
-    if (limit) params.limit = limit
-
-    let q = Object.entries(params)
-      .map(([k, v]) => k + '=' + v)
-      .join('&')
-
     let response = await fetch(
-      `https://min-api.cryptocompare.com/data/v2/histo${interval}?${q}`,
+      `https://api.binance.com/api/v3/klines?${Object.entries(params)
+        .map(([k, v]) => k + '=' + v)
+        .join('&')}`,
       {
-        method: 'GET',
-        headers: {
-          Authorization: 'Apikey ' + this.apiKey
-        }
+        method: 'GET'
       }
     )
 
-    return (await response.json()).Data.Data
+    let data = (await response.json()).map(
+      ([time, open, high, low, close, volume]) => ({
+        time,
+        open: +open,
+        high: +high,
+        low: +low,
+        close: +close,
+        volume: +volume
+      })
+    )
+
+    return data
   }
 
   init() {
     this.ws?.close()
     this.state = null
-    this.initBinance()
+    this.subscribe()
   }
 
-  initBinance() {
+  subscribe() {
     this.ws = new WebSocket(
-      `wss://stream.binance.com:9443/ws/${this.sym.toLowerCase()}usdt@kline_1m`
+      `wss://stream.binance.com:9443/ws/${this.symbol.toLowerCase()}usdt@kline_${
+        this.interval
+      }`
     )
+
     this.ws.onmessage = (event: any) => {
       let data = JSON.parse(event.data)
-      if (data.s?.startsWith(this.sym)) {
+      if (data.s?.startsWith(this.symbol)) {
         this.state = {
           PRICE: +data.k.c,
           LASTUPDATE: Math.floor(data.k.t / 1000),
@@ -85,28 +100,9 @@ export class Ticker {
         this.listeners.forEach(cb => cb(this.state))
       }
     }
+
     this.ws.onclose = () => {
-      setTimeout(this.initBinance, 1000)
-    }
-  }
-
-  initCryptoCompare(symbol: string) {
-    this.ws = new WebSocket(
-      'wss://streamer.cryptocompare.com/v2?api_key=' + this.apiKey
-    )
-    this.ws.onopen = () => {
-      let subRequest = {
-        action: 'SubAdd',
-        subs: [`2~Coinbase~${symbol}~USD`]
-      }
-      this.ws.send(JSON.stringify(subRequest))
-    }
-
-    this.ws.onmessage = (event: any) => {
-      let data = JSON.parse(event.data)
-      if (data.TYPE == 2) {
-        this.state = data
-      }
+      setTimeout(this.subscribe.bind(this), 1000)
     }
   }
 
