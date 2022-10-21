@@ -25,6 +25,8 @@ export class Transform {
     this.boundingRect.right += mx
 
     this.clamp()
+
+    this.chart.chartLayer.needsUpdate = true
   }
 
   // TODO: Make the calculations simpler
@@ -55,6 +57,8 @@ export class Transform {
       this.boundingRect.bottom -=
         (((this.boundingRect.bottom - origin) / d) * dy) / 100
     }
+
+    this.chart.chartLayer.needsUpdate = true
   }
 
   reset(full?: boolean) {

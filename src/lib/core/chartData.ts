@@ -73,8 +73,7 @@ export abstract class ChartData {
       })
     }
 
-    // this.chart.chartLayer.needsUpdate = true
-    // this.chart.layout.priceAxisCanvas.needsUpdate = true
+    this.chart.chartLayer.needsUpdate = true
   }
 
   getPointX(value): number {

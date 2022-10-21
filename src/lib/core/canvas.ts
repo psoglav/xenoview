@@ -78,7 +78,7 @@ export class Canvas {
       this.rescale()
       this.clear()
 
-      Object.values(this.options.components).forEach(component => {
+      Object.entries(this.options.components).forEach(([key, component]) => {
         component.update(this)
       })
 

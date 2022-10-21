@@ -120,6 +120,7 @@ export class Chart extends ChartData {
     this.chartData = this.normalizeData()
     this.loading(false)
     this.getHighestAndLowestPrice()
+    this.chartLayer.needsUpdate = true
   }
 
   setTicker(ticker: Ticker) {
@@ -132,6 +133,7 @@ export class Chart extends ChartData {
   setStyle(value: Chart.StyleName) {
     this.options.style = value
     this.chartLayer.components.style = createChartStyle(this)
+    this.chartLayer.needsUpdate = true
   }
 
   loading(value: boolean) {
@@ -243,6 +245,7 @@ export class Chart extends ChartData {
       }
 
       this.pointer.move()
+      this.uiLayer.update()
     })
 
     window.addEventListener('mouseup', e => {
