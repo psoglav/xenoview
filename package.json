@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "main": "dist/index.js",
-  "types": "dist/index.d.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "yarn remove-build && tsc && yarn copy-public",
     "build:commit": "yarn build && git add dist && git chore 'update build'",
