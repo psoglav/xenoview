@@ -5,6 +5,7 @@ const components_1 = require("../components");
 const _1 = require(".");
 const chartStyle_1 = require("../components/chartStyle");
 require("../../public/styles/main.css");
+console.log('lol');
 // import moment from 'moment'
 // console.log(moment().format('HH:mm'))
 const defaultChartOptions = {
