@@ -1,6 +1,6 @@
 import { Canvas, Chart, Component } from '../core'
 
-import { getFullTimeFromTimestamp, getTimeFromTimestamp } from '../../utils'
+import { formatDate, parseTimeLabel } from '../../utils'
 
 export default class TimeAxis extends Component {
   public isZooming: boolean = false
@@ -42,8 +42,7 @@ export default class TimeAxis extends Component {
     let point = data[i]
     if (!point) return
 
-    if (point.time.toString().length != 13) point.time *= 1000
-    let time = getFullTimeFromTimestamp(point.time)
+    let time = formatDate(point.time)
 
     x = this.chart.getPointX(i)
     ctx.beginPath()
