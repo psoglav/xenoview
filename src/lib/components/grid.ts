@@ -11,7 +11,7 @@ export default class Grid extends Component {
   }
 
   drawRows(ctx: CanvasRenderingContext2D) {
-    let rows = this.chart.getGridRows()
+    let rows = this.chart.getPriceTicks()
 
     ctx.beginPath()
     ctx.strokeStyle = '#7777aa33'

@@ -8,7 +8,7 @@ export default class PriceAxis extends Component {
   }
 
   drawGridLabels(ctx: CanvasRenderingContext2D) {
-    let rows = this.chart.getGridRows()
+    let rows = this.chart.getPriceTicks()
 
     for (let i of rows) {
       let y = this.chart.normalizeToY(i)

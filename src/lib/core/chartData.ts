@@ -171,7 +171,7 @@ export abstract class ChartData {
     })
   }
 
-  getGridRows() {
+  getPriceTicks() {
     let start = this.normalizeToPrice(this.chart.mainCanvasHeight)
     let end = this.normalizeToPrice(0)
     let ticks = Math.floor(this.chart.mainCanvasHeight / 30)
