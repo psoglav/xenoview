@@ -1,7 +1,7 @@
-export function rangeByStep(
+export function getRangeByStep(
   start: number,
   end: number,
-  step: number,
+  step: number
 ): number[] {
   if (end === start || step === 0) {
     return [start]
@@ -34,4 +34,39 @@ export function rangeByStep(
     }
   }
   return result
+}
+
+export function getNiceScale(
+  lowerBound: number,
+  upperBound: number,
+  maxTicks: number = 10
+): [[number, number], number] {
+  let tickSpacing, range, niceLowerBound, niceUpperBound
+
+  function niceNum(range, round) {
+    var exponent = Math.floor(Math.log10(range))
+    var fraction = range / Math.pow(10, exponent)
+    var niceFraction
+
+    if (round) {
+      if (fraction < 1.5) niceFraction = 1
+      else if (fraction < 3) niceFraction = 2
+      else if (fraction < 7) niceFraction = 5
+      else niceFraction = 10
+    } else {
+      if (fraction <= 1) niceFraction = 1
+      else if (fraction <= 2) niceFraction = 2
+      else if (fraction <= 5) niceFraction = 5
+      else niceFraction = 10
+    }
+
+    return niceFraction * Math.pow(10, exponent)
+  }
+
+  range = niceNum(upperBound - lowerBound, false)
+  tickSpacing = niceNum(range / (maxTicks - 1), true)
+  niceLowerBound = Math.floor(lowerBound / tickSpacing) * tickSpacing
+  niceUpperBound = Math.ceil(upperBound / tickSpacing) * tickSpacing
+
+  return [[niceLowerBound, niceUpperBound], tickSpacing]
 }

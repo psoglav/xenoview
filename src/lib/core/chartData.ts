@@ -1,4 +1,9 @@
-import { toMinutes, normalizeTo } from '../../utils'
+import {
+  toMinutes,
+  normalizeTo,
+  getNiceScale,
+  getRangeByStep
+} from '../../utils'
 
 import { Chart } from './chart'
 
@@ -167,30 +172,12 @@ export abstract class ChartData {
   }
 
   getGridRows() {
-    let t = this.highestPrice[1]
-    let b = this.lowestPrice[1]
-
-    if (t == 0 && b == 0) return []
-
-    t = Math.floor(t / 10) * 10
-    b = Math.floor(b / 10) * 10
-    let delta = t - b
-
-    let result = []
-    let length = delta / 10
-    let start = 0
-    let end = length
-
-    let step = 1
-
-    while (
-      this.normalizeToY((start / length) * delta + b) <
-      this.chart.getWidth(this.chart.ctx)
-    ) {
-      start -= step
-      step += 5
-      if (start < -5000) break
-    }
+    let start = this.normalizeToPrice(this.chart.mainCanvasHeight)
+    let end = this.normalizeToPrice(0)
+    let ticks = Math.floor(this.chart.mainCanvasHeight / 30)
+    let scale = getNiceScale(start, end, ticks)
+    return getRangeByStep(...scale[0], scale[1])
+  }
 
     step = 0
 
