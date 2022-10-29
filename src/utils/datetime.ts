@@ -1,9 +1,25 @@
+import { Moment } from 'moment'
+import moment from 'moment'
+
 export const getTimeFromTimestamp = (ts: number): string => {
   let date = new Date(ts)
   let h = date.getHours().toString().padStart(2, '0')
   let m = date.getMinutes().toString().padStart(2, '0')
 
   return h + ':' + m
+}
+
+export const getTimeTickMark = (ts: number): string => {
+  let date = moment(ts)
+  if (date.get('h') == 0) {
+    if (date.get('D') == 1) {
+      if (date.get('M') == 0) return date.get('y').toString()
+      return date.format('MMM')
+    }
+    return date.get('D').toString()
+  }
+
+  return date.format('HH:mm')
 }
 
 // TODO: multiply ts by 1000 if needed
@@ -29,7 +45,7 @@ export const dayOfYear = (date: any) =>
   )
 
 export const intervalToMiliseconds = (value: Ticker.Interval) => {
-  const intervalMap: { [key in Ticker.Interval]: number } = {
+  let intervalMap: { [key in Ticker.Interval]: number } = {
     '1s': 1000,
     '1m': 60000,
     '3m': 60000 * 3,
