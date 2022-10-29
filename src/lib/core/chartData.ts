@@ -199,7 +199,7 @@ export abstract class ChartData {
     let range = moment.range(startDate, endDate)
     return Array.from(range.by(moment.normalizeUnits('d'), { step: 1 }))
       .map((m: any) => this.normalizeToX(m.unix()))
-      .map(x => this.getPointIndexByX(x))
+      // .map(x => this.getPointIndexByX(x))
   }
 
   getGridColumns() {
