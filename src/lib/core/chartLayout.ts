@@ -114,15 +114,19 @@ export class ChartLayout {
     window.addEventListener('mouseup', () => (priceAxis.isZooming = false))
     window.addEventListener('resize', () => {
       let rect = el.getBoundingClientRect()
-      this.chart.setSize(70, rect.height - 28, this.priceAxisCanvas.raw)
+      this.chart.setSize(
+        this.priceAxisCanvas.width,
+        rect.height - this.timeAxisCanvas.height,
+        this.priceAxisCanvas.raw
+      )
     })
   }
 
   createTimeContainer() {
     const el = this.createContainer()
 
-    el.style.gridArea = '2 / 1 / 3 / 3'
-    el.style.width = 'calc(100% - 70px)'
+    el.style.gridArea = '2 / 1 / 3 / 2'
+    el.style.width = '100%'
     el.style.height = '28px'
     el.style.cursor = 'e-resize'
 
@@ -139,11 +143,15 @@ export class ChartLayout {
 
     el.addEventListener('mousedown', () => (timeAxis.isZooming = true))
     el.addEventListener('mouseup', () => (timeAxis.isZooming = false))
-    window.addEventListener('mousemove', (e) => timeAxis.zoom(e.movementX))
+    window.addEventListener('mousemove', e => timeAxis.zoom(e.movementX))
     window.addEventListener('mouseup', () => (timeAxis.isZooming = false))
     window.addEventListener('resize', () => {
       let rect = el.getBoundingClientRect()
-      this.chart.setSize(rect.width - 70, 28, this.timeAxisCanvas.canvas)
+      this.chart.setSize(
+        rect.width,
+        this.timeAxisCanvas.height,
+        this.timeAxisCanvas.canvas
+      )
     })
   }
 
