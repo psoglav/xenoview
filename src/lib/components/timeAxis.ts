@@ -20,10 +20,12 @@ export default class TimeAxis extends Component {
 
     for (let i of cols) {
       let point = this.chart.history[i]
+      if (!point) continue
       let x = this.chart.getPointX(i)
       let time = getTimeFromTimestamp(point.time * 1000)
 
-      ctx.fillText(time, x - 16, 16)
+      ctx.textAlign = 'center'
+      ctx.fillText(time, x, 16)
     }
 
     ctx.stroke()
@@ -47,12 +49,12 @@ export default class TimeAxis extends Component {
     x = this.chart.getPointX(i)
     ctx.beginPath()
     ctx.fillStyle = this.chart.options.pointer.bgColor
-    this.chart.rect(x - 60, 0, 118, h, ctx)
+    this.chart.rect(x - 66, 0, 128, h, ctx)
     ctx.fill()
     ctx.closePath()
     ctx.fillStyle = 'white'
     ctx.font = '11px Verdana'
-    ctx.fillText(time, x - 50, 20)
+    ctx.fillText(time, x, 20)
   }
 
   zoom(dx: number) {
