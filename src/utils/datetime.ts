@@ -44,7 +44,7 @@ export const dayOfYear = (date: any) =>
     (date - (new Date(date.getFullYear(), 0, 0) as any)) / 1000 / 60 / 60 / 24
   )
 
-export const intervalToMiliseconds = (value: Ticker.Interval) => {
+export const unitToMilliseconds = (value: Ticker.Interval) => {
   let intervalMap: { [key in Ticker.Interval]: number } = {
     '1s': 1000,
     '1m': 60000,
@@ -67,6 +67,7 @@ export const intervalToMiliseconds = (value: Ticker.Interval) => {
   return intervalMap[value]
 }
 
+// TODO: merge this into unitToMilliseconds
 export const dateRangeToMilliseconds = (value: Ticker.DateRange) => {
   let d = 86400000
   let dateRangeMap: { [range in Ticker.DateRange]: number } = {

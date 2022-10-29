@@ -1,4 +1,8 @@
-import { symbolToCurrency, dateRangeToMilliseconds, getIntervalByDateRange } from '../utils'
+import {
+  symbolToCurrency,
+  getIntervalByDateRange,
+  unitToMilliseconds
+} from '../utils'
 
 export class Ticker {
   public state: Ticker.State
@@ -38,7 +42,7 @@ export class Ticker {
 
   get historyRange(): [number, number] {
     let cur = +new Date()
-    return [cur - dateRangeToMilliseconds(this.range), cur]
+    return [cur - unitToMilliseconds(this.interval) * 1000, cur]
   }
 
   async fetchHistory(): Promise<History.Data> {
