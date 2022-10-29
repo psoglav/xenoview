@@ -1,13 +1,9 @@
 import { Ticker } from '../ticker'
-import { Pointer, Loader, ChartStyle, } from '../components'
+import { Pointer, Loader, ChartStyle } from '../components'
 import { ChartData, Transform, ChartLayout, UI, Label, UIElementGroup } from '.'
 import { createChartStyle } from '../components/chartStyle'
 
 import '../../public/styles/main.css'
-
-// import moment from 'moment'
-
-// console.log(moment().format('HH:mm'))
 
 const defaultChartOptions: Chart.Options = {
   style: 'candles',
