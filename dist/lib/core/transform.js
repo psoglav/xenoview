@@ -11,10 +11,6 @@ class Transform {
     move(mx, my) {
         this.boundingRect.top += my;
         this.boundingRect.bottom += my;
-        if (this.boundingRect.right == this.chart.mainCanvasWidth - 200 && mx < 0)
-            return;
-        if (this.boundingRect.left == 0 && mx > 0)
-            return;
         this.boundingRect.left += mx;
         this.boundingRect.right += mx;
         this.clamp();

@@ -1,7 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChartData = void 0;
 const utils_1 = require("../../utils");
+const moment_1 = __importDefault(require("moment"));
+const moment_range_1 = require("moment-range");
+const moment = (0, moment_range_1.extendMoment)(moment_1.default);
 class ChartData {
     constructor() {
         this.highestPrice = [0, 0];
@@ -94,9 +100,15 @@ class ChartData {
         let maxPrice = this.highestPrice[1];
         return minY + (0, utils_1.normalizeTo)(price, minPrice, maxPrice, minY, maxY);
     }
+    normalizeToX(timestamp) {
+        let [start] = this.visibleRange;
+        let d1 = this.history[start].time;
+        let d2 = this.history[start + 1].time;
+        return;
+    }
     getPointIndexByX(x) {
         let left = this.chart.boundingRect.left;
-        return (x + left * -1) / this.pointsGap;
+        return Math.round((x + left * -1) / this.pointsGap);
     }
     normalizePoint(point) {
         return Object.assign(Object.assign({}, point), { close: this.normalizeToY(point.close), open: this.normalizeToY(point.open), high: this.normalizeToY(point.high), low: this.normalizeToY(point.low) });
@@ -123,46 +135,22 @@ class ChartData {
             }
         });
     }
-    getGridRows() {
-        let t = this.highestPrice[1];
-        let b = this.lowestPrice[1];
-        if (t == 0 && b == 0)
-            return [];
-        t = Math.floor(t / 10) * 10;
-        b = Math.floor(b / 10) * 10;
-        let delta = t - b;
-        let result = [];
-        let length = delta / 10;
-        let start = 0;
-        let end = length;
-        let step = 1;
-        while (this.normalizeToY((start / length) * delta + b) <
-            this.chart.getWidth(this.chart.ctx)) {
-            start -= step;
-            step += 5;
-            if (start < -5000)
-                break;
-        }
-        step = 0;
-        while (this.normalizeToY((end / length) * delta + b) > 0) {
-            end += step;
-            step += 5;
-            if (end > 5000)
-                break;
-        }
-        for (let i = start; i <= end; i++) {
-            result.push((i / length) * delta + b);
-        }
-        let prev = 0;
-        return result.filter(i => {
-            let y = this.normalizeToY(i);
-            let py = this.normalizeToY(prev);
-            if (py - y < 30 && y != py) {
-                return 0;
-            }
-            prev = i;
-            return 1;
-        });
+    getPriceTicks() {
+        let start = this.normalizeToPrice(this.chart.mainCanvasHeight);
+        let end = this.normalizeToPrice(0);
+        let ticks = Math.floor(this.chart.mainCanvasHeight / 30);
+        let scale = (0, utils_1.getNiceScale)(start, end, ticks);
+        return (0, utils_1.getRangeByStep)(...scale[0], scale[1]);
+    }
+    // TODO: gonna implement this in other way, and for now, it's useless.
+    getTimeTicks() {
+        let [start, end] = this.visibleRange;
+        let startDate = moment(this.history[start].time).minute(0).hour(0);
+        let endDate = moment(this.history[end].time).minute(0).hour(0);
+        let range = moment.range(startDate, endDate);
+        return Array.from(range.by(moment.normalizeUnits('d'), { step: 1 }))
+            .map((m) => this.normalizeToX(m.unix()));
+        // .map(x => this.getPointIndexByX(x))
     }
     getGridColumns() {
         let prev = 0;

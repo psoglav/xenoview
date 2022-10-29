@@ -28,7 +28,7 @@ class Ticker {
     }
     get historyRange() {
         let cur = +new Date();
-        return [cur - (0, utils_1.dateRangeToMilliseconds)(this.range), cur];
+        return [cur - (0, utils_1.unitToMilliseconds)(this.interval) * 1000, cur];
     }
     async fetchHistory() {
         let params = {

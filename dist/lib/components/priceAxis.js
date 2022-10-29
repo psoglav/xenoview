@@ -7,7 +7,7 @@ class PriceAxis extends core_1.Component {
         this.isZooming = false;
     }
     drawGridLabels(ctx) {
-        let rows = this.chart.getGridRows();
+        let rows = this.chart.getPriceTicks();
         for (let i of rows) {
             let y = this.chart.normalizeToY(i);
             this.chart.moveTo(0, y, ctx);

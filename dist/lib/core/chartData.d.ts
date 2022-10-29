@@ -22,10 +22,12 @@ export declare abstract class ChartData {
     get lastVisiblePoint(): History.Point;
     normalizeToPrice(y: number): number;
     normalizeToY(price: number): number;
+    normalizeToX(timestamp: number): void;
     getPointIndexByX(x: number): number;
     normalizePoint(point: History.Point): History.Point;
     normalizeData(): History.Data;
     getHighestAndLowestPrice(): void;
-    getGridRows(): any[];
+    getPriceTicks(): number[];
+    getTimeTicks(): void[];
     getGridColumns(): number[];
 }

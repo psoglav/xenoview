@@ -10,7 +10,7 @@ class Grid extends core_1.Component {
         this.drawColumns(canvas.ctx);
     }
     drawRows(ctx) {
-        let rows = this.chart.getGridRows();
+        let rows = this.chart.getPriceTicks();
         ctx.beginPath();
         ctx.strokeStyle = '#7777aa33';
         for (let i of rows) {

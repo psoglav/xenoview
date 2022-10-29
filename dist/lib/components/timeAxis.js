@@ -17,9 +17,12 @@ class TimeAxis extends core_1.Component {
         ctx.font = size + 'px Verdana';
         for (let i of cols) {
             let point = this.chart.history[i];
+            if (!point)
+                continue;
             let x = this.chart.getPointX(i);
-            let time = (0, utils_1.getTimeFromTimestamp)(point.time * 1000);
-            ctx.fillText(time, x - 16, 16);
+            let time = (0, utils_1.getTimeTickMark)(point.time);
+            ctx.textAlign = 'center';
+            ctx.fillText(time, x, 16);
         }
         ctx.stroke();
         ctx.closePath();
@@ -35,18 +38,16 @@ class TimeAxis extends core_1.Component {
         let point = data[i];
         if (!point)
             return;
-        if (point.time.toString().length != 13)
-            point.time *= 1000;
-        let time = (0, utils_1.getFullTimeFromTimestamp)(point.time);
+        let time = (0, utils_1.formatDate)(point.time);
         x = this.chart.getPointX(i);
         ctx.beginPath();
         ctx.fillStyle = this.chart.options.pointer.bgColor;
-        this.chart.rect(x - 60, 0, 118, h, ctx);
+        this.chart.rect(x - 66, 0, 128, h, ctx);
         ctx.fill();
         ctx.closePath();
         ctx.fillStyle = 'white';
         ctx.font = '11px Verdana';
-        ctx.fillText(time, x - 50, 20);
+        ctx.fillText(time, x, 20);
     }
     zoom(dx) {
         if (this.isZooming) {

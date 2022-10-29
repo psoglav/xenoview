@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIntervalByDateRange = exports.dateRangeToMilliseconds = exports.intervalToMiliseconds = exports.dayOfYear = exports.toMinutes = exports.getFullTimeFromTimestamp = exports.getTimeFromTimestamp = void 0;
+exports.getIntervalByDateRange = exports.dateRangeToMilliseconds = exports.unitToMilliseconds = exports.dayOfYear = exports.toMinutes = exports.formatDate = exports.getTimeTickMark = exports.getTimeFromTimestamp = void 0;
+const moment_1 = __importDefault(require("moment"));
 const getTimeFromTimestamp = (ts) => {
     let date = new Date(ts);
     let h = date.getHours().toString().padStart(2, '0');
@@ -8,17 +12,24 @@ const getTimeFromTimestamp = (ts) => {
     return h + ':' + m;
 };
 exports.getTimeFromTimestamp = getTimeFromTimestamp;
-// TODO: multiply ts by 1000 if needed
-const getFullTimeFromTimestamp = (ts) => {
-    let date = new Date(ts);
-    let y = date.getFullYear().toString().slice(2).padStart(3, `'`);
-    let M = date.toLocaleString('en-US', { month: 'short' });
-    let d = date.getDate().toString().padStart(2, '0');
-    let h = date.getHours().toString().padStart(2, '0');
-    let m = date.getMinutes().toString().padStart(2, '0');
-    return `${d} ${M} ${y}  ${h}:${m}`;
+const getTimeTickMark = (ts) => {
+    let date = (0, moment_1.default)(ts);
+    if (date.get('h') == 0) {
+        if (date.get('D') == 1) {
+            if (date.get('M') == 0)
+                return date.get('y').toString();
+            return date.format('MMM');
+        }
+        return date.get('D').toString();
+    }
+    return date.format('HH:mm');
 };
-exports.getFullTimeFromTimestamp = getFullTimeFromTimestamp;
+exports.getTimeTickMark = getTimeTickMark;
+// TODO: multiply ts by 1000 if needed
+const formatDate = (ts) => {
+    return (0, moment_1.default)(ts).format('ddd DD MMM \'YY HH:mm');
+};
+exports.formatDate = formatDate;
 const toMinutes = (ts) => {
     if (ts.toString().length != (+new Date()).toString().length)
         ts *= 1000;
@@ -28,8 +39,8 @@ const toMinutes = (ts) => {
 exports.toMinutes = toMinutes;
 const dayOfYear = (date) => Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
 exports.dayOfYear = dayOfYear;
-const intervalToMiliseconds = (value) => {
-    const intervalMap = {
+const unitToMilliseconds = (value) => {
+    let intervalMap = {
         '1s': 1000,
         '1m': 60000,
         '3m': 60000 * 3,
@@ -49,7 +60,8 @@ const intervalToMiliseconds = (value) => {
     };
     return intervalMap[value];
 };
-exports.intervalToMiliseconds = intervalToMiliseconds;
+exports.unitToMilliseconds = unitToMilliseconds;
+// TODO: merge this into unitToMilliseconds
 const dateRangeToMilliseconds = (value) => {
     let d = 86400000;
     let dateRangeMap = {
