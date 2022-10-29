@@ -7,6 +7,11 @@ import {
 
 import { Chart } from './chart'
 
+import Moment from 'moment'
+import { extendMoment } from 'moment-range'
+
+const moment: any = extendMoment(<any>Moment)
+
 export abstract class ChartData {
   history: History.Data
   chartData: History.Data
@@ -131,9 +136,16 @@ export abstract class ChartData {
     return minY + normalizeTo(price, minPrice, maxPrice, minY, maxY)
   }
 
+  normalizeToX(timestamp: number) {
+    let [start] = this.visibleRange
+    let d1 = this.history[start].time
+    let d2 = this.history[start + 1].time
+    return 
+  }
+
   getPointIndexByX(x: number): number {
     let left = this.chart.boundingRect.left
-    return (x + left * -1) / this.pointsGap
+    return Math.round((x + left * -1) / this.pointsGap)
   }
 
   normalizePoint(point: History.Point): History.Point {
@@ -179,31 +191,15 @@ export abstract class ChartData {
     return getRangeByStep(...scale[0], scale[1])
   }
 
-    step = 0
-
-    while (this.normalizeToY((end / length) * delta + b) > 0) {
-      end += step
-      step += 5
-      if (end > 5000) break
-    }
-
-    for (let i = start; i <= end; i++) {
-      result.push((i / length) * delta + b)
-    }
-
-    let prev = 0
-
-    return result.filter(i => {
-      let y = this.normalizeToY(i)
-      let py = this.normalizeToY(prev)
-
-      if (py - y < 30 && y != py) {
-        return 0
-      }
-
-      prev = i
-      return 1
-    })
+  // TODO: gonna implement this in other way, and for now, it's useless.
+  getTimeTicks() {
+    let [start, end] = this.visibleRange
+    let startDate = moment(this.history[start].time).minute(0).hour(0)
+    let endDate = moment(this.history[end].time).minute(0).hour(0)
+    let range = moment.range(startDate, endDate)
+    return Array.from(range.by(moment.normalizeUnits('d'), { step: 1 }))
+      .map((m: any) => this.normalizeToX(m.unix()))
+      .map(x => this.getPointIndexByX(x))
   }
 
   getGridColumns() {
