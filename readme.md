@@ -1,1 +1,1 @@
-![](https://i.ibb.co/P691R4w/repo-preview.png)
+![](https://i.ibb.co/yWsj5Vy/repo-preview.png)
