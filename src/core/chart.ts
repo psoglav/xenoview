@@ -1,9 +1,9 @@
-import { Ticker } from '../ticker'
+import { Ticker } from './ticker'
 import { Pointer, Loader, ChartStyle } from '../components'
 import { ChartData, Transform, ChartLayout, UI, Label, UIElementGroup } from '.'
-import { createChartStyle } from '../components/chartStyle'
+import { createChartStyle } from '../components/chart-style'
 
-import '../../public/styles/main.css'
+import '../public/styles/main.css'
 
 const defaultChartOptions: Chart.Options = {
   style: 'candles',

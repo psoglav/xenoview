@@ -1,6 +1,6 @@
 import { Chart, Canvas } from '.'
 import { Pointer, Grid, TimeAxis, PriceAxis } from '../components'
-import { createChartStyle } from '../components/chartStyle'
+import { createChartStyle } from '../components/chart-style'
 
 export class ChartLayout {
   chart: Chart

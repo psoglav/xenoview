@@ -1,4 +1,4 @@
-import { Chart } from '@/lib/core'
+import { Chart } from '@/core'
 
 export class Transform {
   public boundingRect: Chart.BoundingRect

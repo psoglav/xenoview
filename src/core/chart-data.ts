@@ -3,7 +3,7 @@ import {
   normalizeTo,
   getNiceScale,
   getRangeByStep
-} from '../../utils'
+} from '../utils'
 
 import { Chart } from './chart'
 
@@ -136,13 +136,6 @@ export abstract class ChartData {
     return minY + normalizeTo(price, minPrice, maxPrice, minY, maxY)
   }
 
-  normalizeToX(timestamp: number) {
-    let [start] = this.visibleRange
-    let d1 = this.history[start].time
-    let d2 = this.history[start + 1].time
-    return 
-  }
-
   getPointIndexByX(x: number): number {
     let left = this.chart.boundingRect.left
     return Math.round((x + left * -1) / this.pointsGap)
@@ -183,9 +176,17 @@ export abstract class ChartData {
     })
   }
 
+  getUpperPriceBound() {
+    return this.normalizeToPrice(0)
+  }
+
+  getLowerPriceBound() {
+    return this.normalizeToPrice(this.chart.mainCanvasHeight)
+  }
+
   getPriceTicks() {
-    let start = this.normalizeToPrice(this.chart.mainCanvasHeight)
-    let end = this.normalizeToPrice(0)
+    let start = this.getLowerPriceBound()
+    let end = this.getUpperPriceBound()
     let ticks = Math.floor(this.chart.mainCanvasHeight / 30)
     let scale = getNiceScale(start, end, ticks)
     return getRangeByStep(...scale[0], scale[1])
@@ -198,8 +199,6 @@ export abstract class ChartData {
     let endDate = moment(this.history[end].time).minute(0).hour(0)
     let range = moment.range(startDate, endDate)
     return Array.from(range.by(moment.normalizeUnits('d'), { step: 1 }))
-      .map((m: any) => this.normalizeToX(m.unix()))
-      // .map(x => this.getPointIndexByX(x))
   }
 
   getGridColumns() {

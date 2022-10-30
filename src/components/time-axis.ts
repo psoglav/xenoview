@@ -1,6 +1,6 @@
 import { Canvas, Chart, Component } from '../core'
 
-import { formatDate, getTimeTickMark } from '../../utils'
+import { formatDate, getTimeTickMark } from '../utils'
 
 export default class TimeAxis extends Component {
   public isZooming: boolean = false

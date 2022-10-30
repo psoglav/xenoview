@@ -1,2 +1,2 @@
-export * from './lib/core/chart'
-export * from './lib/ticker'
+export * from './core/chart'
+export * from './core/ticker'

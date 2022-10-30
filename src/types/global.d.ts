@@ -1,4 +1,4 @@
-import { UIElement } from '../lib/core'
+import { UIElement } from '../core'
 
 declare global {
   export namespace UI {
@@ -81,7 +81,16 @@ declare global {
       low: number
       close: number
     }
-    type DateRange = '1d' | '5d' | '1M' | '3M' | '6M' | 'ytd' | '1y' | '5y' | 'all'
+    type DateRange =
+      | '1d'
+      | '5d'
+      | '1M'
+      | '3M'
+      | '6M'
+      | 'ytd'
+      | '1y'
+      | '5y'
+      | 'all'
     type Interval =
       | '1s'
       | '1m'
@@ -102,7 +111,6 @@ declare global {
   }
 
   export namespace History {
-    type LinearData = number[][]
     type Point = {
       close: number
       high: number
