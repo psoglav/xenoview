@@ -1,15 +1,7 @@
-import { Moment } from 'moment'
 import moment from 'moment'
+import { TimeInterval } from '../types/time'
 
-export const getTimeFromTimestamp = (ts: number): string => {
-  let date = new Date(ts)
-  let h = date.getHours().toString().padStart(2, '0')
-  let m = date.getMinutes().toString().padStart(2, '0')
-
-  return h + ':' + m
-}
-
-export const getTimeTickMark = (ts: number): string => {
+export const timeTickMark = (ts: number): string => {
   let date = moment(ts)
   if (date.get('h') == 0) {
     if (date.get('D') == 1) {
@@ -22,9 +14,8 @@ export const getTimeTickMark = (ts: number): string => {
   return date.format('HH:mm')
 }
 
-// TODO: multiply ts by 1000 if needed
-export const formatDate = (ts: number): string => {
-  return moment(ts).format('ddd DD MMM \'YY HH:mm')
+export const currentTimeTickMark = (ts: number): string => {
+  return moment(ts).format("ddd DD MMM 'YY HH:mm")
 }
 
 export const toMinutes = (ts: number): number => {
@@ -44,58 +35,49 @@ export const dayOfYear = (date: any) =>
     (date - (new Date(date.getFullYear(), 0, 0) as any)) / 1000 / 60 / 60 / 24
   )
 
-export const unitToMilliseconds = (value: Ticker.Interval) => {
-  let intervalMap: { [key in Ticker.Interval]: number } = {
-    '1s': 1000,
-    '1m': 60000,
-    '3m': 60000 * 3,
-    '5m': 60000 * 5,
-    '15m': 60000 * 15,
-    '30m': 60000 * 30,
-    '1h': 60000 * 60,
-    '2h': 60000 * 60 * 2,
-    '4h': 60000 * 60 * 4,
-    '6h': 60000 * 60 * 6,
-    '8h': 60000 * 60 * 8,
-    '12h': 60000 * 60 * 12,
-    '1d': 60000 * 60 * 24,
-    '3d': 60000 * 60 * 24 * 3,
-    '1w': 60000 * 60 * 24 * 7,
-    '1M': 60000 * 60 * 24 * 30
-  }
+export const timeUnitWeightMap = Object.freeze({
+  year: 31536000000,
+  quarter: 7776000000,
+  month: 2592000000,
+  week: 604800000,
+  day: 86400000,
+  hour: 3600000,
+  minute: 60000,
+  second: 1000
+})
 
-  return intervalMap[value]
+const dateRangeToIntervalMap: { [range: string]: TimeInterval } = {
+  '1d': '1m',
+  '5d': '5m',
+  '1M': '30m',
+  '3M': '1h',
+  '6M': '2h',
+  ytd: '1d',
+  '1y': '1d',
+  '5y': '1w',
+  all: '1M'
 }
 
-// TODO: merge this into unitToMilliseconds
-export const dateRangeToMilliseconds = (value: Ticker.DateRange) => {
-  let d = 86400000
-  let dateRangeMap: { [range in Ticker.DateRange]: number } = {
-    '1d': d,
-    '5d': d * 5,
-    '1M': d * 30,
-    '3M': d * 30 * 3,
-    '6M': d * 30 * 6,
-    ytd: d * dayOfYear(new Date()),
-    '1y': d * 365,
-    '5y': d * 365 * 5,
-    all: undefined
-  }
-
-  return dateRangeMap[value]
+export const getTimeUnitWeight = (value: any): number => {
+  return timeUnitWeightMap[moment.normalizeUnits(value)]
 }
 
-export const getIntervalByDateRange = (value: Ticker.DateRange) => {
-  let map: { [range in Ticker.DateRange]: Ticker.Interval } = {
-    '1d': '1m',
-    '5d': '5m',
-    '1M': '30m',
-    '3M': '1h',
-    '6M': '2h',
-    ytd: '1d',
-    '1y': '1d',
-    '5y': '1w',
-    all: '1M'
-  }
-  return map[value]
+export const timeUnitToRange = (
+  value: string,
+  start = +new Date()
+): [number, number] => {
+  let t = getTimeUnitWeight(value)
+  return [t - start, t]
+}
+
+export const getIntervalWeight = (value: TimeInterval) => {
+  let [amount, unit] = value.split(/([0-9]*)/).filter(s => s) as any
+  amount = +amount
+  return getTimeUnitWeight(unit) * amount
+}
+
+export const getIntervalByDateRange = (
+  value: keyof typeof dateRangeToIntervalMap
+) => {
+  return dateRangeToIntervalMap[value]
 }

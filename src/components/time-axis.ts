@@ -1,6 +1,6 @@
 import { Canvas, Chart, Component } from '../core'
 
-import { formatDate, getTimeTickMark } from '../utils'
+import { currentTimeTickMark, timeTickMark } from '../utils'
 
 export default class TimeAxis extends Component {
   public isZooming: boolean = false
@@ -22,7 +22,7 @@ export default class TimeAxis extends Component {
       let point = this.chart.history[i]
       if (!point) continue
       let x = this.chart.getPointX(i)
-      let time = getTimeTickMark(point.time)
+      let time = timeTickMark(point.time)
 
       ctx.textAlign = 'center'
       ctx.fillText(time, x, 16)
@@ -44,7 +44,7 @@ export default class TimeAxis extends Component {
     let point = data[i]
     if (!point) return
 
-    let time = formatDate(point.time)
+    let time = currentTimeTickMark(point.time)
 
     x = this.chart.getPointX(i)
     ctx.beginPath()

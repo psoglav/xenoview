@@ -71,45 +71,6 @@ declare global {
     type Container = Element | string
   }
 
-  export namespace Ticker {
-    type Listener = (state: Ticker.State) => void
-    type State = {
-      PRICE: number
-      LASTUPDATE: number
-      open: number
-      high: number
-      low: number
-      close: number
-    }
-    type DateRange =
-      | '1d'
-      | '5d'
-      | '1M'
-      | '3M'
-      | '6M'
-      | 'ytd'
-      | '1y'
-      | '5y'
-      | 'all'
-    type Interval =
-      | '1s'
-      | '1m'
-      | '3m'
-      | '5m'
-      | '15m'
-      | '30m'
-      | '1h'
-      | '2h'
-      | '4h'
-      | '6h'
-      | '8h'
-      | '12h'
-      | '1d'
-      | '3d'
-      | '1w'
-      | '1M'
-  }
-
   export namespace History {
     type Point = {
       close: number

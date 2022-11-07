@@ -1,4 +1,4 @@
-import { assert } from '@/utils/assertions'
+import { assert, getTimeUnitWeight } from '@/utils'
 
 export default class Range<T extends number> {
   private readonly _start: T
@@ -25,5 +25,9 @@ export default class Range<T extends number> {
 
   equals(other: Range<T>) {
     return other.start === this.start && other.end === this.end
+  }
+
+  static from(s: Ticker.DateRange) {
+
   }
 }

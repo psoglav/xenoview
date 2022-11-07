@@ -1,9 +1,4 @@
-import {
-  toMinutes,
-  normalizeTo,
-  getNiceScale,
-  getRangeByStep
-} from '../utils'
+import { toMinutes, normalizeTo, getNiceScale, getRangeByStep } from '../utils'
 
 import { Chart } from './chart'
 
@@ -28,7 +23,7 @@ export abstract class ChartData {
   }
 
   get pointsGap(): number {
-    return this.chartFullWidth / this.history.length
+    return this.chartFullWidth / this.history?.length
   }
 
   constructor() {}

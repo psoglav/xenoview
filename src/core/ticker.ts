@@ -1,20 +1,32 @@
 import {
   symbolToCurrency,
   getIntervalByDateRange,
-  unitToMilliseconds
+  getIntervalWeight
 } from '../utils'
+import { TimeInterval, DateRange } from '../types/time'
+import moment from 'moment'
+
+type CurrentBarState = {
+  PRICE: number
+  LASTUPDATE: number
+  open: number
+  high: number
+  low: number
+  close: number
+}
+export type ListenerFunction = (state: CurrentBarState) => void
 
 export class Ticker {
-  public state: Ticker.State
+  public state: CurrentBarState
 
   private symbol: string
-  private interval: Ticker.Interval
-  private range: Ticker.DateRange = '5d'
+  private interval: TimeInterval
+  private range: DateRange = '5d'
 
   private ws: WebSocket = null
-  private listeners: Ticker.Listener[] = []
+  private listeners: ListenerFunction[] = []
 
-  constructor(symbol: string, interval: Ticker.Interval) {
+  constructor(symbol: string, interval: TimeInterval) {
     this.symbol = symbol
     this.interval = interval
 
@@ -30,19 +42,24 @@ export class Ticker {
     this.init()
   }
 
-  setInterval(value: Ticker.Interval) {
+  setInterval(value: TimeInterval) {
     this.interval = value
     this.init()
   }
 
-  setRange(value: Ticker.DateRange) {
+  setRange(value: DateRange) {
     this.range = value
     this.interval = getIntervalByDateRange(value)
   }
 
   get historyRange(): [number, number] {
-    let cur = +new Date()
-    return [cur - unitToMilliseconds(this.interval) * 1000, cur]
+    let veryBeginning = moment([2009, 0, 3]).unix()
+    let end = +new Date()
+    let start = Math.max(
+      end - getIntervalWeight(this.interval) * 1000,
+      veryBeginning
+    )
+    return [start, end]
   }
 
   async fetchHistory(): Promise<History.Data> {
@@ -110,7 +127,7 @@ export class Ticker {
     }
   }
 
-  addListener(cb: Ticker.Listener) {
+  addListener(cb: ListenerFunction) {
     this.listeners.push(cb)
   }
 }
