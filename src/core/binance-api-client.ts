@@ -1,21 +1,4 @@
-export enum Interval {
-  '1s' = 1000,
-  '1m' = 60000,
-  '3m' = 180000,
-  '5m' = 300000,
-  '15m' = 900000,
-  '30m' = 1800000,
-  '1h' = 3600000,
-  '2h' = 7200000,
-  '4h' = 14400000,
-  '6h' = 21600000,
-  '8h' = 28800000,
-  '12h' = 43200000,
-  '1d' = 86400000,
-  '3d' = 259200000,
-  '1w' = 604800000,
-  '1M' = 2592000000
-}
+import { Interval } from '../types/time'
 
 export type KLinesParameters = {
   symbol: string
@@ -25,12 +8,30 @@ export type KLinesParameters = {
   limit?: number
 }
 
+type BinanceStreamMethod = 'SUBSCRIBE' | 'UNSUBSCRIBE' | 'LIST_SUBSCRIPTIONS' | 'SET_PROPERTY' | 'GET_PROPERTY'
+type BinanceStreamEventType =
+  | 'kline'
+  | 'trade'
+  | 'aggTrade'
+  | '24hrTicker'
+  | '24hrMiniTicker'
+  | 'depthUpdate'
+  | '1hTicker'
+type WSEventType = 'close' | 'error' | 'open' | 'message'
+
 export default class BinanceAPIClient {
   private _baseURL = 'https://api.binance.com/api/v3'
+  private _wssStreamURL = 'wss://stream.binance.com:9443'
+  private _ws: WebSocket = null
+  private _counter = 0
+
+  get connected() {
+    return this._ws && this._ws.readyState === this._ws.OPEN
+  }
 
   constructor() {}
 
-  async request(endpoint: string, params: object) {
+  private async get(endpoint: string, params: object) {
     return await fetch(
       this._baseURL +
         endpoint +
@@ -44,7 +45,7 @@ export default class BinanceAPIClient {
   }
 
   async getKLines(params: KLinesParameters): Promise<History.Data> {
-    const response = await this.request('/klines', params)
+    const response = await this.get('/klines', params)
     return (await response.json()).map(([time, open, high, low, close, volume]) => ({
       time,
       open: +open,
@@ -53,5 +54,56 @@ export default class BinanceAPIClient {
       close: +close,
       volume: +volume
     }))
+  }
+
+  public connect(onopen?: EventListener, onerror?: EventListener) {
+    this._ws = new WebSocket(`${this._wssStreamURL}/ws`)
+    if (onopen) this._ws.addEventListener('open', onopen)
+    if (onerror) this._ws.addEventListener('error', onerror)
+  }
+
+  public on(event: WSEventType, cb: EventListener) {
+    if (!this.connected) throw new Error('WebSocket is closed or undefined')
+    this._ws.addEventListener(event, (e: any) => cb(JSON.parse(e.data)))
+  }
+
+  public onStreamEvent(eventType: BinanceStreamEventType, cb: EventListener) {
+    this.on('message', (data: any) => {
+      if (data.e == eventType) {
+        cb(data)
+      }
+    })
+  }
+
+  public disconnect() {
+    this._ws?.close()
+  }
+
+  private emit(method: BinanceStreamMethod, params: string[]) {
+    const id = +new Date() + this._counter++
+    this._ws.send(
+      JSON.stringify({
+        method,
+        params,
+        id
+      })
+    )
+    return new Promise((resolve, reject) => {
+      this.on('message', (data: any) => {
+        if (data.id === id) {
+          resolve(data.result)
+        } else if (data.error) {
+          reject()
+        }
+      })
+    })
+  }
+
+  subscribe(symbol: string, streamName: string) {
+    return this.emit('SUBSCRIBE', [`${symbol.toLowerCase()}@${streamName}`])
+  }
+
+  unsubscribe(symbol: string, streamName: string) {
+    return this.emit('UNSUBSCRIBE', [`${symbol.toLowerCase()}@${streamName}`])
   }
 }
