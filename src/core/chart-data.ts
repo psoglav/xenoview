@@ -105,19 +105,22 @@ export abstract class ChartData {
     return this.chart.boundingRect.left + this.pointsGap * i
   }
 
-  get visibleRange(): number[] {
+  visibleRange(boundless?: boolean): number[] {
     let left = this.chart.boundingRect.left,
       width = this.chart.chartLayer.width,
       start = Math.round((left * -1) / this.pointsGap),
       end = Math.round((left * -1 + width) / this.pointsGap)
 
-    start = Math.max(start - 1, 0)
-    end = Math.min(end, this.history.length - 1)
+    if (!boundless) {
+      start = Math.max(start - 1, 0)
+      end = Math.min(end, this.history.length - 1)
+    }
+
     return [start, end]
   }
 
   get visiblePoints() {
-    return this.history?.slice(...this.visibleRange)
+    return this.history?.slice(...this.visibleRange())
   }
 
   get lastPoint(): History.Point {
@@ -125,7 +128,7 @@ export abstract class ChartData {
   }
 
   get lastVisiblePoint(): History.Point {
-    return this.history[this.visibleRange[1]]
+    return this.history[this.visibleRange()[1]]
   }
 
   normalizeToPrice(y: number) {
@@ -206,7 +209,7 @@ export abstract class ChartData {
 
   // TODO: gonna implement this in other way, and for now, it looks ugly.
   getTimeTicks() {
-    let [start, end] = this.visibleRange
+    let [start, end] = this.visibleRange(true)
     let scale = getNiceScale(start, end, 10)
     return getRangeByStep(...scale[0], scale[1])
   }
