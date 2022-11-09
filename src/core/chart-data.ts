@@ -204,29 +204,10 @@ export abstract class ChartData {
     return getRangeByStep(...scale[0], scale[1])
   }
 
-  // TODO: gonna implement this in other way, and for now, it's useless.
+  // TODO: gonna implement this in other way, and for now, it looks ugly.
   getTimeTicks() {
     let [start, end] = this.visibleRange
-    let startDate = moment(this.history[start].time).minute(0).hour(0)
-    let endDate = moment(this.history[end].time).minute(0).hour(0)
-    let range = moment.range(startDate, endDate)
-    return Array.from(range.by(moment.normalizeUnits('d'), { step: 1 }))
-  }
-
-  getGridColumns() {
-    let prev = 0
-    return this.history
-      .map((_, i) => i)
-      .filter(i => {
-        let x = this.getPointX(i)
-        let px = this.getPointX(prev)
-
-        if (x - px < 100 && x != px) {
-          return 0
-        }
-
-        prev = i
-        return 1
-      })
+    let scale = getNiceScale(start, end, 10)
+    return getRangeByStep(...scale[0], scale[1])
   }
 }

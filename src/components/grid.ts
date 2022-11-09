@@ -28,7 +28,7 @@ export default class Grid extends Component {
   }
 
   drawColumns(ctx: CanvasRenderingContext2D) {
-    let cols = this.chart.getGridColumns()
+    let cols = this.chart.getTimeTicks()
 
     ctx.beginPath()
     ctx.strokeStyle = '#7777aa33'

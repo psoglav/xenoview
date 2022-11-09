@@ -10,9 +10,8 @@ export default class TimeAxis extends Component {
   }
 
   drawLabels(ctx: CanvasRenderingContext2D) {
-    let cols = this.chart.getGridColumns()
+    let cols = this.chart.getTimeTicks()
 
-    this.chart.clear(ctx)
     ctx.beginPath()
     let size = this.chart.options.timeAxis?.labels?.fontSize || 11
     ctx.fillStyle = this.chart.options.textColor
