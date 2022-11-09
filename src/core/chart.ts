@@ -237,22 +237,6 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
     })
   }
 
-  getWidth(ctx: CanvasRenderingContext2D) {
-    return ctx.canvas.width * this.getPixelRatio(ctx)
-  }
-
-  getHeight(ctx: CanvasRenderingContext2D) {
-    return ctx.canvas.height * this.getPixelRatio(ctx)
-  }
-
-  get mainCanvasWidth() {
-    return this.canvas.clientWidth
-  }
-
-  get mainCanvasHeight() {
-    return this.canvas.clientHeight
-  }
-
   get canvasRect() {
     return this.ctx.canvas.getBoundingClientRect()
   }
@@ -261,87 +245,8 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
     this.options.autoScale = !this.options.autoScale
     if (this.options.autoScale) {
       this.boundingRect.top = 0
-      this.boundingRect.bottom = this.mainCanvasHeight
+      this.boundingRect.bottom = this.chartLayer.height
     }
-  }
-
-  private setSize(w: number, h: number, canvas: HTMLCanvasElement) {
-    canvas.width = w
-    canvas.height = h
-  }
-
-  private rescale(ctx: CanvasRenderingContext2D) {
-    let pixelRatio = this.getPixelRatio(ctx)
-    let width = ctx.canvas.clientWidth * pixelRatio
-    let height = ctx.canvas.clientHeight * pixelRatio
-    if (width != ctx.canvas.width) ctx.canvas.width = width
-    if (height != ctx.canvas.height) ctx.canvas.height = height
-
-    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
-  }
-
-  private getSharpPixel(pos: number, ctx: CanvasRenderingContext2D, thickness: number = 1): number {
-    if (thickness % 2 == 0) {
-      return pos
-    }
-    return pos + this.getPixelRatio(ctx) / 2
-  }
-
-  private getPixelRatio(context: any) {
-    let dpr = window.devicePixelRatio || 1
-    let bsr =
-      context.webkitBackingStorePixelRatio ||
-      context.mozBackingStorePixelRatio ||
-      context.msBackingStorePixelRatio ||
-      context.oBackingStorePixelRatio ||
-      context.backingStorePixelRatio ||
-      1
-
-    return dpr / bsr
-  }
-
-  private moveTo(x: number, y: number, ctx?: CanvasRenderingContext2D) {
-    if (!ctx) ctx = this.ctx
-    ctx.moveTo(this.getSharpPixel(Math.round(x), ctx), this.getSharpPixel(Math.round(y), ctx))
-  }
-
-  private lineTo(x: number, y: number, ctx?: CanvasRenderingContext2D) {
-    if (!ctx) ctx = this.ctx
-    ctx.lineTo(this.getSharpPixel(Math.round(x), ctx), this.getSharpPixel(Math.round(y), ctx))
-  }
-
-  private rect(x: number, y: number, w: number, h: number, ctx?: CanvasRenderingContext2D) {
-    if (!ctx) ctx = this.ctx
-    ctx.rect(
-      this.getSharpPixel(Math.round(x) + 0.5, ctx),
-      this.getSharpPixel(Math.round(y) + 0.5, ctx),
-      this.getSharpPixel(Math.round(w) + 0.5, ctx),
-      this.getSharpPixel(Math.round(h) + 0.5, ctx)
-    )
-  }
-
-  private circle(x: number, y: number, radius: number, ctx?: CanvasRenderingContext2D) {
-    if (!ctx) ctx = this.ctx
-    ctx.beginPath()
-    x = this.getSharpPixel(Math.round(x) + 0.5, ctx)
-    y = this.getSharpPixel(Math.round(y) + 0.5, ctx)
-    ctx.arc(x, y, radius, 0, 2 * Math.PI, false)
-    ctx.fill()
-    ctx.stroke()
-    ctx.closePath()
-  }
-
-  private clear(ctx?: CanvasRenderingContext2D) {
-    if (!ctx) ctx = this.ctx
-    ctx.clearRect(0, 0, this.getWidth(ctx), this.getHeight(ctx))
-  }
-
-  private error(msg: string) {
-    throw new Error('CryptoView Error: ' + msg)
-  }
-
-  private log(...msg: any) {
-    console.log('CryptoView Log: ', ...msg)
   }
 
   private debug(text: any, x: number, y: number) {

@@ -62,7 +62,7 @@ export default class Pointer extends Component {
     let y =
       Math.round(
         this.position.y +
-          (this.chart.mainCanvasHeight % 2) / 2 -
+          (this.chart.chartLayer.height % 2) / 2 -
           this.chart.canvasRect.top
       ) + 0.5
 

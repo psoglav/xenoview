@@ -107,7 +107,7 @@ export abstract class ChartData {
 
   get visibleRange(): number[] {
     let left = this.chart.boundingRect.left,
-      width = this.chart.mainCanvasWidth,
+      width = this.chart.chartLayer.width,
       start = Math.round((left * -1) / this.pointsGap),
       end = Math.round((left * -1 + width) / this.pointsGap)
 
@@ -193,13 +193,13 @@ export abstract class ChartData {
   }
 
   getLowerPriceBound() {
-    return this.normalizeToPrice(this.chart.mainCanvasHeight)
+    return this.normalizeToPrice(this.chart.chartLayer.height)
   }
 
   getPriceTicks() {
     let start = this.getLowerPriceBound()
     let end = this.getUpperPriceBound()
-    let ticks = Math.floor(this.chart.mainCanvasHeight / 30)
+    let ticks = Math.floor(this.chart.chartLayer.height / 30)
     let scale = getNiceScale(start, end, ticks)
     return getRangeByStep(...scale[0], scale[1])
   }

@@ -34,7 +34,7 @@ export class Transform {
     dy = dy < 0 ? Math.max(dy, -150) : Math.min(dy, 150)
 
     if (dx) {
-      let zoomPoint = xOrigin || this.chart.mainCanvasWidth
+      let zoomPoint = xOrigin || this.chart.chartLayer.width
       let d = 11 / this.ZOOM_RATE
 
       this.boundingRect.right +=
@@ -45,7 +45,7 @@ export class Transform {
     }
 
     if (dy) {
-      let origin = this.chart.mainCanvasHeight / 2
+      let origin = this.chart.chartLayer.height / 2
       let d = 6 / this.ZOOM_RATE
 
       this.boundingRect.top -=
@@ -60,9 +60,9 @@ export class Transform {
   reset(full?: boolean) {
     this.boundingRect = {
       top: 35,
-      bottom: this.chart.mainCanvasHeight - 35,
+      bottom: this.chart.chartLayer.height - 35,
       left: 0,
-      right: this.chart.mainCanvasWidth,
+      right: this.chart.chartLayer.width,
       offsetX: 0,
       offsetY: 0
     }
@@ -73,7 +73,7 @@ export class Transform {
   }
 
   clamp() {
-    let w = this.chart.mainCanvasWidth
+    let w = this.chart.chartLayer.width
     let gap = this.chart.pointsGap
 
     if (this.boundingRect.right < gap * 3) {

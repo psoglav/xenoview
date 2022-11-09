@@ -33,7 +33,7 @@ export class ChartLayout {
     }
 
     if (!this.layoutContainer) {
-      this.chart.error('no container is found')
+      throw new Error('no container is found')
     } else {
       this.layoutContainer.classList.add('chart-container')
       this.layoutContainer.innerHTML = ''
@@ -114,11 +114,7 @@ export class ChartLayout {
     window.addEventListener('mouseup', () => (priceAxis.isZooming = false))
     window.addEventListener('resize', () => {
       let rect = el.getBoundingClientRect()
-      this.chart.setSize(
-        this.priceAxisCanvas.width,
-        rect.height - this.timeAxisCanvas.height,
-        this.priceAxisCanvas.raw
-      )
+      this.priceAxisCanvas.setSize(this.priceAxisCanvas.width, rect.height - this.timeAxisCanvas.height)
     })
   }
 
@@ -147,11 +143,7 @@ export class ChartLayout {
     window.addEventListener('mouseup', () => (timeAxis.isZooming = false))
     window.addEventListener('resize', () => {
       let rect = el.getBoundingClientRect()
-      this.chart.setSize(
-        rect.width,
-        this.timeAxisCanvas.height,
-        this.timeAxisCanvas.canvas
-      )
+      this.timeAxisCanvas.setSize(rect.width, this.timeAxisCanvas.height)
     })
   }
 

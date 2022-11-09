@@ -24,11 +24,11 @@ export class Canvas {
   }
 
   get width() {
-    return this.raw.width
+    return this.raw.width * this.getPixelRatio(this.ctx)
   }
 
   get height() {
-    return this.raw.height
+    return this.raw.height * this.getPixelRatio(this.ctx)
   }
 
   get components() {
@@ -129,5 +129,32 @@ export class Canvas {
       1
 
     return dpr / bsr
+  }
+
+  rect(x: number, y: number, w: number, h: number) {
+    this.ctx.rect(
+      this.getSharpPixel(Math.round(x) + 0.5),
+      this.getSharpPixel(Math.round(y) + 0.5),
+      this.getSharpPixel(Math.round(w) + 0.5),
+      this.getSharpPixel(Math.round(h) + 0.5)
+    )
+  }
+
+  circle(x: number, y: number, radius: number) {
+    this.ctx.beginPath()
+    x = this.getSharpPixel(Math.round(x) + 0.5)
+    y = this.getSharpPixel(Math.round(y) + 0.5)
+    this.ctx.arc(x, y, radius, 0, 2 * Math.PI, false)
+    this.ctx.fill()
+    this.ctx.stroke()
+    this.ctx.closePath()
+  }
+
+  moveTo(x: number, y: number) {
+    this.ctx.moveTo(this.getSharpPixel(Math.round(x)), this.getSharpPixel(Math.round(y)))
+  }
+
+  lineTo(x: number, y: number) {
+    this.ctx.lineTo(this.getSharpPixel(Math.round(x)), this.getSharpPixel(Math.round(y)))
   }
 }
