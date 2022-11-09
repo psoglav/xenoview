@@ -1,34 +1,19 @@
-import { Ticker } from './ticker'
-import { Pointer, Loader, ChartStyle } from '../components'
-import { ChartData, Transform, ChartLayout, UI, Label, UIElementGroup } from '.'
-import { createChartStyle } from '../components/chart-style'
-
 import '../public/styles/main.css'
 
-const defaultChartOptions: Chart.Options = {
-  style: 'candles',
-  bgColor: '#151924',
-  textColor: '#b2b5be',
-  autoScale: false,
-  spinnerColor: '#b2b5be',
-  pointer: {
-    bgColor: '#363a45',
-    fgColor: '#9598a1'
-  },
-  candles: {
-    colors: {
-      higher: '#089981',
-      lower: '#f23645'
-    }
-  },
-  line: {
-    color: '#089981',
-    width: 2
-  }
-}
+import Configurable from '@/models/configurable'
 
-export class Chart extends ChartData {
+import { ChartData, ChartLayout, Label, Transform, UI, UIElementGroup } from '.'
+import { ChartStyle, Loader, Pointer } from '../components'
+import { createChartStyle } from '../components/chart-style'
+import { ChartOptions, defaultChartOptions } from '../config/chart-options'
+
+export class Chart extends ChartData implements Configurable<ChartOptions> {
+  _opts = defaultChartOptions
   layout: ChartLayout
+
+  get options() {
+    return this._opts
+  }
 
   get chartLayer() {
     return this.layout.chartLayers.view
@@ -38,9 +23,6 @@ export class Chart extends ChartData {
     return this.layout.chartLayers.ui
   }
 
-  options: Chart.Options = defaultChartOptions
-
-  ticker: Ticker
   ui: UI
 
   transform: Transform
@@ -83,11 +65,10 @@ export class Chart extends ChartData {
     return this.components.pointer as Pointer
   }
 
-  constructor(container: HTMLElement | string, options?: Chart.Options) {
+  constructor(container: HTMLElement | string, options?: ChartOptions) {
     super()
+    this.applyOptions(options)
     this.initData(this)
-
-    if (options) this.options = { ...this.options, ...options }
 
     this.layout = new ChartLayout(this, container)
     this.transform = new Transform(this)
@@ -97,7 +78,13 @@ export class Chart extends ChartData {
     this.render()
   }
 
-  render() {
+  applyOptions(opts: ChartOptions): void {
+    Object.keys(opts).forEach(option => {
+      this._opts[option] = opts[option]
+    })
+  }
+
+  private render() {
     if (this.options.autoScale) {
       this.getHighestAndLowestPrice()
     }
@@ -114,7 +101,7 @@ export class Chart extends ChartData {
     requestAnimationFrame(this.render.bind(this))
   }
 
-  loadHistory(value: History.Data) {
+  public loadHistory(value: History.Data) {
     this.transform.reset()
     this.history = value
     this.chartData = this.normalizeData()
@@ -123,31 +110,22 @@ export class Chart extends ChartData {
     this.chartLayer.needsUpdate = true
   }
 
-  setTicker(ticker: Ticker) {
-    this.ticker = ticker
-    setInterval(() => {
-      this.updateCurrentPoint(ticker.state)
-    }, 500)
-  }
-
-  setStyle(value: Chart.StyleName) {
+  public setStyle(value: Chart.StyleName) {
     this.options.style = value
     this.chartLayer.components.style = createChartStyle(this)
     this.chartLayer.needsUpdate = true
   }
 
-  loading(value: boolean) {
+  public loading(value: boolean) {
     this.loader.isActive = value
   }
 
-  initUIElements() {
+  private initUIElements() {
     let h = this.history
     let getPoint = () => this.pointer.focusedPoint || h[h.length - 1]
     let getCandleColor = () => {
       let p = getPoint()
-      return p.close < p.open
-        ? this.options?.candles?.colors?.lower
-        : this.options?.candles?.colors?.higher
+      return p.close < p.open ? this.options?.candles?.colors?.lower : this.options?.candles?.colors?.higher
     }
 
     let commonOpts = () => ({
@@ -165,8 +143,7 @@ export class Chart extends ChartData {
       gap: 2,
       elements: [
         new Label({
-          value: () =>
-            this.ticker?.currency + ' / TetherUS - BINANCE - CryptoView',
+          value: () => this.dataProvider?.currency + ' / TetherUS - BINANCE - CryptoView',
           ...commonOpts(),
           size: 17
         }),
@@ -218,7 +195,7 @@ export class Chart extends ChartData {
     this.ui.elements.push(topbarGroup)
   }
 
-  bindEventListeners() {
+  private bindEventListeners() {
     this.canvas.addEventListener('mouseenter', () => {
       this.pointer.isVisible = true
     })
@@ -254,11 +231,7 @@ export class Chart extends ChartData {
     })
 
     this.canvas.addEventListener('wheel', (e: any) => {
-      this.transform.zoom(
-        e.wheelDeltaY,
-        e.altKey ? -e.wheelDeltaY / 2 : 0,
-        e.ctrlKey ? this.mousePosition.x : null
-      )
+      this.transform.zoom(e.wheelDeltaY, e.altKey ? -e.wheelDeltaY / 2 : 0, e.ctrlKey ? this.mousePosition.x : null)
 
       this.pointer.move()
     })
@@ -284,7 +257,7 @@ export class Chart extends ChartData {
     return this.ctx.canvas.getBoundingClientRect()
   }
 
-  toggleAutoScale() {
+  public toggleAutoScale() {
     this.options.autoScale = !this.options.autoScale
     if (this.options.autoScale) {
       this.boundingRect.top = 0
@@ -292,12 +265,12 @@ export class Chart extends ChartData {
     }
   }
 
-  setSize(w: number, h: number, canvas: HTMLCanvasElement) {
+  private setSize(w: number, h: number, canvas: HTMLCanvasElement) {
     canvas.width = w
     canvas.height = h
   }
 
-  rescale(ctx: CanvasRenderingContext2D) {
+  private rescale(ctx: CanvasRenderingContext2D) {
     let pixelRatio = this.getPixelRatio(ctx)
     let width = ctx.canvas.clientWidth * pixelRatio
     let height = ctx.canvas.clientHeight * pixelRatio
@@ -307,18 +280,14 @@ export class Chart extends ChartData {
     ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
   }
 
-  getSharpPixel(
-    pos: number,
-    ctx: CanvasRenderingContext2D,
-    thickness: number = 1
-  ): number {
+  private getSharpPixel(pos: number, ctx: CanvasRenderingContext2D, thickness: number = 1): number {
     if (thickness % 2 == 0) {
       return pos
     }
     return pos + this.getPixelRatio(ctx) / 2
   }
 
-  getPixelRatio(context: any) {
+  private getPixelRatio(context: any) {
     let dpr = window.devicePixelRatio || 1
     let bsr =
       context.webkitBackingStorePixelRatio ||
@@ -331,29 +300,17 @@ export class Chart extends ChartData {
     return dpr / bsr
   }
 
-  moveTo(x: number, y: number, ctx?: CanvasRenderingContext2D) {
+  private moveTo(x: number, y: number, ctx?: CanvasRenderingContext2D) {
     if (!ctx) ctx = this.ctx
-    ctx.moveTo(
-      this.getSharpPixel(Math.round(x), ctx),
-      this.getSharpPixel(Math.round(y), ctx)
-    )
+    ctx.moveTo(this.getSharpPixel(Math.round(x), ctx), this.getSharpPixel(Math.round(y), ctx))
   }
 
-  lineTo(x: number, y: number, ctx?: CanvasRenderingContext2D) {
+  private lineTo(x: number, y: number, ctx?: CanvasRenderingContext2D) {
     if (!ctx) ctx = this.ctx
-    ctx.lineTo(
-      this.getSharpPixel(Math.round(x), ctx),
-      this.getSharpPixel(Math.round(y), ctx)
-    )
+    ctx.lineTo(this.getSharpPixel(Math.round(x), ctx), this.getSharpPixel(Math.round(y), ctx))
   }
 
-  rect(
-    x: number,
-    y: number,
-    w: number,
-    h: number,
-    ctx?: CanvasRenderingContext2D
-  ) {
+  private rect(x: number, y: number, w: number, h: number, ctx?: CanvasRenderingContext2D) {
     if (!ctx) ctx = this.ctx
     ctx.rect(
       this.getSharpPixel(Math.round(x) + 0.5, ctx),
@@ -363,7 +320,7 @@ export class Chart extends ChartData {
     )
   }
 
-  circle(x: number, y: number, radius: number, ctx?: CanvasRenderingContext2D) {
+  private circle(x: number, y: number, radius: number, ctx?: CanvasRenderingContext2D) {
     if (!ctx) ctx = this.ctx
     ctx.beginPath()
     x = this.getSharpPixel(Math.round(x) + 0.5, ctx)
@@ -374,20 +331,20 @@ export class Chart extends ChartData {
     ctx.closePath()
   }
 
-  clear(ctx?: CanvasRenderingContext2D) {
+  private clear(ctx?: CanvasRenderingContext2D) {
     if (!ctx) ctx = this.ctx
     ctx.clearRect(0, 0, this.getWidth(ctx), this.getHeight(ctx))
   }
 
-  error(msg: string) {
+  private error(msg: string) {
     throw new Error('CryptoView Error: ' + msg)
   }
 
-  log(...msg: any) {
+  private log(...msg: any) {
     console.log('CryptoView Log: ', ...msg)
   }
 
-  debug(text: any, x: number, y: number) {
+  private debug(text: any, x: number, y: number) {
     this.ctx.fillStyle = 'white'
     this.ctx.font = '12px Arial'
     this.ctx.fillText(text, x, y)

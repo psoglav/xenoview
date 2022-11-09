@@ -1,13 +1,16 @@
-import { toMinutes, normalizeTo, getNiceScale, getRangeByStep } from '../utils'
-
-import { Chart } from './chart'
-
 import Moment from 'moment'
 import { extendMoment } from 'moment-range'
+
+import { DateRange } from '../types/time'
+import { getNiceScale, getRangeByStep, normalizeTo, toMinutes } from '../utils'
+import { Interval } from './binance-api-client'
+import { Chart } from './chart'
+import { DataProvider } from './data-provider'
 
 const moment: any = extendMoment(<any>Moment)
 
 export abstract class ChartData {
+  dataProvider: DataProvider
   history: History.Data
   chartData: History.Data
 
@@ -28,14 +31,33 @@ export abstract class ChartData {
 
   constructor() {}
 
-  initData(chart: Chart) {
+  async initData(chart: Chart) {
     this.chart = chart
+
+    if (this.chart.options.dataProvider) {
+      this.dataProvider = new DataProvider(this.chart.options.dataProvider)
+      await this.fetchHistory()
+      setInterval(() => {
+        this.updateCurrentPoint(this.dataProvider.state)
+      }, 500)
+    }
   }
 
-  updatePoint(
-    point: History.Point,
-    value: { PRICE: number; LASTUPDATE: number }
-  ) {
+  public async fetchHistory() {
+    this.chart.loadHistory(await this.dataProvider.requestHistory())
+  }
+
+  public async setInterval(value: Interval) {
+    this.dataProvider.setInterval(value)
+    await this.fetchHistory()
+  }
+
+  public async setRange(value: DateRange) {
+    this.dataProvider.setRange(value)
+    await this.fetchHistory()
+  }
+
+  updatePoint(point: History.Point, value: { PRICE: number; LASTUPDATE: number }) {
     point.close = value.PRICE
     point.time = value.LASTUPDATE
 
@@ -48,12 +70,7 @@ export abstract class ChartData {
     if (!hist?.length) return
     let currentPoint = hist[hist.length - 1]
 
-    if (
-      !value?.PRICE ||
-      !value?.LASTUPDATE ||
-      currentPoint.close === value.PRICE
-    )
-      return
+    if (!value?.PRICE || !value?.LASTUPDATE || currentPoint.close === value.PRICE) return
 
     let pointMinutesTs = toMinutes(value.LASTUPDATE)
     let currentPointMinutesTs = toMinutes(currentPoint.time)

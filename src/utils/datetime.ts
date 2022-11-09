@@ -1,5 +1,5 @@
+import { Interval } from '../types/time.d'
 import moment from 'moment'
-import { TimeInterval } from '../types/time'
 
 export const timeTickMark = (ts: number): string => {
   let date = moment(ts)
@@ -21,19 +21,11 @@ export const currentTimeTickMark = (ts: number): string => {
 export const toMinutes = (ts: number): number => {
   if (ts.toString().length != (+new Date()).toString().length) ts *= 1000
   let date = new Date(ts)
-  return +new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-    date.getHours(),
-    date.getMinutes()
-  )
+  return +new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes())
 }
 
 export const dayOfYear = (date: any) =>
-  Math.floor(
-    (date - (new Date(date.getFullYear(), 0, 0) as any)) / 1000 / 60 / 60 / 24
-  )
+  Math.floor((date - (new Date(date.getFullYear(), 0, 0) as any)) / 1000 / 60 / 60 / 24)
 
 export const timeUnitWeightMap = Object.freeze({
   year: 31536000000,
@@ -46,7 +38,7 @@ export const timeUnitWeightMap = Object.freeze({
   second: 1000
 })
 
-const dateRangeToIntervalMap: { [range: string]: TimeInterval } = {
+const dateRangeToIntervalMap: { [range: string]: Interval } = {
   '1d': '1m',
   '5d': '5m',
   '1M': '30m',
@@ -62,22 +54,11 @@ export const getTimeUnitWeight = (value: any): number => {
   return timeUnitWeightMap[moment.normalizeUnits(value)]
 }
 
-export const timeUnitToRange = (
-  value: string,
-  start = +new Date()
-): [number, number] => {
+export const timeUnitToRange = (value: string, start = +new Date()): [number, number] => {
   let t = getTimeUnitWeight(value)
   return [t - start, t]
 }
 
-export const getIntervalWeight = (value: TimeInterval) => {
-  let [amount, unit] = value.split(/([0-9]*)/).filter(s => s) as any
-  amount = +amount
-  return getTimeUnitWeight(unit) * amount
-}
-
-export const getIntervalByDateRange = (
-  value: keyof typeof dateRangeToIntervalMap
-) => {
+export const getIntervalByDateRange = (value: keyof typeof dateRangeToIntervalMap) => {
   return dateRangeToIntervalMap[value]
 }

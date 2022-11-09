@@ -28,37 +28,6 @@ declare global {
 
   export namespace Chart {
     type StyleName = 'candles' | 'line' | 'area' | 'bars' | 'hollow-candles'
-    interface Options {
-      style?: Chart.StyleName
-      bgColor?: string
-      textColor?: string
-      autoScale?: boolean
-      spinnerColor?: string
-      pointer?: {
-        fgColor: string
-        bgColor: string
-      }
-      candles?: {
-        colors: {
-          higher: string
-          lower: string
-        }
-      }
-      line?: {
-        color: string
-        width: number
-      }
-      timeAxis?: {
-        labels: {
-          fontSize: number
-        }
-      }
-      priceAxis?: {
-        labels?: {
-          fontSize: number
-        }
-      }
-    }
     interface BoundingRect {
       left: number
       right: number
