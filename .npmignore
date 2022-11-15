@@ -4,3 +4,4 @@ sandbox/
 typings/
 examples/
 src/
+.gitmodules
