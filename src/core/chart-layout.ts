@@ -35,14 +35,8 @@ export class ChartLayout {
     if (!this.layoutContainer) {
       throw new Error('no container is found')
     } else {
-      this.layoutContainer.classList.add('chart-container')
+      this.layoutContainer.classList.add('chart-layout')
       this.layoutContainer.innerHTML = ''
-      this.layoutContainer.style.display = 'grid'
-      this.layoutContainer.style.position = 'absolute'
-      this.layoutContainer.style.top = '0'
-      this.layoutContainer.style.left = '0'
-
-      this.layoutContainer.style.grid = '1fr 28px / 1fr 70px'
 
       this.createChartContainer()
       this.createPriceContainer()
@@ -53,12 +47,9 @@ export class ChartLayout {
   createChartContainer() {
     const el = this.createContainer()
 
-    this.chartContainer = el
+    el.classList.add('chart-layout__chart-container')
 
-    el.style.gridArea = '1 / 1 / 2 / 2'
-    el.style.width = '100%'
-    el.style.height = '100%'
-    el.style.cursor = 'crosshair'
+    this.chartContainer = el
 
     this.chartLayers.view = new Canvas({
       container: el,
@@ -91,10 +82,7 @@ export class ChartLayout {
   createPriceContainer() {
     const el = this.createContainer()
 
-    el.style.gridArea = '1 / 2 / 2 / 3'
-    el.style.width = '70px'
-    el.style.height = '100%'
-    el.style.cursor = 'n-resize'
+    el.classList.add('chart-layout__price-scale-container')
 
     this.priceContainer = el
 
@@ -121,10 +109,7 @@ export class ChartLayout {
   createTimeContainer() {
     const el = this.createContainer()
 
-    el.style.gridArea = '2 / 1 / 3 / 2'
-    el.style.width = '100%'
-    el.style.height = '28px'
-    el.style.cursor = 'e-resize'
+    el.classList.add('chart-layout__time-scale-container')
 
     this.timeContainer = el
 
@@ -149,7 +134,6 @@ export class ChartLayout {
 
   createContainer(): HTMLElement {
     const el = document.createElement('div')
-    el.style.position = 'relative'
     this.layoutContainer.appendChild(el)
     return el
   }

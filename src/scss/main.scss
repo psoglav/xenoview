@@ -7,12 +7,41 @@
   }
 }
 
-.chart-container {
+.chart-layout {
+  position: relative;
   width: 100%;
   height: 100%;
+  display: grid;
+  grid: 1fr 28px / 1fr 70px;
   user-select: none;
 
-  .chart {
+  &__chart-container {
+    position: relative;
+    grid-area: 1 / 1 / 2 / 2;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &__price-scale-container {
+    position: relative;
+    grid-area: 1 / 2 / 2 / 3;
+    width: 70px;
+    height: 100%;
+    cursor: n-resize;
+  }
+
+  &__time-scale-container {
+    position: relative;
+    grid-area: 2 / 1 / 3 / 2;
+    width: 100%;
+    height: 28px;
+    cursor: e-resize;
+  }
+
   }
 
   .price-axis {
