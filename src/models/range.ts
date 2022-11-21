@@ -1,5 +1,4 @@
 import { assert } from '@/utils'
-import { DateRange } from '../types/time'
 
 export default class Range<T extends number> {
   private readonly _start: T

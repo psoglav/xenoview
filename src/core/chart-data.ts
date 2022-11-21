@@ -1,7 +1,6 @@
 import Moment from 'moment'
 import { extendMoment } from 'moment-range'
 
-import { DateRange, Interval } from '../types/time'
 import { getNiceScale, getRangeByStep, normalizeTo, toMinutes } from '../utils'
 import { Chart } from './chart'
 import { DataProvider } from './data-provider'

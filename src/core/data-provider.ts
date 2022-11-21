@@ -2,7 +2,6 @@ import Configurable from '@/models/configurable'
 import moment from 'moment'
 
 import { DataProviderOptions, defaultDataProviderOptions } from '../config/data-provider-options'
-import { DateRange, Interval, IntervalWeights } from '../types/time.d'
 import { getIntervalByDateRange, symbolToCurrency } from '../utils'
 import BinanceAPIClient from './binance-api-client'
 

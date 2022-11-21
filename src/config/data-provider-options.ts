@@ -1,5 +1,3 @@
-import { DateRange, Interval } from '../types/time'
-
 export type DataProviderOptions = Partial<{
   fromSymbol: string
   toSymbol: string

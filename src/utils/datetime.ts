@@ -1,4 +1,3 @@
-import { Interval } from '../types/time.d'
 import moment from 'moment'
 
 export const timeTickMark = (ts: number): string => {
