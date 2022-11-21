@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getNiceScale = exports.getRangeByStep = void 0;
-function getRangeByStep(start, end, step) {
+export function getRangeByStep(start, end, step) {
     var _a, _b;
     if (end === start || step === 0) {
         return [start];
@@ -31,8 +28,7 @@ function getRangeByStep(start, end, step) {
     }
     return result;
 }
-exports.getRangeByStep = getRangeByStep;
-function getNiceScale(lowerBound, upperBound, maxTicks = 10) {
+export function getNiceScale(lowerBound, upperBound, maxTicks = 10) {
     let tickSpacing, range, niceLowerBound, niceUpperBound;
     function niceNum(range, round) {
         var exponent = Math.floor(Math.log10(range));
@@ -66,5 +62,3 @@ function getNiceScale(lowerBound, upperBound, maxTicks = 10) {
     niceUpperBound = Math.ceil(upperBound / tickSpacing) * tickSpacing;
     return [[niceLowerBound, niceUpperBound], tickSpacing];
 }
-exports.getNiceScale = getNiceScale;
-//# sourceMappingURL=array.js.map

@@ -1,9 +1,7 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const assertions_1 = require("@/utils/assertions");
-class Range {
+import { assert } from '@/utils';
+export default class Range {
     constructor(start, end) {
-        (0, assertions_1.assert)(start < end, 'start should be less than end');
+        assert(start < end, 'start should be less than end');
         this._start = start;
         this._end = end;
     }
@@ -19,6 +17,6 @@ class Range {
     equals(other) {
         return other.start === this.start && other.end === this.end;
     }
+    static from(s) {
+    }
 }
-exports.default = Range;
-//# sourceMappingURL=range.js.map

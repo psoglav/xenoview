@@ -1,3 +1,4 @@
+import { DateRange } from '../types/time';
 export default class Range<T extends number> {
     private readonly _start;
     private readonly _end;
@@ -6,4 +7,5 @@ export default class Range<T extends number> {
     constructor(start: T, end: T);
     contains(value: number): boolean;
     equals(other: Range<T>): boolean;
+    static from(s: DateRange): void;
 }
