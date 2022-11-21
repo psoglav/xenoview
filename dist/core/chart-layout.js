@@ -100,7 +100,9 @@ export class ChartLayout {
         const el = this.createContainer();
         el.classList.add('chart-layout__legend-wrapper');
         const legend = new Legend(el, this.chart, {});
-        el.innerHTML = legend.getTitle();
+        setInterval(() => {
+            el.innerHTML = legend.getTitle();
+        }, 100);
         return el;
     }
     createContainer() {
