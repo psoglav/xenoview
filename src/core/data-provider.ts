@@ -2,7 +2,7 @@ import Configurable from '@/models/configurable'
 import moment from 'moment'
 
 import { DataProviderOptions, defaultDataProviderOptions } from '../config/data-provider-options'
-import { getIntervalByDateRange, symbolToCurrency } from '../utils'
+import { getIntervalByDateRange, symbolToCurrency, IntervalWeights } from '../utils'
 import BinanceAPIClient from './binance-api-client'
 
 type CurrentBarState = {
