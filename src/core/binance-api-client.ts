@@ -8,6 +8,11 @@ export type KLinesParameters = {
   limit?: number
 }
 
+export type DepthParameters = {
+  symbol: string
+  limit?: number
+}
+
 type BinanceStreamMethod = 'SUBSCRIBE' | 'UNSUBSCRIBE' | 'LIST_SUBSCRIPTIONS' | 'SET_PROPERTY' | 'GET_PROPERTY'
 type BinanceStreamEventType =
   | 'kline'
@@ -54,6 +59,11 @@ export default class BinanceAPIClient {
       close: +close,
       volume: +volume
     }))
+  }
+
+  async getDepth(symbol: string, limit?: number) {
+    const response = await this.get('/depth', { symbol, limit })
+    return await response.json()
   }
 
   public connect(onopen?: EventListener, onerror?: EventListener) {
