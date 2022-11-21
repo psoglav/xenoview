@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rm -rf ./dist && ttsc -p './tsconfig.prod.json' && cp -r ./src/public/ ./dist/",
+    "build": "rm -rf ./dist && tsc -p './tsconfig.json' && cp -r ./src/public/ ./dist/",
     "build:commit": "yarn build && git add dist && git chore 'update build'",
     "dev": "cd sandbox && yarn dev",
     "watch": "tsc --watch",

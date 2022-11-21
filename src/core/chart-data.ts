@@ -1,9 +1,8 @@
 import Moment from 'moment'
 import { extendMoment } from 'moment-range'
 
-import { DateRange } from '../types/time'
+import { DateRange, Interval } from '../types/time'
 import { getNiceScale, getRangeByStep, normalizeTo, toMinutes } from '../utils'
-import { Interval } from './binance-api-client'
 import { Chart } from './chart'
 import { DataProvider } from './data-provider'
 

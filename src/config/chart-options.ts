@@ -1,4 +1,4 @@
-import { DataProviderOptions } from '@/core/data-provider'
+import { DataProviderOptions } from './data-provider-options'
 
 export interface ChartOptions {
   dataProvider?: DataProviderOptions
