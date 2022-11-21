@@ -1,6 +1,5 @@
 import moment from 'moment';
 import { defaultDataProviderOptions } from '../config/data-provider-options';
-import { IntervalWeights } from '../types/time.d';
 import { getIntervalByDateRange, symbolToCurrency } from '../utils';
 import BinanceAPIClient from './binance-api-client';
 export class DataProvider {

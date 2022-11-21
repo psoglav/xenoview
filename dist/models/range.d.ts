@@ -1,4 +1,3 @@
-import { DateRange } from '../types/time';
 export default class Range<T extends number> {
     private readonly _start;
     private readonly _end;

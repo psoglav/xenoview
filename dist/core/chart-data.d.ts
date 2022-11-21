@@ -1,4 +1,3 @@
-import { DateRange, Interval } from '../types/time';
 import { Chart } from './chart';
 import { DataProvider } from './data-provider';
 export declare abstract class ChartData {

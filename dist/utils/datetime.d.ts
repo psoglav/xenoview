@@ -1,4 +1,3 @@
-import { Interval } from '../types/time.d';
 export declare const timeTickMark: (ts: number) => string;
 export declare const currentTimeTickMark: (ts: number) => string;
 export declare const toMinutes: (ts: number) => number;

@@ -1,6 +1,5 @@
 import Configurable from '@/models/configurable';
 import { DataProviderOptions } from '../config/data-provider-options';
-import { DateRange, Interval } from '../types/time.d';
 import BinanceAPIClient from './binance-api-client';
 declare type CurrentBarState = {
     PRICE: number;

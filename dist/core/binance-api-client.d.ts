@@ -1,4 +1,3 @@
-import { Interval } from '../types/time';
 export declare type KLinesParameters = {
     symbol: string;
     interval: Interval;
