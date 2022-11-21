@@ -15,6 +15,8 @@ export declare abstract class ChartData {
     fetchHistory(): Promise<void>;
     setInterval(value: Interval): Promise<void>;
     setRange(value: DateRange): Promise<void>;
+    setFromSymbol(value: any): Promise<void>;
+    setToSymbol(value: any): Promise<void>;
     updatePoint(point: History.Point, value: {
         PRICE: number;
         LASTUPDATE: number;

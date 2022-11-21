@@ -37,6 +37,14 @@ export class ChartData {
         this.dataProvider.setRange(value);
         await this.fetchHistory();
     }
+    async setFromSymbol(value) {
+        this.dataProvider.setFromSymbol(value);
+        await this.fetchHistory();
+    }
+    async setToSymbol(value) {
+        this.dataProvider.setToSymbol(value);
+        await this.fetchHistory();
+    }
     updatePoint(point, value) {
         point.close = value.PRICE;
         point.time = value.LASTUPDATE;
