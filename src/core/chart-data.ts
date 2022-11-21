@@ -55,6 +55,16 @@ export abstract class ChartData {
     await this.fetchHistory()
   }
 
+  public async setFromSymbol(value) {
+    this.dataProvider.setFromSymbol(value)
+    await this.fetchHistory()
+  }
+
+  public async setToSymbol(value) {
+    this.dataProvider.setToSymbol(value)
+    await this.fetchHistory()
+  }
+
   updatePoint(point: History.Point, value: { PRICE: number; LASTUPDATE: number }) {
     point.close = value.PRICE
     point.time = value.LASTUPDATE
