@@ -31,6 +31,25 @@ export const timeUnitWeightMap = Object.freeze({
     minute: 60000,
     second: 1000
 });
+export var IntervalWeights;
+(function (IntervalWeights) {
+    IntervalWeights[IntervalWeights["1s"] = 1000] = "1s";
+    IntervalWeights[IntervalWeights["1m"] = 60000] = "1m";
+    IntervalWeights[IntervalWeights["3m"] = 180000] = "3m";
+    IntervalWeights[IntervalWeights["5m"] = 300000] = "5m";
+    IntervalWeights[IntervalWeights["15m"] = 900000] = "15m";
+    IntervalWeights[IntervalWeights["30m"] = 1800000] = "30m";
+    IntervalWeights[IntervalWeights["1h"] = 3600000] = "1h";
+    IntervalWeights[IntervalWeights["2h"] = 7200000] = "2h";
+    IntervalWeights[IntervalWeights["4h"] = 14400000] = "4h";
+    IntervalWeights[IntervalWeights["6h"] = 21600000] = "6h";
+    IntervalWeights[IntervalWeights["8h"] = 28800000] = "8h";
+    IntervalWeights[IntervalWeights["12h"] = 43200000] = "12h";
+    IntervalWeights[IntervalWeights["1d"] = 86400000] = "1d";
+    IntervalWeights[IntervalWeights["3d"] = 259200000] = "3d";
+    IntervalWeights[IntervalWeights["1w"] = 604800000] = "1w";
+    IntervalWeights[IntervalWeights["1M"] = 2592000000] = "1M";
+})(IntervalWeights || (IntervalWeights = {}));
 const dateRangeToIntervalMap = {
     '1d': '1m',
     '5d': '5m',
