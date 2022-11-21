@@ -4,5 +4,8 @@
       "extensionName": ".css",
       "savePath": "./src/public/styles"
     }
+  ],
+  "cSpell.words": [
+    "OHLC"
   ]
 }

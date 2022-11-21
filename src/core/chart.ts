@@ -1,5 +1,3 @@
-import '../public/styles/main.css'
-
 import Configurable from '@/models/configurable'
 
 import { ChartData, ChartLayout, Label, Transform, UI, UIElementGroup } from '.'
