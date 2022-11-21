@@ -42,11 +42,40 @@
     cursor: e-resize;
   }
 
-  }
+  &__legend-wrapper {
+    position: absolute;
+    z-index: 1;
+    inset: 10px;
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    color: white;
 
-  .price-axis {
-  }
+    .title-wrapper {
+      display: flex;
+      padding: 2px 4px;
+      border-radius: 4px;
 
-  .time-axis {
+      &:hover {
+        outline: 1px #ffffff22 solid;
+        background-color: #00000044;
+      }
+
+      div::before {
+        content: '\b7';
+        font-size: 16px;
+        height: 100%;
+        left: 0;
+        line-height: inherit;
+        position: relative;
+        text-align: center;
+        top: 0;
+        margin: 0 4px;
+      }
+
+      &__symbol-title::before {
+        display: none;
+      }
+    }
   }
 }

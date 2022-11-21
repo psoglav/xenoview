@@ -1,5 +1,7 @@
-import { Chart, Canvas } from '.'
-import { Pointer, Grid, TimeAxis, PriceAxis } from '../components'
+import '../public/styles/main.css'
+
+import { Canvas, Chart } from '.'
+import { Grid, Pointer, PriceAxis, TimeAxis, Legend } from '../components'
 import { createChartStyle } from '../components/chart-style'
 
 export class ChartLayout {
@@ -41,6 +43,7 @@ export class ChartLayout {
       this.createChartContainer()
       this.createPriceContainer()
       this.createTimeContainer()
+      this.createLegendContainer()
     }
   }
 
@@ -130,6 +133,14 @@ export class ChartLayout {
       let rect = el.getBoundingClientRect()
       this.timeAxisCanvas.setSize(rect.width, this.timeAxisCanvas.height)
     })
+  }
+
+  createLegendContainer() {
+    const el = this.createContainer()
+    el.classList.add('chart-layout__legend-wrapper')
+    const legend = new Legend(el, this.chart, {})
+    el.innerHTML = legend.getTitle()
+    return el
   }
 
   createContainer(): HTMLElement {
