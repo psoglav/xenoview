@@ -44,6 +44,7 @@ export default class Pointer extends Component {
     if (!this.chart.chartData?.length || !this.isVisible) return
     canvas.ctx.strokeStyle = this.chart.options.pointer.fgColor
     this.draw(canvas.ctx)
+    this.chart.layout.legend.update()
   }
 
   draw(ctx: CanvasRenderingContext2D) {

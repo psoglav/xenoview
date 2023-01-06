@@ -47,6 +47,7 @@ export abstract class ChartData {
 
   public async setInterval(value: Interval) {
     this.dataProvider.setInterval(value)
+    this.chart.layout.legend.update()
     await this.fetchHistory()
   }
 
@@ -57,6 +58,7 @@ export abstract class ChartData {
 
   public async setFromSymbol(value) {
     this.dataProvider.setFromSymbol(value)
+    this.chart.layout.legend.update()
     await this.fetchHistory()
   }
 

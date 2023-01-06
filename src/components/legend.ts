@@ -11,7 +11,7 @@ type LegendOptions = Partial<{
   showBuySellButtons: boolean
 }>
 
-export default class Legend implements Configurable<LegendOptions>  {
+export default class Legend implements Configurable<LegendOptions> {
   _opts: LegendOptions
 
   private _container: HTMLElement
@@ -22,6 +22,7 @@ export default class Legend implements Configurable<LegendOptions>  {
     this._container = container
 
     this.applyOptions(opts)
+    this.update(false)
   }
 
   applyOptions(opts: LegendOptions): void {
@@ -30,8 +31,8 @@ export default class Legend implements Configurable<LegendOptions>  {
     })
   }
 
-  update() {
-    this._container.innerHTML = this.getTitle() + this.getOHLCValues()
+  update(ohlc = true) {
+    this._container.innerHTML = this.getTitle() + (ohlc ? this.getOHLCValues() : '')
   }
 
   getTitle() {
@@ -48,7 +49,10 @@ export default class Legend implements Configurable<LegendOptions>  {
 
   getOHLCValues() {
     let { open, high, low, close } = this._chart.pointer.focusedPoint || this._chart.lastPoint
-    let h = (n: string, val: number) => `<div>${n}<span>${val}</span></div>`
-    return `<div class="bar-values">${h('O', open) + h('H', high) + h('L', low) + h('C', close)}</div>`
+    let h = (n: string, val: number) =>
+      `<div>${n}<span style="color:${
+        this._chart._opts.candles.colors[close < open ? 'lower' : 'higher']
+      }">${val}</span></div>`
+    return `<div class="ohlc-values">${h('O', open) + h('H', high) + h('L', low) + h('C', close)}</div>`
   }
 }

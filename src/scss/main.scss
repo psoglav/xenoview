@@ -42,14 +42,16 @@
     cursor: e-resize;
   }
 
-  &__legend-wrapper {
+  &__gui-wrapper {
     position: absolute;
     z-index: 1;
     inset: 10px;
     width: fit-content;
     height: fit-content;
     display: flex;
-    color: white;
+    align-items: center;
+    gap: 20px;
+    color: rgb(221, 221, 221);
 
     .title-wrapper {
       display: flex;
@@ -76,6 +78,12 @@
       &__symbol-title::before {
         display: none;
       }
+    }
+
+    .ohlc-values {
+      display: flex;
+      gap: 10px;
+      font-size: 12px;
     }
   }
 }

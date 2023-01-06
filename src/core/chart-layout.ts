@@ -20,6 +20,8 @@ export class ChartLayout {
     ui?: Canvas
   } = {}
 
+  legend: Legend
+
   constructor(chart: Chart, container: HTMLElement | string) {
     this.chart = chart
     this.create(container)
@@ -43,7 +45,7 @@ export class ChartLayout {
       this.createChartContainer()
       this.createPriceContainer()
       this.createTimeContainer()
-      this.createLegendContainer()
+      this.createGUIContainer()
     }
   }
 
@@ -135,13 +137,13 @@ export class ChartLayout {
     })
   }
 
-  createLegendContainer() {
+  createGUIContainer() {
     const el = this.createContainer()
-    el.classList.add('chart-layout__legend-wrapper')
-    const legend = new Legend(el, this.chart, {})
-    setInterval(() => {
-      el.innerHTML = legend.getTitle()
-    }, 100)
+
+    el.classList.add('chart-layout__gui-wrapper')
+
+    this.legend = new Legend(el, this.chart, {})
+
     return el
   }
 

@@ -51,7 +51,7 @@
   height: 28px;
   cursor: e-resize;
 }
-.chart-layout__legend-wrapper {
+.chart-layout__gui-wrapper {
   position: absolute;
   z-index: 1;
   inset: 10px;
@@ -62,18 +62,20 @@
   height: -moz-fit-content;
   height: fit-content;
   display: flex;
-  color: white;
+  align-items: center;
+  gap: 20px;
+  color: rgb(221, 221, 221);
 }
-.chart-layout__legend-wrapper .title-wrapper {
+.chart-layout__gui-wrapper .title-wrapper {
   display: flex;
   padding: 2px 4px;
   border-radius: 4px;
 }
-.chart-layout__legend-wrapper .title-wrapper:hover {
+.chart-layout__gui-wrapper .title-wrapper:hover {
   outline: 1px rgba(255, 255, 255, 0.1333333333) solid;
   background-color: rgba(0, 0, 0, 0.2666666667);
 }
-.chart-layout__legend-wrapper .title-wrapper div::before {
+.chart-layout__gui-wrapper .title-wrapper div::before {
   content: "·";
   font-size: 16px;
   height: 100%;
@@ -84,6 +86,11 @@
   top: 0;
   margin: 0 4px;
 }
-.chart-layout__legend-wrapper .title-wrapper__symbol-title::before {
+.chart-layout__gui-wrapper .title-wrapper__symbol-title::before {
   display: none;
+}
+.chart-layout__gui-wrapper .ohlc-values {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
 }/*# sourceMappingURL=main.css.map */
