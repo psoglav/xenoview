@@ -7,5 +7,6 @@
   ],
   "cSpell.words": [
     "OHLC"
-  ]
+  ],
+  "nuxt.isNuxtApp": false
 }
