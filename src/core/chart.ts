@@ -112,8 +112,15 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
     this.chartLayer.needsUpdate = true
   }
 
-  public loading(value: boolean) {
-    this.loader.isActive = value
+  public loading(value: boolean | Promise<any>) {
+    if (typeof value === 'boolean') {
+      this.loader.isActive = value
+    } else {
+      this.loader.isActive = true
+      value.finally(() => {
+        this.loader.isActive = false
+      })
+    }
   }
 
   private bindEventListeners() {
