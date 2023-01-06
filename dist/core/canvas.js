@@ -1,9 +1,4 @@
 export class Canvas {
-    constructor(options) {
-        this.needsUpdate = true;
-        this.options = options;
-        this.create();
-    }
     get canvas() {
         return this.raw;
     }
@@ -18,6 +13,11 @@ export class Canvas {
     }
     get components() {
         return this.options.components;
+    }
+    constructor(options) {
+        this.needsUpdate = true;
+        this.options = options;
+        this.create();
     }
     create() {
         this.raw = this.createCanvas();

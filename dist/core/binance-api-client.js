@@ -1,12 +1,12 @@
 export default class BinanceAPIClient {
+    get connected() {
+        return this._ws && this._ws.readyState === this._ws.OPEN;
+    }
     constructor() {
         this._baseURL = 'https://api.binance.com/api/v3';
         this._wssStreamURL = 'wss://stream.binance.com:9443';
         this._ws = null;
         this._counter = 0;
-    }
-    get connected() {
-        return this._ws && this._ws.readyState === this._ws.OPEN;
     }
     async get(endpoint, params) {
         return await fetch(this._baseURL +

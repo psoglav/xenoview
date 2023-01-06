@@ -1,15 +1,15 @@
 import { assert } from '@/utils';
 export default class Range {
-    constructor(start, end) {
-        assert(start < end, 'start should be less than end');
-        this._start = start;
-        this._end = end;
-    }
     get start() {
         return this._start;
     }
     get end() {
         return this._end;
+    }
+    constructor(start, end) {
+        assert(start < end, 'start should be less than end');
+        this._start = start;
+        this._end = end;
     }
     contains(value) {
         return this.start >= value && value <= this.end;

@@ -1,5 +1,5 @@
 import Configurable from '@/models/configurable';
-import { ChartData, ChartLayout, Transform, UI } from '.';
+import { ChartData, ChartLayout, Transform } from '.';
 import { ChartStyle, Loader, Pointer } from '../components';
 import { ChartOptions } from '../config/chart-options';
 export declare class Chart extends ChartData implements Configurable<ChartOptions> {
@@ -8,7 +8,6 @@ export declare class Chart extends ChartData implements Configurable<ChartOption
     get options(): ChartOptions;
     get chartLayer(): import("./canvas").Canvas;
     get uiLayer(): import("./canvas").Canvas;
-    ui: UI;
     transform: Transform;
     mousePosition: {
         x: number;
@@ -31,7 +30,6 @@ export declare class Chart extends ChartData implements Configurable<ChartOption
     loadHistory(value: History.Data): void;
     setStyle(value: Chart.StyleName): void;
     loading(value: boolean): void;
-    private initUIElements;
     private bindEventListeners;
     get canvasRect(): DOMRect;
     toggleAutoScale(): void;

@@ -1,4 +1,4 @@
-export declare type DataProviderOptions = Partial<{
+export type DataProviderOptions = Partial<{
     fromSymbol: string;
     toSymbol: string;
     symbol: string;

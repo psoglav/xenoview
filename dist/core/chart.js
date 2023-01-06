@@ -1,20 +1,8 @@
-import { ChartData, ChartLayout, Label, Transform, UIElementGroup } from '.';
+import { ChartData, ChartLayout, Transform } from '.';
 import { Loader } from '../components';
 import { createChartStyle } from '../components/chart-style';
 import { defaultChartOptions } from '../config/chart-options';
 export class Chart extends ChartData {
-    constructor(container, options) {
-        super();
-        this._opts = defaultChartOptions;
-        this.mousePosition = { x: 0, y: 0 };
-        this.applyOptions(options);
-        this.initData(this);
-        this.layout = new ChartLayout(this, container);
-        this.transform = new Transform(this);
-        this.loader = new Loader(this);
-        this.bindEventListeners();
-        this.render();
-    }
     get options() {
         return this._opts;
     }
@@ -47,6 +35,18 @@ export class Chart extends ChartData {
     }
     get pointer() {
         return this.components.pointer;
+    }
+    constructor(container, options) {
+        super();
+        this._opts = defaultChartOptions;
+        this.mousePosition = { x: 0, y: 0 };
+        this.applyOptions(options);
+        this.initData(this);
+        this.layout = new ChartLayout(this, container);
+        this.transform = new Transform(this);
+        this.loader = new Loader(this);
+        this.bindEventListeners();
+        this.render();
     }
     applyOptions(opts) {
         Object.keys(opts).forEach(option => {
@@ -83,49 +83,6 @@ export class Chart extends ChartData {
     }
     loading(value) {
         this.loader.isActive = value;
-    }
-    initUIElements() {
-        let h = this.history;
-        let getPoint = () => this.pointer.focusedPoint || h[h.length - 1];
-        let getCandleColor = () => {
-            var _a, _b, _c, _d, _e, _f;
-            let p = getPoint();
-            return p.close < p.open ? (_c = (_b = (_a = this.options) === null || _a === void 0 ? void 0 : _a.candles) === null || _b === void 0 ? void 0 : _b.colors) === null || _c === void 0 ? void 0 : _c.lower : (_f = (_e = (_d = this.options) === null || _d === void 0 ? void 0 : _d.candles) === null || _e === void 0 ? void 0 : _e.colors) === null || _f === void 0 ? void 0 : _f.higher;
-        };
-        let commonOpts = () => {
-            var _a;
-            return ({
-                x: 0,
-                y: 23,
-                font: 'Arial',
-                size: 13,
-                color: (_a = this.options) === null || _a === void 0 ? void 0 : _a.textColor,
-                ctx: this.ctx
-            });
-        };
-        let topbarGroup = new UIElementGroup({
-            x: 10,
-            y: 23,
-            gap: 2,
-            elements: [
-                new Label(Object.assign(Object.assign({ value: () => { var _a; return ((_a = this.dataProvider) === null || _a === void 0 ? void 0 : _a.currency) + ' / TetherUS - BINANCE - CryptoView'; } }, commonOpts()), { size: 17 })),
-                30,
-                new Label(Object.assign({ value: 'O' }, commonOpts())),
-                new Label(Object.assign(Object.assign({ value: () => getPoint().open }, commonOpts()), { color: getCandleColor })),
-                10,
-                new Label(Object.assign({ value: 'H' }, commonOpts())),
-                new Label(Object.assign(Object.assign({ value: () => getPoint().high }, commonOpts()), { color: getCandleColor })),
-                10,
-                new Label(Object.assign({ value: 'L' }, commonOpts())),
-                new Label(Object.assign(Object.assign({ value: () => getPoint().low }, commonOpts()), { color: getCandleColor })),
-                10,
-                new Label(Object.assign({ value: 'C' }, commonOpts())),
-                new Label(Object.assign(Object.assign({ value: () => getPoint().close }, commonOpts()), { color: getCandleColor }))
-            ],
-            ctx: this.ctx
-        });
-        this.ui.elements = [];
-        this.ui.elements.push(topbarGroup);
     }
     bindEventListeners() {
         this.canvas.addEventListener('mouseenter', () => {

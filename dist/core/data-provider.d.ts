@@ -1,7 +1,7 @@
 import Configurable from '@/models/configurable';
 import { DataProviderOptions } from '../config/data-provider-options';
 import BinanceAPIClient from './binance-api-client';
-declare type CurrentBarState = {
+type CurrentBarState = {
     PRICE: number;
     LASTUPDATE: number;
     open: number;
@@ -9,7 +9,7 @@ declare type CurrentBarState = {
     low: number;
     close: number;
 };
-export declare type ListenerFunction = (state: CurrentBarState) => void;
+export type ListenerFunction = (state: CurrentBarState) => void;
 export declare class DataProvider implements Configurable<DataProviderOptions> {
     _opts: DataProviderOptions;
     state: CurrentBarState;

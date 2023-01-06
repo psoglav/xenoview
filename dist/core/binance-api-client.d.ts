@@ -1,16 +1,16 @@
-export declare type KLinesParameters = {
+export type KLinesParameters = {
     symbol: string;
     interval: Interval;
     startTime?: number;
     endTime?: number;
     limit?: number;
 };
-export declare type DepthParameters = {
+export type DepthParameters = {
     symbol: string;
     limit?: number;
 };
-declare type BinanceStreamEventType = 'kline' | 'trade' | 'aggTrade' | '24hrTicker' | '24hrMiniTicker' | 'depthUpdate' | '1hTicker';
-declare type WSEventType = 'close' | 'error' | 'open' | 'message';
+type BinanceStreamEventType = 'kline' | 'trade' | 'aggTrade' | '24hrTicker' | '24hrMiniTicker' | 'depthUpdate' | '1hTicker';
+type WSEventType = 'close' | 'error' | 'open' | 'message';
 export default class BinanceAPIClient {
     private _baseURL;
     private _wssStreamURL;

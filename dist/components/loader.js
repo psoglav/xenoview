@@ -1,12 +1,12 @@
 import { Component } from '../core';
 export default class Loader extends Component {
-    constructor(chart) {
-        super(chart);
-        this.create();
-    }
     set isActive(value) {
         this.el.style.opacity = value ? '1' : '0';
         this.chart.canvas.style.opacity = value ? '0.3' : '1';
+    }
+    constructor(chart) {
+        super(chart);
+        this.create();
     }
     create() {
         let xmlns = 'http://www.w3.org/2000/svg';

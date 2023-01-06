@@ -1,5 +1,5 @@
 import { Component } from '.';
-export declare type CanvasOptions = {
+export type CanvasOptions = {
     container: HTMLElement;
     components: {
         [name: string]: Component;

@@ -3,13 +3,6 @@ import { defaultDataProviderOptions } from '../config/data-provider-options';
 import { getIntervalByDateRange, symbolToCurrency, IntervalWeights } from '../utils';
 import BinanceAPIClient from './binance-api-client';
 export class DataProvider {
-    constructor(opts) {
-        this._opts = defaultDataProviderOptions;
-        this._client = new BinanceAPIClient();
-        this.listeners = [];
-        this.applyOptions(opts);
-        this.init();
-    }
     get api() {
         return this._client;
     }
@@ -24,6 +17,13 @@ export class DataProvider {
         let end = +new Date();
         let start = Math.max(end - IntervalWeights[this._opts.interval] * 1000, veryBeginning);
         return [start, end];
+    }
+    constructor(opts) {
+        this._opts = defaultDataProviderOptions;
+        this._client = new BinanceAPIClient();
+        this.listeners = [];
+        this.applyOptions(opts);
+        this.init();
     }
     applyOptions(opts) {
         Object.keys(opts).forEach(option => {

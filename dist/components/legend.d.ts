@@ -1,6 +1,6 @@
 import { Chart } from '../core';
 import Configurable from '../models/configurable';
-declare type LegendOptions = Partial<{
+type LegendOptions = Partial<{
     symbolTitle: boolean;
     openMarketStatus: boolean;
     OHLCValues: boolean;

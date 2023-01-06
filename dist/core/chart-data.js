@@ -4,17 +4,17 @@ import { getNiceScale, getRangeByStep, normalizeTo, toMinutes } from '../utils';
 import { DataProvider } from './data-provider';
 const moment = extendMoment(Moment);
 export class ChartData {
-    constructor() {
-        this.highestPrice = [0, 0];
-        this.lowestPrice = [0, 0];
-        this.renderedChartLength = 0;
-    }
     get chartFullWidth() {
         return this.chart.boundingRect.right - this.chart.boundingRect.left;
     }
     get pointsGap() {
         var _a;
         return this.chartFullWidth / ((_a = this.history) === null || _a === void 0 ? void 0 : _a.length);
+    }
+    constructor() {
+        this.highestPrice = [0, 0];
+        this.lowestPrice = [0, 0];
+        this.renderedChartLength = 0;
     }
     async initData(chart) {
         this.chart = chart;
