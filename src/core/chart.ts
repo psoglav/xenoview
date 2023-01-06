@@ -1,6 +1,6 @@
 import Configurable from '@/models/configurable'
 
-import { ChartData, ChartLayout, Label, Transform, UI, UIElementGroup } from '.'
+import { ChartData, ChartLayout, Transform } from '.'
 import { ChartStyle, Loader, Pointer } from '../components'
 import { createChartStyle } from '../components/chart-style'
 import { ChartOptions, defaultChartOptions } from '../config/chart-options'
@@ -20,8 +20,6 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
   get uiLayer() {
     return this.layout.chartLayers.ui
   }
-
-  ui: UI
 
   transform: Transform
   mousePosition = { x: 0, y: 0 }
@@ -116,81 +114,6 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
 
   public loading(value: boolean) {
     this.loader.isActive = value
-  }
-
-  private initUIElements() {
-    let h = this.history
-    let getPoint = () => this.pointer.focusedPoint || h[h.length - 1]
-    let getCandleColor = () => {
-      let p = getPoint()
-      return p.close < p.open ? this.options?.candles?.colors?.lower : this.options?.candles?.colors?.higher
-    }
-
-    let commonOpts = () => ({
-      x: 0,
-      y: 23,
-      font: 'Arial',
-      size: 13,
-      color: this.options?.textColor,
-      ctx: this.ctx
-    })
-
-    let topbarGroup = new UIElementGroup({
-      x: 10,
-      y: 23,
-      gap: 2,
-      elements: [
-        new Label({
-          value: () => this.dataProvider?.currency + ' / TetherUS - BINANCE - CryptoView',
-          ...commonOpts(),
-          size: 17
-        }),
-        30,
-        new Label({
-          value: 'O',
-          ...commonOpts()
-        }),
-        new Label({
-          value: () => getPoint().open,
-          ...commonOpts(),
-          color: getCandleColor
-        }),
-        10,
-        new Label({
-          value: 'H',
-          ...commonOpts()
-        }),
-        new Label({
-          value: () => getPoint().high,
-          ...commonOpts(),
-          color: getCandleColor
-        }),
-        10,
-        new Label({
-          value: 'L',
-          ...commonOpts()
-        }),
-        new Label({
-          value: () => getPoint().low,
-          ...commonOpts(),
-          color: getCandleColor
-        }),
-        10,
-        new Label({
-          value: 'C',
-          ...commonOpts()
-        }),
-        new Label({
-          value: () => getPoint().close,
-          ...commonOpts(),
-          color: getCandleColor
-        })
-      ],
-      ctx: this.ctx
-    })
-
-    this.ui.elements = []
-    this.ui.elements.push(topbarGroup)
   }
 
   private bindEventListeners() {
