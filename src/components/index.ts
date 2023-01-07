@@ -6,5 +6,6 @@ import Grid from './grid'
 import ChartStyle from './chart-style'
 import Legend from './legend'
 import Trading from './trading'
+import Prompt from './prompt'
 
-export { Pointer, PriceAxis, TimeAxis, Loader, Grid, ChartStyle, Legend, Trading }
+export { Pointer, PriceAxis, TimeAxis, Loader, Grid, ChartStyle, Legend, Trading, Prompt }

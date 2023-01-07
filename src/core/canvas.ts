@@ -237,7 +237,26 @@ export class Canvas {
     return calculateRect()
   }
 
-  isInside(pos: { x: number; y: number }, rect: { x: number; y: number; width: number; height: number }) {
+  static isInside(pos: { x: number; y: number }, rect: { x: number; y: number; width: number; height: number }) {
     return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y
+  }
+
+  getLines(text: string, maxWidth: number, ctx = this.ctx): string[] {
+    var words = text.split(' ')
+    var lines = []
+    var currentLine = words[0]
+
+    for (var i = 1; i < words.length; i++) {
+      var word = words[i]
+      var width = ctx.measureText(currentLine + ' ' + word).width
+      if (width < maxWidth) {
+        currentLine += ' ' + word
+      } else {
+        lines.push(currentLine)
+        currentLine = word
+      }
+    }
+    lines.push(currentLine)
+    return lines
   }
 }

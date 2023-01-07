@@ -49,7 +49,7 @@ export default class Trading extends Component {
 
       const rect = canvas.drawMark(mark)
 
-      item.isHovered = canvas.isInside(canvas.mouse, rect)
+      item.isHovered = Canvas.isInside(canvas.mouse, rect)
 
       if (!atLeastOneIsGrabbed() && item.isHovered) {
         item.isGrabbed = canvas.mouse.button === 0

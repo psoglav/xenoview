@@ -1,7 +1,7 @@
 import '../public/styles/main.css'
 
 import { Canvas, Chart } from '.'
-import { Grid, Pointer, PriceAxis, TimeAxis, Legend, Trading } from '../components'
+import { Grid, Pointer, PriceAxis, TimeAxis, Legend, Trading, Prompt } from '../components'
 import { createChartStyle } from '../components/chart-style'
 
 export class ChartLayout {
@@ -70,6 +70,7 @@ export class ChartLayout {
       container: el,
       zIndex: 1,
       components: {
+        prompt: new Prompt(this.chart),
         pointer: new Pointer(this.chart),
         trading: new Trading(this.chart)
       }
