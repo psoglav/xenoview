@@ -1,6 +1,6 @@
-import { Chart } from '../core'
-import Configurable from '../models/configurable'
-import { symbolToCurrency } from './../utils/crypto'
+import { Chart } from '../..'
+import Configurable from '../../models/configurable'
+import { symbolToCurrency } from '../../utils/crypto'
 
 type LegendOptions = Partial<{
   symbolTitle: boolean

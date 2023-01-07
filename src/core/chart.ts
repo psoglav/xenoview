@@ -1,6 +1,7 @@
 import Configurable from '@/models/configurable'
 
 import { ChartData, ChartLayout, Transform } from '.'
+import { createLoader } from './gui'
 import { ChartStyle, Loader, Pointer, Trading } from '../components'
 import { Order } from '../components/trading'
 import { createChartStyle } from '../components/chart-style'
@@ -25,7 +26,9 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
   transform: Transform
   mousePosition = { x: 0, y: 0 }
 
-  loader: Loader
+  loader: {
+    isActive: boolean
+  }
 
   get ctx(): CanvasRenderingContext2D {
     return this.chartLayer.ctx
@@ -73,7 +76,10 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
 
     this.layout = new ChartLayout(this, container)
     this.transform = new Transform(this)
-    this.loader = new Loader(this)
+    this.loader = createLoader({
+      color: this.options.spinnerColor,
+      container: this.container
+    })
 
     this.bindEventListeners()
     this.render()
