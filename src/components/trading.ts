@@ -41,7 +41,7 @@ export default class Trading extends Component {
         type: item.isGrabbed ? 'primary' : 'secondary',
         x: width - 200,
         y,
-        text: `${item.units} | ${capitalize(item.side)} Limit`,
+        text: `${item.units} | ${capitalize(item.side)} ${capitalize(item.type)}`,
         color,
         bg: item.isHovered ? this.chart.options.bgColor : '#111',
         line: 'solid'
