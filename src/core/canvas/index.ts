@@ -57,10 +57,6 @@ export class Canvas {
     })
   }
 
-  // public add(object: CanvasObject) {
-    // this.children.push(object)
-  // }
-
   private createCanvas() {
     const preventDefault = function (e: Event) {
       e.preventDefault()
