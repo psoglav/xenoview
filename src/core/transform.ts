@@ -2,7 +2,8 @@ import { Chart } from '@/core'
 
 export class Transform {
   public boundingRect: Chart.BoundingRect
-  public isPanning: boolean = false
+  public isPanning = false
+  public isBlockedByGUI = false
 
   chart: Chart
 
@@ -14,6 +15,8 @@ export class Transform {
   }
 
   move(mx: number, my: number) {
+    if(this.isBlockedByGUI) return
+
     this.boundingRect.top += my
     this.boundingRect.bottom += my
 
@@ -37,8 +40,7 @@ export class Transform {
       let zoomPoint = xOrigin || this.chart.chartLayer.width
       let d = 11 / this.ZOOM_RATE
 
-      this.boundingRect.right +=
-        ((this.boundingRect.right - zoomPoint) / d) * dx
+      this.boundingRect.right += ((this.boundingRect.right - zoomPoint) / d) * dx
       this.boundingRect.left += ((this.boundingRect.left - zoomPoint) / d) * dx
 
       this.clamp()
@@ -48,10 +50,8 @@ export class Transform {
       let origin = this.chart.chartLayer.height / 2
       let d = 6 / this.ZOOM_RATE
 
-      this.boundingRect.top -=
-        (((this.boundingRect.top - origin) / d) * dy) / 100
-      this.boundingRect.bottom -=
-        (((this.boundingRect.bottom - origin) / d) * dy) / 100
+      this.boundingRect.top -= (((this.boundingRect.top - origin) / d) * dy) / 100
+      this.boundingRect.bottom -= (((this.boundingRect.bottom - origin) / d) * dy) / 100
     }
 
     this.chart.chartLayer.needsUpdate = true

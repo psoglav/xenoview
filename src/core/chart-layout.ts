@@ -1,7 +1,7 @@
 import '../public/styles/main.css'
 
 import { Canvas, Chart } from '.'
-import { Grid, Pointer, PriceAxis, TimeAxis, Legend } from '../components'
+import { Grid, Pointer, PriceAxis, TimeAxis, Legend, Trading } from '../components'
 import { createChartStyle } from '../components/chart-style'
 
 export class ChartLayout {
@@ -70,7 +70,8 @@ export class ChartLayout {
       container: el,
       zIndex: 1,
       components: {
-        pointer: new Pointer(this.chart)
+        pointer: new Pointer(this.chart),
+        trading: new Trading(this.chart)
       }
     })
 
@@ -139,11 +140,11 @@ export class ChartLayout {
 
   createGUIContainer() {
     const el = this.createContainer()
-
+    const legendNode = document.createElement('div')
+    this.legend = new Legend(legendNode, this.chart, {})
     el.classList.add('chart-layout__gui-wrapper')
-
-    this.legend = new Legend(el, this.chart, {})
-
+    legendNode.classList.add('legend')
+    el.appendChild(legendNode)
     return el
   }
 

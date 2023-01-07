@@ -1,8 +1,4 @@
-export function getRangeByStep(
-  start: number,
-  end: number,
-  step: number
-): number[] {
+export function getRangeByStep(start: number, end: number, step: number): number[] {
   if (end === start || step === 0) {
     return [start]
   }
@@ -17,10 +13,7 @@ export function getRangeByStep(
   const increment = end - start > 0 ? step : -step
   const intEnd = Math.floor(end * power)
 
-  const isFulFilled =
-    end - start > 0
-      ? (current: number) => current > intEnd
-      : (current: number) => current < intEnd
+  const isFulFilled = end - start > 0 ? (current: number) => current > intEnd : (current: number) => current < intEnd
 
   const result = []
   let current = start

@@ -1,7 +1,8 @@
 import Configurable from '@/models/configurable'
 
 import { ChartData, ChartLayout, Transform } from '.'
-import { ChartStyle, Loader, Pointer } from '../components'
+import { ChartStyle, Loader, Pointer, Trading } from '../components'
+import { Order } from '../components/trading'
 import { createChartStyle } from '../components/chart-style'
 import { ChartOptions, defaultChartOptions } from '../config/chart-options'
 
@@ -59,6 +60,10 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
 
   get pointer() {
     return this.components.pointer as Pointer
+  }
+
+  get trading() {
+    return this.components.trading as Trading
   }
 
   constructor(container: HTMLElement | string, options?: ChartOptions) {
@@ -177,7 +182,15 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
     }
   }
 
-  private debug(text: any, x: number, y: number) {
+  public createOrder(payload: Order) {
+    this.trading.createOrder(payload)
+  }
+
+  public updateOrders(payload: Order[]) {
+    this.trading.updateOrders(payload)
+  }
+
+  private _debug(text: any, x: number, y: number) {
     this.ctx.fillStyle = 'white'
     this.ctx.font = '12px Arial'
     this.ctx.fillText(text, x, y)

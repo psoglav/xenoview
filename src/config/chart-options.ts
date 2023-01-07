@@ -11,6 +11,12 @@ export interface ChartOptions {
     fgColor: string
     bgColor: string
   }
+  trading?: {
+    colors: {
+      buy: string
+      sell: string
+    }
+  }
   candles?: {
     colors: {
       higher: string

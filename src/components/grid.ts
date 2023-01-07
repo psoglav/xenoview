@@ -1,5 +1,4 @@
 import { Canvas, Chart, Component } from '../core'
-import PriceAxis from './price-axis'
 
 export default class Grid extends Component {
   constructor(chart: Chart) {

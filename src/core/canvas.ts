@@ -1,4 +1,5 @@
 import { Component } from '.'
+import { MarkModel } from '../models/mark'
 
 export type CanvasOptions = {
   container: HTMLElement
@@ -14,6 +15,7 @@ export class Canvas {
   raw: HTMLCanvasElement
 
   public needsUpdate: boolean = true
+  public mouse = { x: 0, y: 0, button: null }
 
   get canvas() {
     return this.raw
@@ -42,6 +44,17 @@ export class Canvas {
 
   create() {
     this.raw = this.createCanvas()
+    const canvasRect = this.raw.getBoundingClientRect()
+    window.addEventListener('mousemove', (e: MouseEvent) => {
+      this.mouse.x = e.clientX - canvasRect.x
+      this.mouse.y = e.clientY - canvasRect.y
+    })
+    window.addEventListener('mousedown', (e: MouseEvent) => {
+      this.mouse.button = e.button
+    })
+    window.addEventListener('mouseup', (e: MouseEvent) => {
+      this.mouse.button = null
+    })
   }
 
   private createCanvas() {
@@ -156,5 +169,75 @@ export class Canvas {
 
   lineTo(x: number, y: number) {
     this.ctx.lineTo(this.getSharpPixel(Math.round(x)), this.getSharpPixel(Math.round(y)))
+  }
+
+  line(x1: number, y1: number, x2: number, y2: number, color?: string) {
+    if (color) this.ctx.strokeStyle = color
+    this.ctx.beginPath()
+    this.moveTo(x1, y1)
+    this.lineTo(x2, y2)
+    this.ctx.closePath()
+    this.ctx.stroke()
+  }
+
+  drawMark(payload: MarkModel) {
+    const ctx = this.ctx
+
+    ctx.font = '11px Verdana'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+
+    const metrics = ctx.measureText(payload.text)
+    const tw = metrics.width
+    const th = metrics.fontBoundingBoxDescent + metrics.fontBoundingBoxAscent
+    let px = 6
+    let py = 3
+
+    const calculateRect = () => ({
+      x: payload.x - px - tw / 2,
+      y: Math.round(payload.y) - th / 2 - py + 1,
+      width: tw + px * 2,
+      height: th + py * 2
+    })
+
+    if (payload.color) {
+      if (payload.line) {
+        ctx.lineWidth = 1
+        this.line(0, payload.y, this.width, payload.y, payload.color)
+      }
+
+      ctx.lineJoin = 'round'
+      ctx.strokeStyle = payload.color
+      ctx.beginPath()
+
+      if (payload.type == 'primary') {
+        ctx.lineWidth = 8
+        px = 2
+        py = 0
+        ctx.fillStyle = payload.color
+      } else {
+        ctx.lineWidth = 1
+        ctx.fillStyle = payload.bg || 'black'
+      }
+
+      const rect = calculateRect()
+      ctx.rect(rect.x, rect.y, rect.width, rect.height)
+      ctx.stroke()
+      ctx.fill()
+      ctx.closePath()
+    }
+
+    ctx.fillStyle = payload.type == 'primary' ? 'white' : payload.color
+    ctx.fillText(payload.text, payload.x, payload.y + 1)
+    ctx.lineWidth = 1
+
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'alphabetic'
+
+    return calculateRect()
+  }
+
+  isInside(pos: { x: number; y: number }, rect: { x: number; y: number; width: number; height: number }) {
+    return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y
   }
 }

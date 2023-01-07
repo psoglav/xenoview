@@ -1,10 +1,21 @@
 import { Canvas, Chart, Component } from '../core'
+import { MarkModel } from '../models/mark'
 
 export default class PriceAxis extends Component {
   public isZooming: boolean = false
 
   constructor(chart: Chart) {
     super(chart)
+  }
+
+  update(canvas: Canvas) {
+    this.drawGridLabels(canvas)
+    this.drawLastPrice(canvas)
+    this.drawLastVisiblePrice(canvas)
+
+    if (this.chart.pointer.isVisible) {
+      this.drawPointerPrice(canvas)
+    }
   }
 
   drawGridLabels(canvas: Canvas) {
@@ -22,14 +33,7 @@ export default class PriceAxis extends Component {
   drawPointerPrice(canvas: Canvas) {
     let y = this.chart.mousePosition.y - this.chart.canvasRect.top
     let price = this.chart.normalizeToPrice(y).toFixed(2)
-    this.drawLabel(
-      price,
-      y,
-      canvas,
-      'white',
-      this.chart.options.pointer.bgColor,
-      true
-    )
+    this.drawLabel(price, y, canvas, 'white', this.chart.options.pointer.bgColor, true)
   }
 
   drawLastVisiblePrice(canvas: Canvas) {
@@ -38,8 +42,7 @@ export default class PriceAxis extends Component {
     if (this.chart.getPointX(last) < canvas.width) return
 
     let lastVisible = this.chart.lastVisiblePoint
-    if (lastVisible == last)
-      lastVisible = this.chart.history[this.chart.history.length - 2]
+    if (lastVisible == last) lastVisible = this.chart.history[this.chart.history.length - 2]
     let my = this.chart.normalizeToY(last.close)
     let y = this.chart.normalizeToY(lastVisible.close)
 
@@ -53,40 +56,44 @@ export default class PriceAxis extends Component {
   }
 
   drawLastPrice(canvas: Canvas) {
+    const mark: MarkModel = {
+      type: 'primary',
+      x: canvas.width / 2,
+      y: 0,
+      text: null,
+      color: null
+    }
+
     let data = this.chart.history
     if (!data || !data.length) return
     let point = data[data.length - 1]
     let { close, open } = this.chart.normalizePoint(point)
-    let y = close
 
-    let color = this.chart.options.line.color
+    mark.y = close
+    mark.text = point.close.toFixed(2)
+    mark.color = this.chart.options.line.color
 
     if (this.chart.style.bars) {
       let type = close < open ? 'higher' : 'lower'
-      color = this.chart.options.candles.colors[type]
+      mark.color = this.chart.options.candles.colors[type]
     }
 
-    this.chart.ctx.strokeStyle = color
+    this.chart.ctx.strokeStyle = mark.color
     this.chart.ctx.setLineDash([1, 2])
     this.chart.ctx.beginPath()
-    this.chart.chartLayer.moveTo(0, y)
-    this.chart.chartLayer.lineTo(this.chart.chartLayer.width, y)
+    this.chart.chartLayer.moveTo(0, mark.y)
+    this.chart.chartLayer.lineTo(this.chart.chartLayer.width, mark.y)
     this.chart.ctx.closePath()
     this.chart.ctx.stroke()
 
     this.chart.ctx.setLineDash([])
 
-    this.drawLabel(point.close.toFixed(2), y, canvas, 'white', color, true)
+    // this.drawLabel(point.close.toFixed(2), y, canvas, 'white', color, true)
+
+    canvas.drawMark(mark)
   }
 
-  drawLabel(
-    text: any,
-    y: number,
-    canvas: Canvas,
-    fgColor: string,
-    bgColor?: string,
-    fill?: boolean
-  ) {
+  drawLabel(text: any, y: number, canvas: Canvas, fgColor: string, bgColor?: string, fill?: boolean) {
     if (bgColor) {
       canvas.ctx.beginPath()
       canvas.ctx.strokeStyle = bgColor
@@ -115,16 +122,6 @@ export default class PriceAxis extends Component {
   zoom(dy: number) {
     if (this.isZooming) {
       this.chart.transform.zoom(0, dy)
-    }
-  }
-
-  update(canvas: Canvas) {
-    this.drawGridLabels(canvas)
-    this.drawLastPrice(canvas)
-    this.drawLastVisiblePrice(canvas)
-
-    if (this.chart.pointer.isVisible) {
-      this.drawPointerPrice(canvas)
     }
   }
 }

@@ -20,7 +20,7 @@
     grid-area: 1 / 1 / 2 / 2;
     width: 100%;
     height: 100%;
-    cursor: crosshair;
+    // cursor: crosshair;
     &:active {
       cursor: grabbing;
     }
@@ -45,45 +45,53 @@
   &__gui-wrapper {
     position: absolute;
     z-index: 1;
-    inset: 10px;
-    width: fit-content;
-    height: fit-content;
-    display: flex;
-    align-items: center;
-    gap: 20px;
+    width: calc(100% - 70px);
+    height: calc(100% - 28px);
+    pointer-events: none;
+    overflow: hidden;
     color: rgb(221, 221, 221);
+    white-space: nowrap;
 
-    .title-wrapper {
+    .legend {
       display: flex;
-      padding: 2px 4px;
-      border-radius: 4px;
+      align-items: center;
+      gap: 20px;
+      margin: 10px;
 
-      &:hover {
-        outline: 1px #ffffff22 solid;
-        background-color: #00000044;
+      .title-wrapper {
+        display: flex;
+        padding: 2px 4px;
+        border-radius: 4px;
+        pointer-events: all;
+
+        &:hover {
+          outline: 1px #ffffff22 solid;
+          background-color: #00000044;
+        }
+
+        div::before {
+          content: '\b7';
+          font-size: 16px;
+          height: 100%;
+          left: 0;
+          line-height: inherit;
+          position: relative;
+          text-align: center;
+          top: 0;
+          margin: 0 4px;
+        }
+
+        &__symbol-title::before {
+          display: none;
+        }
       }
 
-      div::before {
-        content: '\b7';
-        font-size: 16px;
-        height: 100%;
-        left: 0;
-        line-height: inherit;
-        position: relative;
-        text-align: center;
-        top: 0;
-        margin: 0 4px;
+      .ohlc-values {
+        pointer-events: all;
+        display: flex;
+        gap: 10px;
+        font-size: 12px;
       }
-
-      &__symbol-title::before {
-        display: none;
-      }
-    }
-
-    .ohlc-values {
-      display: flex;
-      gap: 10px;
-      font-size: 12px;
     }
   }
 }

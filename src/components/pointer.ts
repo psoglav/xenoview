@@ -7,6 +7,7 @@ type PointerPosition = {
 
 export default class Pointer extends Component {
   public isVisible: Boolean = false
+  public isBlockedByGUI: Boolean = false
   public focusedPointIndex: number
   public focusedPoint: History.Point
 
@@ -41,7 +42,7 @@ export default class Pointer extends Component {
   }
 
   update(canvas: Canvas) {
-    if (!this.chart.chartData?.length || !this.isVisible) return
+    if (!this.chart.chartData?.length || !this.isVisible || this.isBlockedByGUI) return
     canvas.ctx.strokeStyle = this.chart.options.pointer.fgColor
     this.draw(canvas.ctx)
     this.chart.layout.legend.update()
