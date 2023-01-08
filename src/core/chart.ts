@@ -2,8 +2,7 @@ import Configurable from '@/models/configurable'
 
 import { ChartData, ChartLayout, Transform } from '.'
 import { createLoader } from './gui'
-import { ChartStyle, Loader, Pointer, Trading } from '../components'
-import { Order } from '../components/trading'
+import { ChartStyle, Pointer, Trading } from '../components'
 import { createChartStyle } from '../components/chart-style'
 import { ChartOptions, defaultChartOptions } from '../config/chart-options'
 
@@ -188,14 +187,6 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
       this.boundingRect.top = 0
       this.boundingRect.bottom = this.chartLayer.height
     }
-  }
-
-  public createOrder(payload: Order) {
-    this.trading.createOrder(payload)
-  }
-
-  public updateOrders(payload: Order[]) {
-    this.trading.updateOrders(payload)
   }
 
   private _debug(text: any, x: number, y: number) {
