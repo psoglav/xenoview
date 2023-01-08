@@ -212,7 +212,7 @@ export abstract class ChartData {
   getPriceTicks() {
     let start = this.getLowerPriceBound()
     let end = this.getUpperPriceBound()
-    let ticks = Math.floor(this.chart.chartLayer.height / 30)
+    let ticks = Math.floor(this.chart.chartLayer.height / 40)
     let scale = getNiceScale(start, end, ticks)
     return getRangeByStep(...scale[0], scale[1])
   }
