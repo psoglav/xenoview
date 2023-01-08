@@ -1,11 +1,8 @@
-import { Chart, Canvas } from '.'
+import { Canvas } from '.'
 
 export abstract class Component {
-  chart: Chart
-
-  constructor(chart: Chart) {
-    this.chart = chart
+  get chart() {
+    return window.xenoview
   }
-
   abstract update(canvas: Canvas): void
 }

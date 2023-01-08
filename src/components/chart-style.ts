@@ -6,9 +6,9 @@ export default abstract class ChartStyle extends Component {
 
   abstract bars: boolean
 
-  constructor(chart: Chart) {
-    super(chart)
-    this.style = chart.options.style
+  constructor() {
+    super()
+    this.style = this.chart.options.style
   }
 }
 
@@ -24,23 +24,23 @@ export function createChartStyle(chart: Chart): ChartStyle {
   const style = chart.options.style
   switch (style) {
     case 'candles':
-      return cacheStyle(style, new Candles(chart))
+      return cacheStyle(style, new Candles())
     case 'line':
-      return cacheStyle(style, new Line(chart))
+      return cacheStyle(style, new Line())
     case 'area':
-      return cacheStyle(style, new Area(chart))
+      return cacheStyle(style, new Area())
     case 'bars':
-      return cacheStyle(style, new Bars(chart))
+      return cacheStyle(style, new Bars())
     case 'hollow-candles':
-      return cacheStyle(style, new HollowCandles(chart))
+      return cacheStyle(style, new HollowCandles())
   }
 }
 
 export class Line extends ChartStyle {
   bars = false
 
-  constructor(chart: Chart) {
-    super(chart)
+  constructor() {
+    super()
   }
 
   update(canvas: Canvas) {
@@ -50,8 +50,7 @@ export class Line extends ChartStyle {
 
   drawLivePoint(canvas: Canvas) {
     let data = this.chart.history
-    let x =
-      this.chart.boundingRect.left + (data.length - 1) * this.chart.pointsGap
+    let x = this.chart.boundingRect.left + (data.length - 1) * this.chart.pointsGap
     let y = this.chart.normalizeToY(data[data.length - 1].close)
     canvas.ctx.fillStyle = this.chart.options.line.color
     canvas.circle(x, y, 3)
@@ -95,8 +94,8 @@ export class Candles extends ChartStyle {
   bars = true
   empty = false
 
-  constructor(chart: Chart) {
-    super(chart)
+  constructor() {
+    super()
   }
 
   update(canvas: Canvas) {
@@ -141,21 +140,9 @@ export class Candles extends ChartStyle {
     canvas.ctx.closePath()
   }
 
-  drawCandleBody(
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    type: string,
-    canvas: Canvas
-  ) {
+  drawCandleBody(x: number, y: number, width: number, height: number, type: string, canvas: Canvas) {
     canvas.ctx.beginPath()
-    canvas.ctx.rect(
-      Math.round(x) + 0.5,
-      Math.round(y) + 0.5,
-      Math.round(width) + 1,
-      Math.round(height)
-    )
+    canvas.ctx.rect(Math.round(x) + 0.5, Math.round(y) + 0.5, Math.round(width) + 1, Math.round(height))
     canvas.ctx.fillStyle = this.chart.options.candles?.colors[type]
     canvas.ctx.fill()
     canvas.ctx.stroke()
@@ -166,8 +153,8 @@ export class Candles extends ChartStyle {
 export class Area extends Line {
   bars = false
 
-  constructor(chart: Chart) {
-    super(chart)
+  constructor() {
+    super()
   }
 
   update(canvas: Canvas) {
@@ -220,8 +207,8 @@ export class Area extends Line {
 export class Bars extends Candles {
   bars = true
 
-  constructor(chart: Chart) {
-    super(chart)
+  constructor() {
+    super()
   }
 
   drawCandleBody(x: number, y: number, width: number, height: number, type: string, canvas: Canvas) {
@@ -239,25 +226,14 @@ export class Bars extends Candles {
 export class HollowCandles extends Candles {
   bars = true
 
-  constructor(chart: Chart) {
-    super(chart)
+  constructor() {
+    super()
     this.empty = true
   }
 
-  drawCandleBody(
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    type: string
-  ) {
+  drawCandleBody(x: number, y: number, width: number, height: number, type: string) {
     this.chart.ctx.beginPath()
-    this.chart.ctx.rect(
-      Math.round(x) + 0.5,
-      Math.round(y) + 0.5,
-      Math.round(width) + 1,
-      Math.round(height)
-    )
+    this.chart.ctx.rect(Math.round(x) + 0.5, Math.round(y) + 0.5, Math.round(width) + 1, Math.round(height))
     this.chart.ctx.strokeStyle = this.chart.options.candles?.colors[type]
     this.chart.ctx.stroke()
     this.chart.ctx.closePath()

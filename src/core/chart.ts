@@ -71,6 +71,8 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
 
   constructor(container: HTMLElement | string, options?: ChartOptions) {
     super()
+    window.xenoview = this
+
     this.applyOptions(options)
     this.initData(this)
 

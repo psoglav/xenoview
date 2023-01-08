@@ -1,12 +1,12 @@
-import { Canvas, Chart, Component } from '../core'
+import { Canvas, Component } from '../core'
 
 import { currentTimeTickMark, timeTickMark } from '../utils'
 
 export default class TimeAxis extends Component {
   public isZooming: boolean = false
 
-  constructor(chart: Chart) {
-    super(chart)
+  constructor() {
+    super()
   }
 
   drawLabels(canvas: Canvas) {
@@ -35,10 +35,7 @@ export default class TimeAxis extends Component {
     let data = this.chart.history
     if (!data) return
     let x = this.chart.mousePosition.x - this.chart.canvasRect.x
-    let i = Math.round(
-      ((x - this.chart.boundingRect.left) / this.chart.chartFullWidth) *
-        data.length,
-    )
+    let i = Math.round(((x - this.chart.boundingRect.left) / this.chart.chartFullWidth) * data.length)
     let point = data[i]
     if (!point) return
 

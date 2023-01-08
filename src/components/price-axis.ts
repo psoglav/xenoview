@@ -1,11 +1,11 @@
-import { Canvas, Chart, Component } from '../core'
+import { Canvas, Component } from '../core'
 import { MarkModel } from '../models/mark'
 
 export default class PriceAxis extends Component {
   public isZooming: boolean = false
 
-  constructor(chart: Chart) {
-    super(chart)
+  constructor() {
+    super()
   }
 
   update(canvas: Canvas) {

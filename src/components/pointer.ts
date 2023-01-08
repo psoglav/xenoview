@@ -1,4 +1,4 @@
-import { Chart, Component, Canvas } from '../core'
+import { Component, Canvas } from '../core'
 
 type PointerPosition = {
   x: number
@@ -16,8 +16,8 @@ export default class Pointer extends Component {
     y: 0
   }
 
-  constructor(chart: Chart) {
-    super(chart)
+  constructor() {
+    super()
   }
 
   move() {
@@ -26,9 +26,7 @@ export default class Pointer extends Component {
     if (!data?.length) return
 
     let x =
-      ((this.chart.mousePosition.x -
-        this.chart.canvasRect.x -
-        this.chart.boundingRect.left) /
+      ((this.chart.mousePosition.x - this.chart.canvasRect.x - this.chart.boundingRect.left) /
         this.chart.chartFullWidth) *
       data.length
 
@@ -55,18 +53,9 @@ export default class Pointer extends Component {
       Math.round(
         this.chart.boundingRect.left +
           this.chart.pointsGap *
-            Math.round(
-              this.chart.getPointIndexByX(
-                this.chart.mousePosition.x - this.chart.canvasRect.left
-              )
-            )
+            Math.round(this.chart.getPointIndexByX(this.chart.mousePosition.x - this.chart.canvasRect.left))
       ) + 0.5
-    let y =
-      Math.round(
-        this.position.y +
-          (this.chart.chartLayer.height % 2) / 2 -
-          this.chart.canvasRect.top
-      ) + 0.5
+    let y = Math.round(this.position.y + (this.chart.chartLayer.height % 2) / 2 - this.chart.canvasRect.top) + 0.5
 
     ctx.setLineDash([5, 5])
 

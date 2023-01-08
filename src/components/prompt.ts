@@ -1,4 +1,4 @@
-import { Canvas, Component, Chart } from '../core'
+import { Canvas, Component } from '../core'
 
 export const PROMPTS = {
   zooming: 'Hold Ctrl to zoom into the center, and Alt to zoom proportionally'
@@ -7,8 +7,8 @@ export const PROMPTS = {
 export default class Prompt extends Component {
   value: string
 
-  constructor(chart: Chart) {
-    super(chart)
+  constructor() {
+    super()
   }
 
   update(canvas: Canvas) {

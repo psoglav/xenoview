@@ -1,6 +1,11 @@
 import { Nominal } from '../models/nominal'
+import { Chart } from '../core'
 
 declare global {
+  interface Window {
+    xenoview: Chart
+  }
+
   export namespace Chart {
     type StyleName = 'candles' | 'line' | 'area' | 'bars' | 'hollow-candles'
     interface BoundingRect {

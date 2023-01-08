@@ -1,8 +1,8 @@
-import { Canvas, Chart, Component } from '../core'
+import { Canvas, Component } from '../core'
 
 export default class Grid extends Component {
-  constructor(chart: Chart) {
-    super(chart)
+  constructor() {
+    super()
   }
 
   update(canvas: Canvas): void {
