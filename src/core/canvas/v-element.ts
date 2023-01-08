@@ -1,4 +1,5 @@
 export abstract class VElement {
+  public isDestroyed: boolean = false
   public position: Position
   public rect: Rect = { x: 0, y: 0, width: 0, height: 0 }
   public canvas: HTMLCanvasElement

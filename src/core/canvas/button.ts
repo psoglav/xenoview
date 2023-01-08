@@ -20,6 +20,7 @@ export interface ButtonOptions {
     hover?: string
     active?: string
   }
+  click?(ctx: Button): void
 }
 
 export class Button extends InteractiveVElement {
@@ -69,7 +70,9 @@ export class Button extends InteractiveVElement {
 
   onMouseDown(e: MouseEvent): void {}
 
-  onMouseUp(e: MouseEvent): void {}
+  onMouseUp(e: MouseEvent): void {
+    this.options.click(this)
+  }
 
   onMouseEnter(e: MouseEvent): void {}
 

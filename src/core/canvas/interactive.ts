@@ -10,6 +10,12 @@ export abstract class InteractiveVElement extends VElement implements Destroyabl
     return window.xenoview
   }
 
+  private _listeners = {
+    mousemove: this._onMouseMove.bind(this),
+    mousedown: this._onMouseDown.bind(this),
+    mouseup: this._onMouseUp.bind(this)
+  }
+
   private _state: MouseCursorState = 'default'
 
   public get state() {
@@ -54,9 +60,9 @@ export abstract class InteractiveVElement extends VElement implements Destroyabl
   abstract onMouseUp(e: MouseEvent): void
 
   bind(): void {
-    this.canvas.addEventListener('mousemove', this._onMouseMove.bind(this))
-    this.canvas.addEventListener('mousedown', this._onMouseDown.bind(this))
-    this.canvas.addEventListener('mouseup', this._onMouseUp.bind(this))
+    Object.keys(this._listeners).forEach(type => {
+      this.canvas.addEventListener(type, this._listeners[type])
+    })
   }
 
   private _onMouseMove(e: MouseEvent) {
@@ -83,16 +89,18 @@ export abstract class InteractiveVElement extends VElement implements Destroyabl
 
   private _onMouseUp(e: MouseEvent) {
     if (this.isInside(this.mouse)) {
-      this.onMouseUp(e)
       this.state = 'hover'
+      this.onMouseUp(e)
     } else {
       this.state = 'default'
     }
   }
 
   destroy() {
-    this.canvas.removeEventListener('mousemove', this._onMouseMove.bind(this))
-    this.canvas.removeEventListener('mousedown', this._onMouseDown.bind(this))
-    this.canvas.removeEventListener('mouseup', this._onMouseUp.bind(this))
+    Object.keys(this._listeners).forEach(type => {
+      this.canvas.removeEventListener(type, this._listeners[type])
+    })
+    this.state = 'default'
+    this.isDestroyed = true
   }
 }

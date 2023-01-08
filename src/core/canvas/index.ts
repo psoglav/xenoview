@@ -99,6 +99,11 @@ export class Canvas {
       this.needsUpdate = false
     }
 
+    this.updateElements()
+  }
+
+  updateElements() {
+    this.elements = this.elements.filter(el => !el.isDestroyed)
     this.elements.forEach(el => {
       el.update()
     })

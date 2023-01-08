@@ -99,21 +99,23 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
     this.bindEventListeners()
     this.render()
 
-    this.uiLayer.elements.push(
-      new Button(this.chartLayer.raw, 100, 100, {
-        text: 'My button',
-        textColor: { default: 'white', active: 'black' },
-        fillColor: { default: '#ffffff33', hover: '#ffffff55', active: '#fff' },
-        border: {
-          width: 1,
-          color: this._opts.line.color
-        },
-        padding: {
-          x: 4,
-          y: 2
-        }
-      })
-    )
+    const button = new Button(this.chartLayer.raw, 100, 100, {
+      text: 'My button',
+      textColor: { default: 'white', active: 'black' },
+      fillColor: { default: '#ffffff33', hover: '#ffffff55', active: '#fff' },
+      border: {
+        width: 1,
+        color: this._opts.line.color
+      },
+      padding: {
+        x: 4,
+        y: 2
+      },
+      click(ctx) {
+        ctx.destroy()
+      }
+    })
+    this.uiLayer.elements.push(button)
   }
 
   applyOptions(opts: ChartOptions): void {

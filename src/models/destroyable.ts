@@ -1,4 +1,5 @@
 export default interface Destroyable {
+  isDestroyed: boolean
   bind(): void
   onMouseMove(e: MouseEvent): void
   onMouseDown(e: MouseEvent): void
