@@ -10,8 +10,9 @@ export default class PriceAxis extends Component {
 
   update(canvas: Canvas) {
     this.drawGridLabels(canvas)
-    this.drawLastPrice(canvas)
     this.drawLastVisiblePrice(canvas)
+    this.drawOrdersPrice(canvas)
+    this.drawLastPrice(canvas)
 
     if (this.chart.pointer.isVisible) {
       this.drawPointerPrice(canvas)
@@ -61,7 +62,8 @@ export default class PriceAxis extends Component {
       x: canvas.width / 2,
       y: 0,
       text: null,
-      color: null
+      color: null,
+      fullWidth: true
     }
 
     let data = this.chart.history
@@ -91,6 +93,21 @@ export default class PriceAxis extends Component {
     // this.drawLabel(point.close.toFixed(2), y, canvas, 'white', color, true)
 
     canvas.drawMark(mark)
+  }
+
+  drawOrdersPrice(canvas: Canvas) {
+    this.chart.trading.orders.forEach(item => {
+      const y = this.chart.normalizeToY(item.deltaPrice + item.price)
+      const color = this.chart.options.candles.colors[item.side === 'buy' ? 'higher' : 'lower']
+      canvas.drawMark({
+        type: 'secondary',
+        x: canvas.width / 2,
+        y,
+        text: (item.deltaPrice + item.price).toFixed(2),
+        bg: this.chart.options.bgColor,
+        color
+      })
+    })
   }
 
   drawLabel(text: any, y: number, canvas: Canvas, fgColor: string, bgColor?: string, fill?: boolean) {

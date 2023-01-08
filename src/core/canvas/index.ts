@@ -194,9 +194,9 @@ export class Canvas {
     let py = 3
 
     const calculateRect = () => ({
-      x: payload.x - px - tw / 2,
+      x: payload.fullWidth ? (payload.type == 'primary' ? 4 : 1) : payload.x - px - tw / 2,
       y: Math.round(payload.y) - th / 2 - py + 1,
-      width: tw + px * 2,
+      width: payload.fullWidth ? this.width - (payload.type == 'primary' ? 8 : 0) : tw + px * 2,
       height: th + py * 2
     })
 

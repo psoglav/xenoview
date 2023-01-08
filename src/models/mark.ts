@@ -10,4 +10,5 @@ export interface MarkModel {
   x: number
   y: number
   line?: MarkLineType
+  fullWidth?: boolean
 }
