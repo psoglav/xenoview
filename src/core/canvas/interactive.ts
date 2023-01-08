@@ -1,12 +1,11 @@
-import Destroyable from '../../models/destroyable'
 import { VElement } from './v-element'
 
 type MouseCursorState = 'hover' | 'active' | 'default'
 
-export abstract class InteractiveVElement extends VElement implements Destroyable {
+export abstract class InteractiveVElement extends VElement {
   public mouse: Position
 
-  private get chart() {
+  get chart() {
     return window.xenoview
   }
 
@@ -52,12 +51,6 @@ export abstract class InteractiveVElement extends VElement implements Destroyabl
     super(canvas)
     this.bind()
   }
-
-  abstract onMouseEnter(e: MouseEvent): void
-  abstract onMouseMove(e: MouseEvent): void
-  abstract onMouseLeave(e: MouseEvent): void
-  abstract onMouseDown(e: MouseEvent): void
-  abstract onMouseUp(e: MouseEvent): void
 
   bind(): void {
     Object.keys(this._listeners).forEach(type => {
