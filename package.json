@@ -16,6 +16,7 @@
     "commit:sub": "git add sandbox && git commit -m 'chore: update submodule'"
   },
   "dependencies": {
+    "color": "^4.2.3",
     "moment": "^2.29.4",
     "moment-range": "^4.0.2"
   },
