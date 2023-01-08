@@ -221,6 +221,7 @@ export class Canvas {
       }
 
       const rect = calculateRect()
+      ctx.clearRect(rect.x, rect.y, rect.width, rect.height)
       ctx.rect(rect.x, rect.y, rect.width, rect.height)
       ctx.stroke()
       ctx.fill()
