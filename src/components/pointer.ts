@@ -6,8 +6,7 @@ type PointerPosition = {
 }
 
 export default class Pointer extends Component {
-  public isVisible: Boolean = false
-  public isBlockedByGUI: Boolean = false
+  public isVisible: boolean = false
   public focusedPointIndex: number
   public focusedPoint: History.Point
 
@@ -26,8 +25,7 @@ export default class Pointer extends Component {
     if (!data?.length) return
 
     let x =
-      ((this.chart.mousePosition.x - this.chart.canvasRect.x - this.chart.boundingRect.left) /
-        this.chart.chartFullWidth) *
+      ((this.chart.mouse.x - this.chart.canvasRect.x - this.chart.boundingRect.left) / this.chart.chartFullWidth) *
       data.length
 
     let i = Math.round(x)
@@ -36,11 +34,11 @@ export default class Pointer extends Component {
     this.focusedPointIndex = i
     this.focusedPoint = this.chart.history[i]
 
-    this.position.y = this.chart.mousePosition.y
+    this.position.y = this.chart.mouse.y
   }
 
   update(canvas: Canvas) {
-    if (!this.chart.chartData?.length || !this.isVisible || this.isBlockedByGUI) return
+    if (!this.chart.chartData?.length || !this.isVisible || this.chart.mouse.isBlockedByUI) return
     canvas.ctx.strokeStyle = this.chart.options.pointer.fgColor
     this.draw(canvas.ctx)
     this.chart.layout.legend.update()
@@ -53,7 +51,7 @@ export default class Pointer extends Component {
       Math.round(
         this.chart.boundingRect.left +
           this.chart.pointsGap *
-            Math.round(this.chart.getPointIndexByX(this.chart.mousePosition.x - this.chart.canvasRect.left))
+            Math.round(this.chart.getPointIndexByX(this.chart.mouse.x - this.chart.canvasRect.left))
       ) + 0.5
     let y = Math.round(this.position.y + (this.chart.chartLayer.height % 2) / 2 - this.chart.canvasRect.top) + 0.5
 

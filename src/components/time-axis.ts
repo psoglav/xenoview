@@ -34,7 +34,7 @@ export default class TimeAxis extends Component {
   drawTimeMarker(canvas: Canvas) {
     let data = this.chart.history
     if (!data) return
-    let x = this.chart.mousePosition.x - this.chart.canvasRect.x
+    let x = this.chart.mouse.x - this.chart.canvasRect.x
     let i = Math.round(((x - this.chart.boundingRect.left) / this.chart.chartFullWidth) * data.length)
     let point = data[i]
     if (!point) return

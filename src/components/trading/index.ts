@@ -1,5 +1,5 @@
 import { capitalize } from '../../utils'
-import { Canvas, Chart, Component } from '../../core'
+import { Canvas, Component, Label, Button } from '../../core'
 import { MarkModel } from '../../models/mark'
 import Color from 'color'
 
@@ -28,7 +28,6 @@ export default class Trading extends Component {
   }
 
   update(canvas: Canvas) {
-    const atLeastOneIsHovered = () => this.orders.findIndex(item => item.isHovered) != -1
     const atLeastOneIsGrabbed = () => this.orders.findIndex(item => item.isGrabbed) != -1
 
     if (!this.orders?.length) return
@@ -64,13 +63,6 @@ export default class Trading extends Component {
         item.isGrabbed = false
       }
     })
-
-    const blocked = atLeastOneIsGrabbed() || atLeastOneIsHovered()
-
-    this.chart.pointer.isBlockedByGUI = blocked
-    this.chart.transform.isBlockedByGUI = blocked
-
-    document.body.style.cursor = blocked ? 'pointer' : ''
   }
 
   public createOrder(item: Order) {

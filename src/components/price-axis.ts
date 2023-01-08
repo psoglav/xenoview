@@ -32,7 +32,7 @@ export default class PriceAxis extends Component {
   }
 
   drawPointerPrice(canvas: Canvas) {
-    let y = this.chart.mousePosition.y - this.chart.canvasRect.top
+    let y = this.chart.mouse.y - this.chart.canvasRect.top
     let price = this.chart.normalizeToPrice(y).toFixed(2)
     this.drawLabel(price, y, canvas, 'white', this.chart.options.pointer.bgColor, true)
   }

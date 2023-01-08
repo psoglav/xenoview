@@ -1,4 +1,4 @@
-import { Component } from '..'
+import { Component, VElement } from '..'
 import { MarkModel } from '../../models/mark'
 
 export type CanvasOptions = {
@@ -13,6 +13,7 @@ export type CanvasOptions = {
 export class Canvas {
   options: CanvasOptions
   raw: HTMLCanvasElement
+  elements: VElement[] = []
 
   public needsUpdate: boolean = true
   public mouse = { x: 0, y: 0, button: null }
@@ -97,6 +98,10 @@ export class Canvas {
 
       this.needsUpdate = false
     }
+
+    this.elements.forEach(el => {
+      el.update()
+    })
   }
 
   clear() {
@@ -180,6 +185,45 @@ export class Canvas {
     this.ctx.stroke()
   }
 
+  static measureText(
+    ctx: CanvasRenderingContext2D,
+    text: string,
+    x: number,
+    y: number,
+    options: {
+      font?: string
+      textAlign?: CanvasTextAlign
+      textBaseline?: CanvasTextBaseline
+    } = {}
+  ): Rect {
+    ctx.font = options.font || '11px Verdana'
+    ctx.textAlign = options.textAlign || 'left'
+    ctx.textBaseline = options.textBaseline || 'middle'
+
+    const metrics = ctx.measureText(text)
+    const width = metrics.width
+    const height = metrics.fontBoundingBoxDescent + metrics.fontBoundingBoxAscent
+
+    if (ctx.textAlign == 'center') {
+      x -= width / 2
+    } else if (['right', 'end'].includes(ctx.textAlign)) {
+      x -= width
+    }
+
+    if (ctx.textBaseline == 'middle') {
+      y -= height / 2
+    } else if (['bottom'].includes(ctx.textBaseline)) {
+      y -= height
+    }
+
+    return {
+      x,
+      y,
+      width,
+      height
+    }
+  }
+
   drawMark(payload: MarkModel): Rect {
     const ctx = this.ctx
 
@@ -261,3 +305,8 @@ export class Canvas {
     return lines
   }
 }
+
+export * from './v-element'
+export * from './interactive'
+export * from './label'
+export * from './button'

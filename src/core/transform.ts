@@ -3,7 +3,6 @@ import { Chart } from '@/core'
 export class Transform {
   public boundingRect: Chart.BoundingRect
   public isPanning = false
-  public isBlockedByGUI = false
 
   chart: Chart
 
@@ -15,7 +14,7 @@ export class Transform {
   }
 
   move(mx: number, my: number) {
-    if(this.isBlockedByGUI) return
+    if (this.chart.mouse.isBlockedByUI) return
 
     this.boundingRect.top += my
     this.boundingRect.bottom += my
@@ -30,6 +29,7 @@ export class Transform {
 
   // TODO: Make the calculations simpler
   zoom(dx: number, dy: number, xOrigin?: number) {
+    if (this.chart.mouse.isBlockedByUI) return
     if (dx < 0 && this.chart.pointsGap < 1) return
     if (dx > 0 && this.chart.pointsGap > 350) return
 

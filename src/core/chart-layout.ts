@@ -61,7 +61,7 @@ export class ChartLayout {
       zIndex: 0,
       // updateByRequest: true,
       components: {
-        grid: new Grid(this.chart),
+        grid: new Grid(),
         style: createChartStyle(this.chart)
       }
     })
@@ -70,9 +70,9 @@ export class ChartLayout {
       container: el,
       zIndex: 1,
       components: {
-        prompt: new Prompt(this.chart),
-        pointer: new Pointer(this.chart),
-        trading: new Trading(this.chart)
+        prompt: new Prompt(),
+        pointer: new Pointer(),
+        trading: new Trading()
       }
     })
 
@@ -93,7 +93,7 @@ export class ChartLayout {
 
     this.priceContainer = el
 
-    const priceAxis = new PriceAxis(this.chart)
+    const priceAxis = new PriceAxis()
 
     this.priceAxisCanvas = new Canvas({
       container: el,
@@ -120,7 +120,7 @@ export class ChartLayout {
 
     this.timeContainer = el
 
-    const timeAxis = new TimeAxis(this.chart)
+    const timeAxis = new TimeAxis()
 
     this.timeAxisCanvas = new Canvas({
       container: el,
