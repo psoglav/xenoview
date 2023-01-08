@@ -6,6 +6,9 @@ declare global {
     xenoview: Chart
   }
 
+  type Position = { x: number; y: number }
+  type Rect = { x: number; y: number; width: number; height: number }
+
   export namespace Chart {
     type StyleName = 'candles' | 'line' | 'area' | 'bars' | 'hollow-candles'
     interface BoundingRect {

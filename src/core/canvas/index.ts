@@ -180,7 +180,7 @@ export class Canvas {
     this.ctx.stroke()
   }
 
-  drawMark(payload: MarkModel) {
+  drawMark(payload: MarkModel): Rect {
     const ctx = this.ctx
 
     ctx.font = '11px Verdana'
@@ -238,7 +238,7 @@ export class Canvas {
     return calculateRect()
   }
 
-  static isInside(pos: { x: number; y: number }, rect: { x: number; y: number; width: number; height: number }) {
+  static isInside(pos: Position, rect: Rect) {
     return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y
   }
 
