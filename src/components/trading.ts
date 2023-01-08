@@ -28,6 +28,8 @@ export default class Trading extends Component {
     const atLeastOneIsHovered = () => this.orders.findIndex(item => item.isHovered) != -1
     const atLeastOneIsGrabbed = () => this.orders.findIndex(item => item.isGrabbed) != -1
 
+    if (!this.orders?.length) return
+
     this.orders.forEach(item => {
       if (item.isGrabbed) {
         item.deltaPrice = this.chart.normalizeToPrice(canvas.mouse.y) - item.price
@@ -72,6 +74,9 @@ export default class Trading extends Component {
   }
 
   public updateOrders(items: Order[]) {
-    this.orders = items
+    this.orders = []
+    items.forEach(item => {
+      this.createOrder(item)
+    })
   }
 }
