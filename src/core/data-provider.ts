@@ -71,7 +71,7 @@ export class DataProvider implements Configurable<DataProviderOptions> {
     this.api.connect(async () => {
       this.api.subscribe(this.symbol, `kline_${this._opts.interval}`)
       this.api.onStreamEvent('kline', (data: any) => {
-        if (data.s === this.symbol)
+        if (data.s === this.symbol) {
           this.state = {
             PRICE: +data.k.c,
             LASTUPDATE: Math.floor(data.k.t / 1000),
@@ -80,6 +80,8 @@ export class DataProvider implements Configurable<DataProviderOptions> {
             low: +data.k.l,
             close: +data.k.c
           }
+          window.xenoview?.updateCurrentPoint(this.state)
+        }
         this.listeners.forEach(cb => cb(this.state))
       })
     })

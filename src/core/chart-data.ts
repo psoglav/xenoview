@@ -35,9 +35,6 @@ export abstract class ChartData {
     if (this.chart.options.dataProvider) {
       this.dataProvider = new DataProvider(this.chart.options.dataProvider)
       await this.fetchHistory()
-      setInterval(() => {
-        this.updateCurrentPoint(this.dataProvider.state)
-      }, 500)
     }
   }
 
