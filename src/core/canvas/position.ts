@@ -76,7 +76,7 @@ export class Position extends VElement {
       textColor,
       text: 'x',
       click() {
-        EventEmitter.dispatch('trading:order-cancel', options.id)
+        EventEmitter.dispatch('trading:order-cancel', options)
       }
     })
   }
