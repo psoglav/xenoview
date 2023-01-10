@@ -1,7 +1,7 @@
 import '../public/styles/main.css'
 
 import { Canvas, Chart } from '.'
-import { Grid, Pointer, PriceAxis, TimeAxis, Legend, Trading, Prompt } from '../components'
+import { Grid, Pointer, PriceAxis, TimeAxis, Legend, Trading, Prompt, PlaceOrderButton } from '../components'
 import { createChartStyle } from '../components/chart-style'
 
 export class ChartLayout {
@@ -72,11 +72,12 @@ export class ChartLayout {
       components: {
         prompt: new Prompt(),
         pointer: new Pointer(),
+        'place-order-button': new PlaceOrderButton(),
         trading: new Trading()
       }
     })
 
-    this.chartLayers.ui.canvas.style.pointerEvents = 'none'
+    this.chartLayers.view.canvas.style.pointerEvents = 'none'
 
     const observer = new ResizeObserver(() => {
       if (!this.chart.transform) return

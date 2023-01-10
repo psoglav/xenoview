@@ -4,12 +4,24 @@ import { Canvas } from '.'
 export class Label extends VElement {
   public text: string
   public color: string
+  public align: CanvasTextAlign
+  public baseline: CanvasTextBaseline
 
-  constructor(canvas: HTMLCanvasElement, x: number, y: number, text: string, color?: string) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    x: number,
+    y: number,
+    text: string,
+    color?: string,
+    align?: CanvasTextAlign,
+    baseline?: CanvasTextBaseline
+  ) {
     super(canvas)
     this.setPosition(x, y)
     this.text = text
-    if (color) this.color = color
+    this.color = color
+    this.align = align
+    this.baseline = baseline
   }
 
   update(): void {
@@ -18,7 +30,11 @@ export class Label extends VElement {
 
   draw(): void {
     this.rect = Canvas.measureText(this.ctx, this.text, this.position.x, this.position.y)
-    this.ctx.fillStyle = this.color || 'white'
+
+    if (this.color) this.ctx.fillStyle = this.color
+    if (this.align) this.ctx.textAlign = this.align
+    if (this.baseline) this.ctx.textBaseline = this.baseline
+
     this.ctx.fillText(this.text, this.position.x, this.position.y)
   }
 }

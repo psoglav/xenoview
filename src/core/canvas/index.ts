@@ -99,14 +99,19 @@ export class Canvas {
       this.needsUpdate = false
     }
 
-    this.updateElements()
-  }
-
-  updateElements() {
     this.elements = this.elements.filter(el => !el.isDestroyed)
+
     this.elements.forEach(el => {
       el.update()
     })
+  }
+
+  add(item: VElement) {
+    this.elements.push(item)
+  }
+
+  remove(item: VElement) {
+    this.elements = this.elements.filter(el => el !== item)
   }
 
   clear() {
@@ -245,7 +250,7 @@ export class Canvas {
     const calculateRect = () => ({
       x: payload.fullWidth ? (payload.type == 'primary' ? 4 : 1) : payload.x - px - tw / 2,
       y: Math.round(payload.y) - th / 2 - py + 1,
-      width: payload.fullWidth ? this.width - (payload.type == 'primary' ? 8 : 0) : tw + px * 2,
+      width: payload.fullWidth ? this.width - (payload.type == 'primary' ? 8 : 2) : tw + px * 2,
       height: th + py * 2
     })
 
@@ -287,7 +292,7 @@ export class Canvas {
     return calculateRect()
   }
 
-  static isInside(pos: Position, rect: Rect) {
+  static isInside(pos: Vector, rect: Rect) {
     return pos.x > rect.x && pos.x < rect.x + rect.width && pos.y < rect.y + rect.height && pos.y > rect.y
   }
 
@@ -315,3 +320,4 @@ export * from './v-element'
 export * from './interactive'
 export * from './label'
 export * from './button'
+export * from './position'

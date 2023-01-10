@@ -6,5 +6,6 @@ import ChartStyle from './chart-style'
 import Legend from '../core/gui/legend'
 import Trading from './trading'
 import Prompt from './prompt'
+import PlaceOrderButton from './place-order-button'
 
-export { Pointer, PriceAxis, TimeAxis, Grid, ChartStyle, Legend, Trading, Prompt }
+export { Pointer, PriceAxis, TimeAxis, Grid, ChartStyle, Legend, Trading, Prompt, PlaceOrderButton }

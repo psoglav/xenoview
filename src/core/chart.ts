@@ -1,6 +1,6 @@
 import Configurable from '@/models/configurable'
 
-import { ChartData, ChartLayout, Transform, Button } from '.'
+import { ChartData, ChartLayout, Transform, EventEmitter } from '.'
 import { createLoader } from './gui'
 import { ChartStyle, Pointer, Trading } from '../components'
 import { createChartStyle } from '../components/chart-style'
@@ -9,6 +9,7 @@ import { ChartOptions, defaultChartOptions } from '../config/chart-options'
 export class Chart extends ChartData implements Configurable<ChartOptions> {
   _opts = defaultChartOptions
   layout: ChartLayout
+  focusedVElement: number
 
   get options() {
     return this._opts
@@ -98,24 +99,7 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
 
     this.bindEventListeners()
     this.render()
-
-    const button = new Button(this.chartLayer.raw, 100, 100, {
-      text: 'My button',
-      textColor: { default: 'white', active: 'black' },
-      fillColor: { default: '#ffffff33', hover: '#ffffff55', active: '#fff' },
-      border: {
-        width: 1,
-        color: this._opts.line.color
-      },
-      padding: {
-        x: 4,
-        y: 2
-      },
-      click(ctx) {
-        ctx.destroy()
-      }
-    })
-    this.uiLayer.elements.push(button)
+    EventEmitter.dispatch('mounted', null)
   }
 
   applyOptions(opts: ChartOptions): void {
@@ -168,15 +152,15 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
   }
 
   private bindEventListeners() {
-    this.canvas.addEventListener('mouseenter', () => {
+    this.uiLayer.canvas.addEventListener('mouseenter', () => {
       this.pointer.isVisible = true
     })
 
-    this.canvas.addEventListener('mouseleave', () => {
+    this.uiLayer.canvas.addEventListener('mouseleave', () => {
       this.pointer.isVisible = false
     })
 
-    this.canvas.addEventListener('mousedown', e => {
+    this.uiLayer.canvas.addEventListener('mousedown', e => {
       if (e.button == 0 && !this.mouse.isBlockedByUI) {
         e.preventDefault()
         this.transform.isPanning = true
@@ -202,7 +186,7 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
       }
     })
 
-    this.canvas.addEventListener('wheel', (e: any) => {
+    this.uiLayer.canvas.addEventListener('wheel', (e: any) => {
       this.transform.zoom(e.wheelDeltaY, e.altKey ? -e.wheelDeltaY / 2 : 0, e.ctrlKey ? this.mouse.x : null)
 
       this.pointer.move()
@@ -219,6 +203,10 @@ export class Chart extends ChartData implements Configurable<ChartOptions> {
       this.boundingRect.top = 0
       this.boundingRect.bottom = this.chartLayer.height
     }
+  }
+
+  public on(event: ChartEventType, listener: (e: CustomEvent) => void) {
+    EventEmitter.on(event, listener)
   }
 
   private _debug(text: any, x: number, y: number) {

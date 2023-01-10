@@ -1,11 +1,11 @@
-import Moment from 'moment'
-import { extendMoment } from 'moment-range'
+// import Moment from 'moment'
+// import { extendMoment } from 'moment-range'
 
 import { getNiceScale, getRangeByStep, normalizeTo, toMinutes } from '../utils'
 import { Chart } from './chart'
-import { DataProvider } from './data-provider'
+import { CurrentBarState, DataProvider } from './data-provider'
 
-const moment: any = extendMoment(<any>Moment)
+// const moment: any = extendMoment(<any>Moment)
 
 export abstract class ChartData {
   dataProvider: DataProvider
@@ -72,7 +72,7 @@ export abstract class ChartData {
     if (point.close > point.high) point.high = point.close
   }
 
-  updateCurrentPoint(value: any) {
+  updateCurrentPoint(value: CurrentBarState) {
     let hist = this.history
     if (!hist?.length) return
     let currentPoint = hist[hist.length - 1]

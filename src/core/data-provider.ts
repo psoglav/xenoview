@@ -77,18 +77,7 @@ export class DataProvider implements Configurable<DataProviderOptions> {
     this.listeners.forEach(cb => cb(this.state))
 
     return data
-
-    const bar = data[data.length - 1]
-
-    this.state = {
-      PRICE: bar.close,
-      LASTUPDATE: bar.time,
-      open: bar.open,
-      high: bar.high,
-      low: bar.low,
-        if (data.s === this.symbol) {
-    }
-
+  }
 
   init() {
     this.state = null

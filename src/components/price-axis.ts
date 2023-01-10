@@ -96,7 +96,7 @@ export default class PriceAxis extends Component {
   }
 
   drawOrdersPrice(canvas: Canvas) {
-    this.chart.trading.orders.forEach(item => {
+    this.chart.trading.positions.forEach(item => {
       const y = this.chart.normalizeToY(item.deltaPrice + item.price)
       const color = this.chart.options.candles.colors[item.side === 'buy' ? 'higher' : 'lower']
       canvas.drawMark({
@@ -105,7 +105,8 @@ export default class PriceAxis extends Component {
         y,
         text: (item.deltaPrice + item.price).toFixed(2),
         bg: this.chart.options.bgColor,
-        color
+        color,
+        fullWidth: true
       })
     })
   }

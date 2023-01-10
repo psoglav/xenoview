@@ -3,13 +3,14 @@ import { VElement } from './v-element'
 type MouseCursorState = 'hover' | 'active' | 'default'
 
 export abstract class InteractiveVElement extends VElement {
-  public mouse: Position
+  public mouse: Vector
 
-  get chart() {
-    return window.xenoview
+  public get isFocused() {
+    return this.chart.focusedVElement === this._id && this.isHovered
   }
 
   private _listeners = {
+    mouseleave: this._onMouseLeave.bind(this),
     mousemove: this._onMouseMove.bind(this),
     mousedown: this._onMouseDown.bind(this),
     mouseup: this._onMouseUp.bind(this)
@@ -47,6 +48,8 @@ export abstract class InteractiveVElement extends VElement {
     return this.state === 'active'
   }
 
+  public isGrabbed = false
+
   constructor(canvas: HTMLCanvasElement) {
     super(canvas)
     this.bind()
@@ -58,6 +61,10 @@ export abstract class InteractiveVElement extends VElement {
     })
   }
 
+  private _onMouseLeave(e: MouseEvent) {
+    this.state = 'default'
+  }
+
   private _onMouseMove(e: MouseEvent) {
     this.mouse = { x: e.clientX - this.canvasRect.x, y: e.clientY - this.canvasRect.y }
 
@@ -65,16 +72,20 @@ export abstract class InteractiveVElement extends VElement {
       if (!this.isHovered && !this.isClicked) {
         this.onMouseEnter(e)
         this.state = 'hover'
+        if(!this.chart.focusedVElement || this.chart.focusedVElement < this._id) this.chart.focusedVElement = this._id
+      } else if (this.isClicked) {
+        this.isGrabbed = true
       }
       this.onMouseMove(e)
     } else if (this.isHovered) {
+      if(this.chart.focusedVElement > this._id) this.chart.focusedVElement = null
       this.onMouseLeave(e)
       this.state = 'default'
     }
   }
 
   private _onMouseDown(e: MouseEvent) {
-    if (this.isInside(this.mouse)) {
+    if (this.isInside(this.mouse) && this.isFocused) {
       this.onMouseDown(e)
       this.state = 'active'
     }
@@ -87,6 +98,7 @@ export abstract class InteractiveVElement extends VElement {
     } else {
       this.state = 'default'
     }
+    this.isGrabbed = false
   }
 
   destroy() {

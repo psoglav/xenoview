@@ -1,85 +1,46 @@
-import { capitalize } from '../../utils'
-import { Canvas, Component, Label, Button } from '../../core'
-import { MarkModel } from '../../models/mark'
-import Color from 'color'
-
-type OrderType = 'market' | 'limit' | 'stop'
-type OrderSide = 'buy' | 'sell'
-type OrderSymbol = 'BTCUSDT' | 'ETHUSDT' | 'LTCUSDT'
-
-export type Order = {
-  id: string
-  type: OrderType
-  side: OrderSide
-  symbol: OrderSymbol
-  price: number
-  units: number
-  deltaPrice?: number
-  isHovered?: boolean
-  isGrabbed?: boolean
-  isModified?: boolean
-}
+import { Component, EventEmitter, Position,  } from '../../core'
+import moment from 'moment'
 
 export default class Trading extends Component {
-  public orders: Order[] = []
+  public orders: OrderModel[] = []
+  public get positions() {
+    return this.orders?.filter(el => el.status == 'working')
+  }
+  public get currentPrice(): number {
+    return this.chart.dataProvider.state.PRICE
+  }
+
+  private elements: Position[] = []
 
   constructor() {
     super()
   }
 
-  update(canvas: Canvas) {
-    const atLeastOneIsGrabbed = () => this.orders.findIndex(item => item.isGrabbed) != -1
+  update() {
+    this.positions.forEach(item => {
+      const { side, type, price } = item
 
-    if (!this.orders?.length) return
-
-    this.orders.forEach(item => {
-      if (item.isGrabbed) {
-        item.deltaPrice = this.chart.normalizeToPrice(canvas.mouse.y) - item.price
+      if (this.currentPrice > price && ((side == 'sell' && type == 'limit') || (side == 'buy' && type == 'stop'))) {
+        this.executeOrder(item)
       }
 
-      const color = new Color(this.chart.options.candles.colors[item.side === 'buy' ? 'higher' : 'lower'])
-      const bg = new Color(item.isHovered ? this.chart.options.bgColor : '#111111')
-
-      const y = this.chart.normalizeToY(item.deltaPrice + item.price)
-      const width = canvas.width
-
-      const mark: MarkModel = {
-        type: item.isGrabbed ? 'primary' : 'secondary',
-        x: width - 200,
-        y,
-        text: `${item.units} | ${capitalize(item.side)} ${capitalize(item.type)}`,
-        color: color.alpha(item.isModified ? 0.5 : 1),
-        bg: bg.alpha(item.isModified ? 0.5 : 1),
-        line: 'solid'
+      if (price > this.currentPrice && ((side == 'buy' && type == 'limit') || (side == 'sell' && type == 'stop'))) {
+        this.executeOrder(item)
       }
 
-      const rect = canvas.drawMark(mark)
-
-      item.isHovered = Canvas.isInside(canvas.mouse, rect)
-
-      if (!atLeastOneIsGrabbed() && item.isHovered) {
-        item.isGrabbed = canvas.mouse.button === 0
-      } else if (canvas.mouse.button !== 0) {
-        item.isGrabbed = false
+      if (item.type === 'market') {
+        item.price = this.currentPrice
+        this.executeOrder(item)
       }
+    })
+    this.elements = this.elements.filter(el => !el.isDestroyed)
+    this.elements.forEach(element => {
+      if (element.options.price) element.update()
     })
   }
 
-  public createOrder(item: Order) {
-    item.deltaPrice = 0
-    item.id = this.orders.length.toString(16)
-
-    Object.defineProperty(item, 'isModified', {
-      get() {
-        return !!this.deltaPrice && !this.isGrabbed
-      }
-    })
-
-    this.orders.push(item)
-  }
-
-  public updateOrder(id: string, payload: Partial<Order>) {
-    const i = this.orders.findIndex((item: Order) => item.id === id)
+  public updateOrder(id: string, payload: Partial<OrderModel>) {
+    const i = this.orders.findIndex((item: OrderModel) => item.id === id)
     Object.keys(key => {
       if (key in this.orders[i]) {
         this.orders[i][key] = payload[key]
@@ -87,14 +48,38 @@ export default class Trading extends Component {
     })
   }
 
-  public updateOrders(items: Order[]) {
-    this.orders = []
-    items.forEach(item => {
-      this.createOrder(item)
+  public updateOrders(items: OrderModel[]) {
+    this.orders = items
+    this.orders.forEach(item => {
+      if (!item.id) {
+        item.id = this.orders.length.toString(16)
+        item.deltaPrice = 0
+        item.status = 'working'
+        item.at = moment().format('DD.MM.YY HH:mm:ss')
+      }
+      this.openPosition(item)
     })
   }
 
-  public removeOrder(value: Order | string) {
-    this.orders = this.orders.filter(el => el.id !== (typeof value === 'string' ? value : value.id))
+  public executeOrder(order: OrderModel) {
+    this.closePosition(order, 'fulfilled')
+    EventEmitter.dispatch('trading:order-fulfilled', order)
+  }
+
+  public openPosition(order: OrderModel) {
+    if (this.elements.findIndex(el => el.options.id === order.id) != -1) return
+    const position = new Position(this.chart.uiLayer.canvas, order)
+    this.elements.push(position)
+  }
+
+  public closePosition(value: OrderModel | string, status: Exclude<OrderStatus, 'working'> = 'canceled') {
+    const id = typeof value === 'string' ? value : value.id
+    const i = this.orders.findIndex(el => el.id === id)
+    this.orders[i].status = status
+    this.elements.forEach((el: any) => {
+      if (el.options?.id === id) {
+        el.destroy()
+      }
+    })
   }
 }

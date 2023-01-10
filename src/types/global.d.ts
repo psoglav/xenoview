@@ -6,8 +6,30 @@ declare global {
     xenoview: Chart
   }
 
-  type Position = { x: number; y: number }
+  type Vector = { x: number; y: number }
   type Rect = { x: number; y: number; width: number; height: number }
+
+  type OrderType = 'market' | 'limit' | 'stop'
+  type OrderSide = 'buy' | 'sell'
+  type OrderSymbol = 'BTC' | 'ETH' | 'LTC'
+  type OrderStatus = 'working' | 'canceled' | 'fulfilled'
+
+  export type OrderModel = {
+    id: string
+    at: string
+    status: OrderStatus
+    type: OrderType
+    side: OrderSide
+    symbol: OrderSymbol
+    price: number
+    units: number
+    deltaPrice?: number
+    isHovered?: boolean
+    isGrabbed?: boolean
+    disabled?: boolean
+  }
+
+  type ChartEventType = 'order:fulfilled' | 'order:canceled' | 'order:canceled'
 
   export namespace Chart {
     type StyleName = 'candles' | 'line' | 'area' | 'bars' | 'hollow-candles'
