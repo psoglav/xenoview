@@ -5,7 +5,7 @@ import { DataProviderOptions, defaultDataProviderOptions } from '../config/data-
 import { getIntervalByDateRange, symbolToCurrency, IntervalWeights } from '../utils'
 import BinanceAPIClient from './binance-api-client'
 
-type CurrentBarState = {
+export type CurrentBarState = {
   PRICE: number
   LASTUPDATE: number
   open: number
