@@ -55,14 +55,40 @@ export class DataProvider implements Configurable<DataProviderOptions> {
   }
 
   async requestHistory(): Promise<History.Data> {
-    return await this.api.getKLines({
+    const data = await this.api.getKLines({
       symbol: this.symbol,
       interval: this._opts.interval,
       startTime: this.historyRange[0],
       endTime: this.historyRange[1],
       limit: 1000
     })
-  }
+
+    const bar = data[data.length - 1]
+
+    this.state = {
+      PRICE: bar.close,
+      LASTUPDATE: bar.time,
+      open: bar.open,
+      high: bar.high,
+      low: bar.low,
+      close: bar.close
+    }
+
+    this.listeners.forEach(cb => cb(this.state))
+
+    return data
+
+    const bar = data[data.length - 1]
+
+    this.state = {
+      PRICE: bar.close,
+      LASTUPDATE: bar.time,
+      open: bar.open,
+      high: bar.high,
+      low: bar.low,
+        if (data.s === this.symbol) {
+    }
+
 
   init() {
     this.state = null
