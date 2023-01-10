@@ -37,4 +37,16 @@ export class Label extends VElement {
 
     this.ctx.fillText(this.text, this.position.x, this.position.y)
   }
+
+  destroy(): void {}
+
+  onMouseDown(e: MouseEvent): void {}
+
+  onMouseEnter(e: MouseEvent): void {}
+
+  onMouseLeave(e: MouseEvent): void {}
+
+  onMouseMove(e: MouseEvent): void {}
+
+  onMouseUp(e: MouseEvent): void {}
 }
