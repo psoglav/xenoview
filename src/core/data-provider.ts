@@ -85,6 +85,7 @@ export class DataProvider implements Configurable<DataProviderOptions> {
     this.api.disconnect()
     this.api.connect(async () => {
       this.api.subscribe(this.symbol, `kline_${this._opts.interval}`)
+      this.api.subscribe(this.symbol, `depth@100ms`)
       this.api.onStreamEvent('kline', (data: any) => {
         if (data.s === this.symbol) {
           this.state = {
@@ -96,8 +97,13 @@ export class DataProvider implements Configurable<DataProviderOptions> {
             close: +data.k.c
           }
           window.xenoview?.updateCurrentPoint(this.state)
+          this.listeners.forEach(cb => cb(this.state))
         }
-        this.listeners.forEach(cb => cb(this.state))
+      })
+      this.api.onStreamEvent('depthUpdate', (data: any) => {
+        if (data.s === this.symbol) {
+          this.listeners.forEach(cb => cb(data))
+        }
       })
     })
   }
