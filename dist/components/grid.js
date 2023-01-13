@@ -1,7 +1,7 @@
 import { Component } from '../core';
 export default class Grid extends Component {
-    constructor(chart) {
-        super(chart);
+    constructor() {
+        super();
     }
     update(canvas) {
         this.drawRows(canvas);

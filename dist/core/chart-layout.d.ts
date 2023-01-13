@@ -1,5 +1,6 @@
 import '../public/styles/main.css';
 import { Canvas, Chart } from '.';
+import { Legend } from '../components';
 export declare class ChartLayout {
     chart: Chart;
     layoutContainer: HTMLElement;
@@ -12,12 +13,13 @@ export declare class ChartLayout {
         view?: Canvas;
         ui?: Canvas;
     };
+    legend: Legend;
     constructor(chart: Chart, container: HTMLElement | string);
     ctx(canvas: HTMLCanvasElement): CanvasRenderingContext2D;
     create(container: HTMLElement | string): void;
     createChartContainer(): void;
     createPriceContainer(): void;
     createTimeContainer(): void;
-    createLegendContainer(): HTMLElement;
+    createGUIContainer(): HTMLElement;
     createContainer(): HTMLElement;
 }

@@ -1,6 +1,6 @@
-import { Canvas, Chart, Component } from '../core';
+import { Canvas, Component } from '../core';
 export default class Grid extends Component {
-    constructor(chart: Chart);
+    constructor();
     update(canvas: Canvas): void;
     drawRows(canvas: Canvas): void;
     drawColumns(canvas: Canvas): void;

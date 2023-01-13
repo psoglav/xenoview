@@ -12,9 +12,7 @@ export function getRangeByStep(start, end, step) {
     const power = Math.pow(10, maxNumOfDecimal);
     const increment = end - start > 0 ? step : -step;
     const intEnd = Math.floor(end * power);
-    const isFulFilled = end - start > 0
-        ? (current) => current > intEnd
-        : (current) => current < intEnd;
+    const isFulFilled = end - start > 0 ? (current) => current > intEnd : (current) => current < intEnd;
     const result = [];
     let current = start;
     while (true) {

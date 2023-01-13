@@ -1,8 +1,8 @@
 import { Component } from '../core';
 import { currentTimeTickMark, timeTickMark } from '../utils';
 export default class TimeAxis extends Component {
-    constructor(chart) {
-        super(chart);
+    constructor() {
+        super();
         this.isZooming = false;
     }
     drawLabels(canvas) {
@@ -28,9 +28,8 @@ export default class TimeAxis extends Component {
         let data = this.chart.history;
         if (!data)
             return;
-        let x = this.chart.mousePosition.x - this.chart.canvasRect.x;
-        let i = Math.round(((x - this.chart.boundingRect.left) / this.chart.chartFullWidth) *
-            data.length);
+        let x = this.chart.mouse.x - this.chart.canvasRect.x;
+        let i = Math.round(((x - this.chart.boundingRect.left) / this.chart.chartFullWidth) * data.length);
         let point = data[i];
         if (!point)
             return;

@@ -1,8 +1,10 @@
 import Pointer from './pointer';
 import PriceAxis from './price-axis';
 import TimeAxis from './time-axis';
-import Loader from './loader';
 import Grid from './grid';
 import ChartStyle from './chart-style';
-import Legend from './legend';
-export { Pointer, PriceAxis, TimeAxis, Loader, Grid, ChartStyle, Legend };
+import Legend from '../core/gui/legend';
+import Trading from './trading';
+import Prompt from './prompt';
+import PlaceOrderButton from './place-order-button';
+export { Pointer, PriceAxis, TimeAxis, Grid, ChartStyle, Legend, Trading, Prompt, PlaceOrderButton };

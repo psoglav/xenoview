@@ -1,5 +1,5 @@
 import { Chart } from './chart';
-import { DataProvider } from './data-provider';
+import { CurrentBarState, DataProvider } from './data-provider';
 export declare abstract class ChartData {
     dataProvider: DataProvider;
     history: History.Data;
@@ -21,7 +21,7 @@ export declare abstract class ChartData {
         PRICE: number;
         LASTUPDATE: number;
     }): void;
-    updateCurrentPoint(value: any): void;
+    updateCurrentPoint(value: CurrentBarState): void;
     getPointX(value: any): number;
     visibleRange(boundless?: boolean): number[];
     get visiblePoints(): History.Point[];

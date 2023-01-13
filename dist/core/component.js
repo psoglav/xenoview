@@ -1,5 +1,5 @@
 export class Component {
-    constructor(chart) {
-        this.chart = chart;
+    get chart() {
+        return window.xenoview;
     }
 }

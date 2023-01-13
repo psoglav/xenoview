@@ -1,7 +1,7 @@
-import { Canvas, Chart, Component } from '../core';
+import { Canvas, Component } from '../core';
 export default class TimeAxis extends Component {
     isZooming: boolean;
-    constructor(chart: Chart);
+    constructor();
     drawLabels(canvas: Canvas): void;
     drawTimeMarker(canvas: Canvas): void;
     zoom(dx: number): void;

@@ -31,21 +31,34 @@ export class DataProvider {
         });
     }
     async requestHistory() {
-        return await this.api.getKLines({
+        const data = await this.api.getKLines({
             symbol: this.symbol,
             interval: this._opts.interval,
             startTime: this.historyRange[0],
             endTime: this.historyRange[1],
             limit: 1000
         });
+        const bar = data[data.length - 1];
+        this.state = {
+            PRICE: bar.close,
+            LASTUPDATE: bar.time,
+            open: bar.open,
+            high: bar.high,
+            low: bar.low,
+            close: bar.close
+        };
+        this.listeners.forEach(cb => cb(this.state));
+        return data;
     }
     init() {
         this.state = null;
         this.api.disconnect();
         this.api.connect(async () => {
             this.api.subscribe(this.symbol, `kline_${this._opts.interval}`);
+            this.api.subscribe(this.symbol, `depth@100ms`);
             this.api.onStreamEvent('kline', (data) => {
-                if (data.s === this.symbol)
+                var _a;
+                if (data.s === this.symbol) {
                     this.state = {
                         PRICE: +data.k.c,
                         LASTUPDATE: Math.floor(data.k.t / 1000),
@@ -54,7 +67,14 @@ export class DataProvider {
                         low: +data.k.l,
                         close: +data.k.c
                     };
-                this.listeners.forEach(cb => cb(this.state));
+                    (_a = window.xenoview) === null || _a === void 0 ? void 0 : _a.updateCurrentPoint(this.state);
+                    this.listeners.forEach(cb => cb(this.state));
+                }
+            });
+            this.api.onStreamEvent('depthUpdate', (data) => {
+                if (data.s === this.symbol) {
+                    this.listeners.forEach(cb => cb(data));
+                }
             });
         });
     }

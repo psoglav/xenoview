@@ -1,6 +1,6 @@
 import '../public/styles/main.css';
 import { Canvas } from '.';
-import { Grid, Pointer, PriceAxis, TimeAxis, Legend } from '../components';
+import { Grid, Pointer, PriceAxis, TimeAxis, Legend, Trading, Prompt, PlaceOrderButton } from '../components';
 import { createChartStyle } from '../components/chart-style';
 export class ChartLayout {
     constructor(chart, container) {
@@ -24,7 +24,7 @@ export class ChartLayout {
             this.createChartContainer();
             this.createPriceContainer();
             this.createTimeContainer();
-            this.createLegendContainer();
+            this.createGUIContainer();
         }
     }
     createChartContainer() {
@@ -36,7 +36,7 @@ export class ChartLayout {
             zIndex: 0,
             // updateByRequest: true,
             components: {
-                grid: new Grid(this.chart),
+                grid: new Grid(),
                 style: createChartStyle(this.chart)
             }
         });
@@ -44,10 +44,13 @@ export class ChartLayout {
             container: el,
             zIndex: 1,
             components: {
-                pointer: new Pointer(this.chart)
+                prompt: new Prompt(),
+                pointer: new Pointer(),
+                'place-order-button': new PlaceOrderButton(),
+                trading: new Trading()
             }
         });
-        this.chartLayers.ui.canvas.style.pointerEvents = 'none';
+        this.chartLayers.view.canvas.style.pointerEvents = 'none';
         const observer = new ResizeObserver(() => {
             if (!this.chart.transform)
                 return;
@@ -59,7 +62,7 @@ export class ChartLayout {
         const el = this.createContainer();
         el.classList.add('chart-layout__price-scale-container');
         this.priceContainer = el;
-        const priceAxis = new PriceAxis(this.chart);
+        const priceAxis = new PriceAxis();
         this.priceAxisCanvas = new Canvas({
             container: el,
             // updateByRequest: true,
@@ -80,7 +83,7 @@ export class ChartLayout {
         const el = this.createContainer();
         el.classList.add('chart-layout__time-scale-container');
         this.timeContainer = el;
-        const timeAxis = new TimeAxis(this.chart);
+        const timeAxis = new TimeAxis();
         this.timeAxisCanvas = new Canvas({
             container: el,
             components: {
@@ -96,13 +99,13 @@ export class ChartLayout {
             this.timeAxisCanvas.setSize(rect.width, this.timeAxisCanvas.height);
         });
     }
-    createLegendContainer() {
+    createGUIContainer() {
         const el = this.createContainer();
-        el.classList.add('chart-layout__legend-wrapper');
-        const legend = new Legend(el, this.chart, {});
-        setInterval(() => {
-            el.innerHTML = legend.getTitle();
-        }, 100);
+        const legendNode = document.createElement('div');
+        this.legend = new Legend(legendNode, this.chart, this.chart._opts.legend);
+        el.classList.add('chart-layout__gui-wrapper');
+        legendNode.classList.add('legend');
+        el.appendChild(legendNode);
         return el;
     }
     createContainer() {

@@ -1,8 +1,8 @@
 import { Component } from '../core/component';
 export default class ChartStyle extends Component {
-    constructor(chart) {
-        super(chart);
-        this.style = chart.options.style;
+    constructor() {
+        super();
+        this.style = this.chart.options.style;
     }
 }
 const CachedStyles = {};
@@ -16,20 +16,20 @@ export function createChartStyle(chart) {
     const style = chart.options.style;
     switch (style) {
         case 'candles':
-            return cacheStyle(style, new Candles(chart));
+            return cacheStyle(style, new Candles());
         case 'line':
-            return cacheStyle(style, new Line(chart));
+            return cacheStyle(style, new Line());
         case 'area':
-            return cacheStyle(style, new Area(chart));
+            return cacheStyle(style, new Area());
         case 'bars':
-            return cacheStyle(style, new Bars(chart));
+            return cacheStyle(style, new Bars());
         case 'hollow-candles':
-            return cacheStyle(style, new HollowCandles(chart));
+            return cacheStyle(style, new HollowCandles());
     }
 }
 export class Line extends ChartStyle {
-    constructor(chart) {
-        super(chart);
+    constructor() {
+        super();
         this.bars = false;
     }
     update(canvas) {
@@ -70,8 +70,8 @@ export class Line extends ChartStyle {
     }
 }
 export class Candles extends ChartStyle {
-    constructor(chart) {
-        super(chart);
+    constructor() {
+        super();
         this.bars = true;
         this.empty = false;
     }
@@ -123,8 +123,8 @@ export class Candles extends ChartStyle {
     }
 }
 export class Area extends Line {
-    constructor(chart) {
-        super(chart);
+    constructor() {
+        super();
         this.bars = false;
     }
     update(canvas) {
@@ -164,8 +164,8 @@ export class Area extends Line {
     }
 }
 export class Bars extends Candles {
-    constructor(chart) {
-        super(chart);
+    constructor() {
+        super();
         this.bars = true;
     }
     drawCandleBody(x, y, width, height, type, canvas) {
@@ -180,8 +180,8 @@ export class Bars extends Candles {
     }
 }
 export class HollowCandles extends Candles {
-    constructor(chart) {
-        super(chart);
+    constructor() {
+        super();
         this.bars = true;
         this.empty = true;
     }

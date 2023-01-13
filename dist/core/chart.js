@@ -1,5 +1,5 @@
-import { ChartData, ChartLayout, Transform } from '.';
-import { Loader } from '../components';
+import { ChartData, ChartLayout, Transform, EventEmitter } from '.';
+import { createLoader } from './gui';
 import { createChartStyle } from '../components/chart-style';
 import { defaultChartOptions } from '../config/chart-options';
 export class Chart extends ChartData {
@@ -36,17 +36,37 @@ export class Chart extends ChartData {
     get pointer() {
         return this.components.pointer;
     }
+    get trading() {
+        return this.components.trading;
+    }
     constructor(container, options) {
         super();
         this._opts = defaultChartOptions;
-        this.mousePosition = { x: 0, y: 0 };
+        this.mouse = new Proxy({ x: 0, y: 0, cursor: 'default', isBlockedByUI: false, DEFAULT_CURSOR: 'default' }, {
+            set(target, prop, value) {
+                if (prop == 'cursor') {
+                    document.body.style.cursor = value;
+                }
+                else if (prop == 'isBlockedByUI') {
+                    const el = document.querySelector('.chart-layout__chart-container');
+                    el.classList[value ? 'add' : 'remove']('blocked-by-ui');
+                }
+                // @ts-ignore
+                return Reflect.set(...arguments);
+            }
+        });
+        window.xenoview = this;
         this.applyOptions(options);
         this.initData(this);
         this.layout = new ChartLayout(this, container);
         this.transform = new Transform(this);
-        this.loader = new Loader(this);
+        this.loader = createLoader({
+            color: this.options.spinnerColor,
+            container: this.container
+        });
         this.bindEventListeners();
         this.render();
+        EventEmitter.dispatch('mounted', null);
     }
     applyOptions(opts) {
         Object.keys(opts).forEach(option => {
@@ -82,24 +102,32 @@ export class Chart extends ChartData {
         this.chartLayer.needsUpdate = true;
     }
     loading(value) {
-        this.loader.isActive = value;
+        if (typeof value === 'boolean') {
+            this.loader.isActive = value;
+        }
+        else {
+            this.loader.isActive = true;
+            value.finally(() => {
+                this.loader.isActive = false;
+            });
+        }
     }
     bindEventListeners() {
-        this.canvas.addEventListener('mouseenter', () => {
+        this.uiLayer.canvas.addEventListener('mouseenter', () => {
             this.pointer.isVisible = true;
         });
-        this.canvas.addEventListener('mouseleave', () => {
+        this.uiLayer.canvas.addEventListener('mouseleave', () => {
             this.pointer.isVisible = false;
         });
-        this.canvas.addEventListener('mousedown', e => {
-            if (e.button == 0) {
+        this.uiLayer.canvas.addEventListener('mousedown', e => {
+            if (e.button == 0 && !this.mouse.isBlockedByUI) {
                 e.preventDefault();
                 this.transform.isPanning = true;
             }
         });
         window.addEventListener('mousemove', e => {
-            this.mousePosition.x = e.clientX;
-            this.mousePosition.y = e.clientY;
+            this.mouse.x = e.clientX;
+            this.mouse.y = e.clientY;
             if (this.transform.isPanning) {
                 let mx = e.movementX;
                 let my = this.options.autoScale ? 0 : e.movementY;
@@ -112,8 +140,8 @@ export class Chart extends ChartData {
                 this.transform.isPanning = false;
             }
         });
-        this.canvas.addEventListener('wheel', (e) => {
-            this.transform.zoom(e.wheelDeltaY, e.altKey ? -e.wheelDeltaY / 2 : 0, e.ctrlKey ? this.mousePosition.x : null);
+        this.uiLayer.canvas.addEventListener('wheel', (e) => {
+            this.transform.zoom(e.wheelDeltaY, e.altKey ? -e.wheelDeltaY / 2 : 0, e.ctrlKey ? this.mouse.x : null);
             this.pointer.move();
         });
     }
@@ -127,7 +155,10 @@ export class Chart extends ChartData {
             this.boundingRect.bottom = this.chartLayer.height;
         }
     }
-    debug(text, x, y) {
+    on(event, listener) {
+        EventEmitter.on(event, listener);
+    }
+    _debug(text, x, y) {
         this.ctx.fillStyle = 'white';
         this.ctx.font = '12px Arial';
         this.ctx.fillText(text, x, y);

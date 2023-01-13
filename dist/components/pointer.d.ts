@@ -1,10 +1,10 @@
-import { Chart, Component, Canvas } from '../core';
+import { Component, Canvas } from '../core';
 export default class Pointer extends Component {
-    isVisible: Boolean;
+    isVisible: boolean;
     focusedPointIndex: number;
     focusedPoint: History.Point;
     private position;
-    constructor(chart: Chart);
+    constructor();
     move(): void;
     update(canvas: Canvas): void;
     draw(ctx: CanvasRenderingContext2D): void;

@@ -1,6 +1,5 @@
-import { Chart, Canvas } from '.';
+import { Canvas } from '.';
 export declare abstract class Component {
-    chart: Chart;
-    constructor(chart: Chart);
+    get chart(): import("./chart").Chart;
     abstract update(canvas: Canvas): void;
 }

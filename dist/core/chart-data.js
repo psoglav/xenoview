@@ -1,8 +1,8 @@
-import Moment from 'moment';
-import { extendMoment } from 'moment-range';
+// import Moment from 'moment'
+// import { extendMoment } from 'moment-range'
 import { getNiceScale, getRangeByStep, normalizeTo, toMinutes } from '../utils';
 import { DataProvider } from './data-provider';
-const moment = extendMoment(Moment);
+// const moment: any = extendMoment(<any>Moment)
 export class ChartData {
     get chartFullWidth() {
         return this.chart.boundingRect.right - this.chart.boundingRect.left;
@@ -21,9 +21,6 @@ export class ChartData {
         if (this.chart.options.dataProvider) {
             this.dataProvider = new DataProvider(this.chart.options.dataProvider);
             await this.fetchHistory();
-            setInterval(() => {
-                this.updateCurrentPoint(this.dataProvider.state);
-            }, 500);
         }
     }
     async fetchHistory() {
@@ -31,6 +28,7 @@ export class ChartData {
     }
     async setInterval(value) {
         this.dataProvider.setInterval(value);
+        this.chart.layout.legend.update();
         await this.fetchHistory();
     }
     async setRange(value) {
@@ -39,6 +37,7 @@ export class ChartData {
     }
     async setFromSymbol(value) {
         this.dataProvider.setFromSymbol(value);
+        this.chart.layout.legend.update();
         await this.fetchHistory();
     }
     async setToSymbol(value) {
@@ -160,7 +159,7 @@ export class ChartData {
     getPriceTicks() {
         let start = this.getLowerPriceBound();
         let end = this.getUpperPriceBound();
-        let ticks = Math.floor(this.chart.chartLayer.height / 30);
+        let ticks = Math.floor(window.innerHeight / 80);
         let scale = getNiceScale(start, end, ticks);
         return getRangeByStep(...scale[0], scale[1]);
     }

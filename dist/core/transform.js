@@ -6,6 +6,8 @@ export class Transform {
         this.reset();
     }
     move(mx, my) {
+        if (this.chart.mouse.isBlockedByUI)
+            return;
         this.boundingRect.top += my;
         this.boundingRect.bottom += my;
         this.boundingRect.left += mx;
@@ -15,6 +17,8 @@ export class Transform {
     }
     // TODO: Make the calculations simpler
     zoom(dx, dy, xOrigin) {
+        if (this.chart.mouse.isBlockedByUI)
+            return;
         if (dx < 0 && this.chart.pointsGap < 1)
             return;
         if (dx > 0 && this.chart.pointsGap > 350)
@@ -24,18 +28,15 @@ export class Transform {
         if (dx) {
             let zoomPoint = xOrigin || this.chart.chartLayer.width;
             let d = 11 / this.ZOOM_RATE;
-            this.boundingRect.right +=
-                ((this.boundingRect.right - zoomPoint) / d) * dx;
+            this.boundingRect.right += ((this.boundingRect.right - zoomPoint) / d) * dx;
             this.boundingRect.left += ((this.boundingRect.left - zoomPoint) / d) * dx;
             this.clamp();
         }
         if (dy) {
             let origin = this.chart.chartLayer.height / 2;
             let d = 6 / this.ZOOM_RATE;
-            this.boundingRect.top -=
-                (((this.boundingRect.top - origin) / d) * dy) / 100;
-            this.boundingRect.bottom -=
-                (((this.boundingRect.bottom - origin) / d) * dy) / 100;
+            this.boundingRect.top -= (((this.boundingRect.top - origin) / d) * dy) / 100;
+            this.boundingRect.bottom -= (((this.boundingRect.bottom - origin) / d) * dy) / 100;
         }
         this.chart.chartLayer.needsUpdate = true;
     }

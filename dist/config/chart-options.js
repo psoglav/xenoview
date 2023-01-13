@@ -17,5 +17,9 @@ export const defaultChartOptions = {
     line: {
         color: '#089981',
         width: 2
+    },
+    legend: {
+        provider: true,
+        xenoview: true
     }
 };

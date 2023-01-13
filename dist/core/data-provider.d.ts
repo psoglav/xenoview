@@ -1,7 +1,7 @@
 import Configurable from '@/models/configurable';
 import { DataProviderOptions } from '../config/data-provider-options';
 import BinanceAPIClient from './binance-api-client';
-type CurrentBarState = {
+export type CurrentBarState = {
     PRICE: number;
     LASTUPDATE: number;
     open: number;
@@ -29,4 +29,3 @@ export declare class DataProvider implements Configurable<DataProviderOptions> {
     setInterval(value: Interval): void;
     setRange(value: DateRange): void;
 }
-export {};

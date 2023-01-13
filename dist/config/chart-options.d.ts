@@ -10,6 +10,12 @@ export interface ChartOptions {
         fgColor: string;
         bgColor: string;
     };
+    trading?: {
+        colors: {
+            buy: string;
+            sell: string;
+        };
+    };
     candles?: {
         colors: {
             higher: string;
@@ -29,6 +35,10 @@ export interface ChartOptions {
         labels?: {
             fontSize: number;
         };
+    };
+    legend?: {
+        provider?: boolean;
+        xenoview?: boolean;
     };
 }
 export declare const defaultChartOptions: ChartOptions;
