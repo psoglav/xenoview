@@ -1,4 +1,4 @@
-import { Chart } from '@/core';
+import { Chart } from '../core';
 export declare class Transform {
     boundingRect: Chart.BoundingRect;
     isPanning: boolean;

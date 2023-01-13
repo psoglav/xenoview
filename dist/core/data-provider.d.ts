@@ -1,4 +1,4 @@
-import Configurable from '@/models/configurable';
+import Configurable from '../models/configurable';
 import { DataProviderOptions } from '../config/data-provider-options';
 import BinanceAPIClient from './binance-api-client';
 export type CurrentBarState = {

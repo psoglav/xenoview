@@ -1,4 +1,4 @@
-import Configurable from '@/models/configurable';
+import Configurable from '../models/configurable';
 import { ChartData, ChartLayout, Transform } from '.';
 import { ChartStyle, Pointer, Trading } from '../components';
 import { ChartOptions } from '../config/chart-options';
