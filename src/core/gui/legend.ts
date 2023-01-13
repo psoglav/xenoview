@@ -9,10 +9,12 @@ type LegendOptions = Partial<{
   barChangeValues: boolean
   volume: boolean
   showBuySellButtons: boolean
+  provider?: boolean
+  xenoview?: boolean
 }>
 
 export default class Legend implements Configurable<LegendOptions> {
-  _opts: LegendOptions
+  _opts: LegendOptions = {}
 
   private _container: HTMLElement
   private _chart: Chart
@@ -21,7 +23,7 @@ export default class Legend implements Configurable<LegendOptions> {
     this._chart = chart
     this._container = container
 
-    this.applyOptions(opts)
+    this.applyOptions(opts || {})
     this.update(false)
   }
 
@@ -42,8 +44,8 @@ export default class Legend implements Configurable<LegendOptions> {
     return `<div class="title-wrapper">
               <div class="title-wrapper__symbol-title">${c1} / ${c2}</div>
               <div class="title-wrapper__interval-title">${this._chart.dataProvider._opts.interval}</div>
-              <div class="title-wrapper__provider-title">BINANCE</div>
-              <div class="title-wrapper__brand-title">XenoView</div>
+              ${this._opts?.provider ? '<div class="title-wrapper__provider-title">BINANCE</div>' : ''}
+              ${this._opts?.xenoview ? '<div class="title-wrapper__brand-title">XenoView</div>' : ''}
             </div>`
   }
 

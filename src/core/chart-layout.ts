@@ -143,7 +143,7 @@ export class ChartLayout {
   createGUIContainer() {
     const el = this.createContainer()
     const legendNode = document.createElement('div')
-    this.legend = new Legend(legendNode, this.chart, {})
+    this.legend = new Legend(legendNode, this.chart, this.chart._opts.legend)
     el.classList.add('chart-layout__gui-wrapper')
     legendNode.classList.add('legend')
     el.appendChild(legendNode)

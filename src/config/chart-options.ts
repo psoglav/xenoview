@@ -37,6 +37,10 @@ export interface ChartOptions {
       fontSize: number
     }
   }
+  legend?: {
+    provider?: boolean
+    xenoview?: boolean
+  }
 }
 
 export const defaultChartOptions: ChartOptions = {
@@ -58,5 +62,9 @@ export const defaultChartOptions: ChartOptions = {
   line: {
     color: '#089981',
     width: 2
+  },
+  legend: {
+    provider: true,
+    xenoview: true
   }
 }
