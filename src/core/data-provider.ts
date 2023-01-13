@@ -1,4 +1,4 @@
-import Configurable from '@/models/configurable'
+import Configurable from '../models/configurable'
 import moment from 'moment'
 
 import { DataProviderOptions, defaultDataProviderOptions } from '../config/data-provider-options'

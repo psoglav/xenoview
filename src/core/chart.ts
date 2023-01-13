@@ -1,4 +1,4 @@
-import Configurable from '@/models/configurable'
+import Configurable from '../models/configurable'
 
 import { ChartData, ChartLayout, Transform, EventEmitter } from '.'
 import { createLoader } from './gui'

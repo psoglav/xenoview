@@ -1,4 +1,4 @@
-import { assert } from '@/utils'
+import { assert } from '../utils'
 
 export default class Range<T extends number> {
   private readonly _start: T
