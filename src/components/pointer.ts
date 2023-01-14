@@ -57,15 +57,17 @@ export default class Pointer extends Component {
 
     ctx.setLineDash([5, 5])
 
+    let b = Math.floor(Math.max(w, h) / 10) * 10 + 2
+
     ctx.beginPath()
     ctx.moveTo(x, 0)
-    ctx.lineTo(x, Math.max(w, h))
+    ctx.lineTo(x, b)
     ctx.closePath()
     ctx.stroke()
 
     ctx.beginPath()
     ctx.moveTo(0, y)
-    ctx.lineTo(Math.max(w, h), y)
+    ctx.lineTo(b, y)
     ctx.closePath()
     ctx.stroke()
 
