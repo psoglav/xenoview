@@ -16,7 +16,7 @@ declare global {
 
   export type OrderModel = {
     id: string
-    at: string
+    at: number
     status: OrderStatus
     type: OrderType
     side: OrderSide

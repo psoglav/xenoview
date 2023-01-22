@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Position,  } from '../../core'
-import moment from 'moment'
 
 export default class Trading extends Component {
   public orders: OrderModel[] = []
@@ -55,7 +54,7 @@ export default class Trading extends Component {
         item.id = this.orders.length.toString(16)
         item.deltaPrice = 0
         item.status = 'working'
-        item.at = moment().format('DD.MM.YY HH:mm:ss')
+        item.at = +new Date()
       }
       this.openPosition(item)
     })
