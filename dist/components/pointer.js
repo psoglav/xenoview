@@ -36,14 +36,15 @@ export default class Pointer extends Component {
                 Math.round(this.chart.getPointIndexByX(this.chart.mouse.x - this.chart.canvasRect.left))) + 0.5;
         let y = Math.round(this.position.y + (this.chart.chartLayer.height % 2) / 2 - this.chart.canvasRect.top) + 0.5;
         ctx.setLineDash([5, 5]);
+        let b = Math.floor(Math.max(w, h) / 10) * 10 + 2;
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(x, Math.max(w, h));
+        ctx.lineTo(x, b);
         ctx.closePath();
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(0, y);
-        ctx.lineTo(Math.max(w, h), y);
+        ctx.lineTo(b, y);
         ctx.closePath();
         ctx.stroke();
         ctx.lineDashOffset = 0;
